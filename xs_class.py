@@ -1,0 +1,3 @@
+class XS:
+    dane = []
+    pass
