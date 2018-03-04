@@ -52,15 +52,11 @@ for line in lines:
         pass
     row +=1
 
-for object in XS_dat:
-    object.kordy()
-    #print(object.KM)
-
+# przypisacie left right kordynaty i max
 for i in range(len(XS_dat)):
-    print(i)
+    XS_dat[i].kordy()
     if i == 0 or i == len(XS_dat)-1:
         XS_dat[i].len=XS_dat[i].KM
-
     elif i > 0 and i < len(XS_dat):
         XS_dat[i].len = abs((XS_dat[i-1].KM-XS_dat[i+1].KM)/2)
 
