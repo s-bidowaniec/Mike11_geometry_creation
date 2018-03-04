@@ -12,7 +12,7 @@ for line in lines:
     elif row == 1:
         XS_dat[XSnum].ReachCode = line
     elif row == 2:
-        XS_dat[XSnum].KM = line
+        XS_dat[XSnum].KM = float(line)
     elif row == 4:
         XS_dat[XSnum].cords = line
     elif row == 6:
@@ -35,16 +35,50 @@ for line in lines:
         XS_dat[XSnum].RN = line
     elif row == 23:
         XS_dat[XSnum].Profile = line
-    elif row > 23 and line != 'LEVEL PARAMS':
+    elif row > 23 and 'LEVEL PARAMS' not in line and '*****' not in line:
         XS_dat[XSnum].dane.append(line)
-    elif line == 'LEVEL PARAMS':
-        row='LP'
-    elif row == 'LP':
+        #print(line)
+    elif 'LEVEL PARAMS' in line:
+        row_num = row
+        row=-100
+    elif row == -100 and 'LEVEL PARAMS' not in line:
         XS_dat[XSnum].LP = line
+        row=int(row_num)
     elif '*******************************' in line:
-        row = 0
+
+        row = -1
         XSnum += 1
-    row+=1
+    else:
+        pass
+    row +=1
+
+for object in XS_dat:
+    object.kordy()
+    #print(object.KM)
+
+for i in range(len(XS_dat)):
+    print(i)
+    if i == 0 or i == len(XS_dat)-1:
+        XS_dat[i].len=XS_dat[i].KM
+
+    elif i > 0 and i < len(XS_dat):
+        XS_dat[i].len = abs((XS_dat[i-1].KM-XS_dat[i+1].KM)/2)
+
+linki = []
+for object in XS_dat:
+    lewa = object.Left
+    prawa = object.Right
+    for object in XS_dat:
+        if lewa == object.Right:
+            linki.append(object.KM)
+        if prawa == object.Left:
+            linki.append(object.KM)
+
 print(len(XS_dat))
 print(XS_dat)
-
+print(XS_dat[1].Left)
+print(XS_dat[1].Right)
+print(XS_dat[1].MaxLeft)
+print(XS_dat[1].MaxRight)
+print(XS_dat[1].len)
+print(linki)
