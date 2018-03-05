@@ -2,8 +2,8 @@ class XS(object):
     def __init__(self):
         self.dane = []
     def kordy(self):
-        self.Left = self.cords.split()[1:3]
-        self.Right = self.cords.split()[3:5]
+        self.left = self.cords.split()[1:3]
+        self.right = self.cords.split()[3:5]
         elev_points = []
         #print(len(self.dane))
         for element in self.dane:
@@ -12,6 +12,6 @@ class XS(object):
                 elev_points.append(h)
             except:
                 print(element)
-        self.MaxLeft = max(elev_points[0:5])
-        self.MaxRight = max(elev_points[-6:-1])
+        self.max_left = max(elev_points[0:5])
+        self.max_right = max(elev_points[-6:-1])
     pass
