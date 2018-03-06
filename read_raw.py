@@ -1,7 +1,7 @@
 import os
 from xs_class import XS
 from link_class import link
-file = open(r'/home/asus/PycharmProjects/linki/linik_gen/MIKE2_uzup_raw.txt','r')
+file = open(r'K:\Wymiana danych\Staszek\Krynka_model 06_03_18\robocze_3_poprawa\XS_Raw.txt','r')
 lines = file.readlines()
 row = 0
 XSnum = 0
@@ -62,12 +62,11 @@ for i in range(len(XS_dat)):
         XS_dat[i].len = abs((XS_dat[i-1].km-XS_dat[i+1].km)/2)
 
 linki = []
-for object in XS_dat:
-    lewa = object.left
-    prawa = object.right
-    for object in XS_dat:
-        if lewa == object.right:
-            linki.append(link())
+for object1 in XS_dat:
+    lewa = object1.left
+    for object2 in XS_dat:
+        if abs(float(lewa[0]) - float(object2.right[0]))<10 and abs(float(lewa[1]) - float(object2.right[1]))<10:
+            linki.append(link(object1, object2))
 
 
 print(len(XS_dat))
@@ -77,4 +76,5 @@ print(XS_dat[1].right)
 print(XS_dat[1].max_left)
 print(XS_dat[1].max_right)
 print(XS_dat[1].len)
-print(linki)
+print(len(linki))
+print(linki[0].river1," ", linki[0].river2)
