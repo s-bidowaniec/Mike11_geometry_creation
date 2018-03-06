@@ -1,7 +1,6 @@
 import os
-from xs_class import XS
-from link_class import link
-file = open(r'K:\Wymiana danych\Staszek\Krynka_model 06_03_18\robocze_3_poprawa\XS_Raw.txt','r')
+from classes_lib import XS, link
+file = open(r'/home/ciurski/PycharmProjects/linik_gen/XS_Raw.txt','r')
 lines = file.readlines()
 row = 0
 XSnum = 0
