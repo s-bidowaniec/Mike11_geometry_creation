@@ -1,6 +1,6 @@
 import os
-from classes_lib import XS, link
-file = open(r'E:\!!Modele_IsokII\Pielgrzymowka_11468\Mike\V6\S01_Pielgrzymowka_Qn_raw.txt','r')
+from classes_lib import XS, link, printowanie
+file = open(r'E:\!!Modele_IsokII\Zlotna_161152\Mike\V0\S01_Zlotna_Qn_raw.txt','r')
 lines = file.readlines()
 row = 0
 XSnum = 0
@@ -66,18 +66,20 @@ for i in range(len(XS_dat)):
     list_km.sort()
     index = list_km.index(float(XS_dat[i].km))
     if index == 0:
-        XS_dat[i].len = int(list_km[index])
+        XS_dat[i].len = int(list_km[index]/2+(list_km[index]-list_km[index+1])/2)
     elif index >= len(list_km)-1:
-        XS_dat[i].len = int(abs((list_km[index - 1] - list_km[index])))
+        XS_dat[i].len = int(abs((list_km[index - 1] - list_km[index]))/2)
     elif index > 0 and index < len(list_km)-1:
         XS_dat[i].len = int(abs((list_km[index-1]-list_km[index+1])/2))
+    if XS_dat[i].len == 0:
+        XS_dat[i].len = 1
     list_km = []
 # wykrycie polaczen przekroii od lewej do prawej, stworzenie listy obiektow typu link
 linki = []
 for object1 in XS_dat:
     lewa = object1.left
     for object2 in XS_dat:
-        if abs(float(lewa[0]) - float(object2.right[0]))<5 and abs(float(lewa[1]) - float(object2.right[1]))<5 and object1.river_code != object2.river_code:
+        if abs(float(lewa[0]) - float(object2.right[0]))<2 and abs(float(lewa[1]) - float(object2.right[1]))<2 and object1.river_code != object2.river_code:
             if "LTZ" in object1.river_code and "PTZ" in object2.river_code:
                 pass
             elif "PTZ" in object1.river_code and "LTZ" in object2.river_code:
@@ -170,9 +172,11 @@ for element in linki:
     element.data_definition()
 
 
-i = 2
-print(linki[i].definitions,"\n", linki[i].connections)
-print(linki[i].points,"\n", linki[i].geometry)
-print(linki[i].cross_section)
+#for i in range(len(linki)):
+    #print(linki[i].definitions,"\n", linki[i].connections)
+    #print(linki[i].points,"\n", linki[i].geometry)
+    #print(linki[i].cross_section)
+    #print(linki[i].connections)
+print(len(linki))
 
-
+print(printowanie(linki,10))

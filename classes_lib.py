@@ -44,6 +44,7 @@ class link(object):
                 self.definitions = ["KP_"+str(self.main_chan)+"_"+str(self.main_km)+"_"+self.main_site, self.topo,0,5,0,10000,1]
                 self.connections = [self.object1.river_code, self.object1.km, self.object2.river_code, self.object2.km]
                 self.points = [float(self.object1.left[0])-2, float(self.object1.left[1])-2, float(self.object1.left[0])+2, float(self.object1.left[1])+2]
+                print(self.points)
                 h_elev = float(max(self.object1.max_left, self.object2.max_right))
                 self.geometry = [h_elev, h_elev-1]
                 self.cross_section = [[0,0],[0.1, float(self.object1.len)], [3, float(self.object1.len)]]
@@ -55,3 +56,26 @@ class link(object):
                 self.geometry = [h_elev, h_elev-1]
                 self.cross_section = [[0,0],[0.1, float(self.object1.len)], [3, float(self.object1.len)]]
             pass
+def printowanie(list_lin, num):
+    point_list = []
+    f = open('workfile.txt', 'w')
+    for element in list_lin:
+        point1 = str(element.points[0:2])
+        elem = [num+1,point1]
+        point_list.append(elem)
+        f.write(str(elem)+"\n")
+        point2 = str(element.points[2:4])
+        elem2 = [num+2, point2]
+        point_list.append(elem2)
+        f.write(str(elem2)+"\n")
+        num+=2
+        element.points2=[num-1, num]
+    for element in list_lin:
+        f.write("-------------\n\n")
+        f.write(str(element.definitions) + "\n")
+        f.write(str(element.connections) + "\n")
+        f.write(str(element.points2) + "\n")
+        f.write(str(element.geometry) + "\n")
+        f.write(str(element.cross_section) + "\n")
+    return (point_list)
+
