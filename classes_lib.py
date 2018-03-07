@@ -12,6 +12,7 @@ class XS(object):
                 elev_points.append(h)
             except:
                 print(element)
+        #print(self.reach_code, self.km)
         self.max_left = max(elev_points[0:5])
         self.mean_left = float(self.max_left) / 5
         self.max_right = max(elev_points[-6:-1])
