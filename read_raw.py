@@ -1,6 +1,6 @@
 import os
 from classes_lib import XS, link, printowanie
-file = open(r'E:\!!Modele_IsokII\Zlotna_161152\Mike\V0\S01_Zlotna_Qn_raw.txt','r')
+file = open(r'E:\Robocze\!!python\Zlotna_161152\Mike\V0\S01_Zlotna_test_raw.txt','r')
 lines = file.readlines()
 row = 0
 XSnum = 0
@@ -48,7 +48,6 @@ for line in lines:
         XS_dat[XSnum].lp = line
         row=int(row_num)
     elif '**' in line:
-
         row = -1
         XSnum += 1
     else:
@@ -66,7 +65,7 @@ for i in range(len(XS_dat)):
     list_km.sort()
     index = list_km.index(float(XS_dat[i].km))
     if index == 0:
-        XS_dat[i].len = int(list_km[index]/2+(list_km[index]-list_km[index+1])/2)
+        XS_dat[i].len = int(abs(list_km[index]/2+(list_km[index]-list_km[index+1])/2))
     elif index >= len(list_km)-1:
         XS_dat[i].len = int(abs((list_km[index - 1] - list_km[index]))/2)
     elif index > 0 and index < len(list_km)-1:
@@ -81,9 +80,9 @@ for object1 in XS_dat:
     for object2 in XS_dat:
         if abs(float(lewa[0]) - float(object2.right[0]))<2 and abs(float(lewa[1]) - float(object2.right[1]))<2 and object1.river_code != object2.river_code:
             if "LTZ" in object1.river_code and "PTZ" in object2.river_code:
-                pass
+                print("blad: LTZ polaczony z PTZ")
             elif "PTZ" in object1.river_code and "LTZ" in object2.river_code:
-                pass
+                print("blad: PTZ polaczony z LTZ")
             else:
                 linki.append(link(object1, object2))
 licz_lin = len(linki)
@@ -122,8 +121,7 @@ for element in linki:
             element.main_km = element.object2.km
             element.topo = element.object2.reach_code
             defined += 1
-#print(len(linki))
-#print(defined)
+
 rzad = 1
 safety = 0
 while len(linki) > defined and safety < 10:
@@ -134,23 +132,30 @@ while len(linki) > defined and safety < 10:
                     if element.river2 == element2.river1 and element.chain2 == element2.chain1 and element2.rzad == 0:
                         element2.rzad = rzad+1
                         element2.kolej = 1
+                        element2.main_chan = element.main_chan
+                        element2.main_km = element.main_km
+                        element2.topo = element.topo
                         defined += 1
                         #print(element2.river1, element2.chain1, element2.river2, element2.chain2)
                     elif element.river2 == element2.river1 and element.chain2 == element2.chain1 and element2.rzad == rzad:
-
                         if element2.object1.mean_left > element2.object2.mean_right:
                             element2.rzad = rzad+1
                             element2.kolej = 1
-
                         else:
                             element2.rzad = rzad+1
                             element2.kolej = 2
+                            element2.main_chan = element.main_chan
+                            element2.main_km = element.main_km
+                            element2.topo = element.topo
 
             elif element.kolej == 2:
                 for element2 in linki:
                     if element.river1 == element2.river2 and element.chain1 == element2.chain2 and element2.rzad == 0:
                         element2.rzad = rzad+1
                         element2.kolej = 2
+                        element2.main_chan = element.main_chan
+                        element2.main_km = element.main_km
+                        element2.topo = element.topo
                         defined += 1
                         #print(element2.river1, element2.chain1, element2.river2, element2.chain2)
                     elif element.river1 == element2.river2 and element.chain1 == element2.chain2 and element2.rzad == rzad:
@@ -159,6 +164,9 @@ while len(linki) > defined and safety < 10:
                             element2.kolej = 1
                         else:
                             element2.rzad = rzad+1
+                            element2.main_chan = element.main_chan
+                            element2.main_km = element.main_km
+                            element2.topo = element.topo
                             element2.kolej = 2
 
     rzad += 1
@@ -171,12 +179,6 @@ for element in linki:
     # topo bezposrednio z cieku glownego
     element.data_definition()
 
-
-#for i in range(len(linki)):
-    #print(linki[i].definitions,"\n", linki[i].connections)
-    #print(linki[i].points,"\n", linki[i].geometry)
-    #print(linki[i].cross_section)
-    #print(linki[i].connections)
 print(len(linki))
 
-print(printowanie(linki,10))
+print(printowanie(linki,14923))
