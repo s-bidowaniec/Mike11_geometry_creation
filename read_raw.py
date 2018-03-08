@@ -1,5 +1,5 @@
 import os
-from classes_lib import XS, link, printowanie
+from classes import XS, link, printowanie
 file = open(r'E:\Robocze\!!python\Zlotna_161152\Mike\V0\S01_Zlotna_test_raw.txt','r')
 lines = file.readlines()
 row = 0
