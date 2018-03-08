@@ -114,13 +114,47 @@ def printowanie(list_lin, num):
 
 #bridges----------------------------------------------------------------------------------------------------------------
 
+class point(object):
+    def __init__(self, lp, x, y, z, kod="nul", cos="nul"):
+        self.lp = lp
+        self.x = x
+        self.y = y
+        self.z = z
+        self.kod = kod
+        self.cos = [cos]
+
 class XS_t(object):
     def __init__(self, file):
         self.km = 0
         self.rzeka = "Riv"
         self.data = "01.01.1990"
+        self.type = "none"
         self.x = []
         self.y = []
         self.z = []
         self.kod = []
-        self.dane = file.read().split("\n")
+        self.dane = []
+        self.point_data = []
+        for line in file.read().split("\r\n"):
+            line2 = line.replace("\t\t","").replace("\r","")
+            numbers = sum(c.isdigit() for c in line2)
+            if numbers < 14:
+                self.dane.append(line2)
+            else:
+                self.point_data.append(point(*line2.split('\t')))
+        if "rzek" in str.lower(self.dane[0]) or "zeka" in str.lower(self.dane[0]):
+            self.rzeka = self.dane[0].split(':')[1]
+        else:
+            print("Brak: river def")
+        if "przek" in str.lower(self.dane[1]) or "rzekr" in str.lower(self.dane[1]):
+            self.lp = self.dane[1].split(':')[1]
+        else:
+            print("Brak: lp def")
+        if "dat" in str.lower(self.dane[2]) or "ata" in str.lower(self.dane[2]):
+            self.data = self.dane[2].split(':')[1]
+        else:
+            print("Brak: data def")
+        if "typ" in str.lower(self.dane[3]) or "obiekt" in str.lower(self.dane[3]):
+            self.type = self.dane[3].split(':')[1]
+        else:
+            print("Brak: type def")
