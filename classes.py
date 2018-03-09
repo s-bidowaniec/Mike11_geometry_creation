@@ -1,3 +1,8 @@
+import math
+import operator
+from operator import itemgetter
+import matplotlib.pyplot as plt
+
 def get_xy_delta(self):
     if self.right[0] > self.left[0]:
         x1, x2 = 2, -2
@@ -129,32 +134,112 @@ class XS_t(object):
         self.rzeka = "Riv"
         self.data = "01.01.1990"
         self.type = "none"
-        self.x = []
-        self.y = []
-        self.z = []
-        self.kod = []
         self.dane = []
         self.point_data = []
-        for line in file.read().split("\r\n"):
+        for line in file.read().split("\n"):
             line2 = line.replace("\t\t","").replace("\r","")
             numbers = sum(c.isdigit() for c in line2)
             if numbers < 14:
                 self.dane.append(line2)
+
             else:
                 self.point_data.append(point(*line2.split('\t')))
-        if "rzek" in str.lower(self.dane[0]) or "zeka" in str.lower(self.dane[0]):
-            self.rzeka = self.dane[0].split(':')[1]
+
+        r = 0
+        while sum(c.islower() for c in self.dane[r]) < 1:
+            r+=1
+        if "rzek" in str.lower(self.dane[r]) or "zeka" in str.lower(self.dane[0]):
+            self.rzeka = self.dane[r].split(':')[1]
         else:
-            print("Brak: river def")
-        if "przek" in str.lower(self.dane[1]) or "rzekr" in str.lower(self.dane[1]):
-            self.lp = self.dane[1].split(':')[1]
+            print("Brak: river def", self.lp)
+        if "przek" in str.lower(self.dane[r+1]) or "rzekr" in str.lower(self.dane[1]):
+            self.lp = self.dane[r+1].split(':')[1]
         else:
-            print("Brak: lp def")
-        if "dat" in str.lower(self.dane[2]) or "ata" in str.lower(self.dane[2]):
-            self.data = self.dane[2].split(':')[1]
+            print("Brak: lp def", self.lp)
+        if "dat" in str.lower(self.dane[r+2]) or "ata" in str.lower(self.dane[2]):
+            self.data = self.dane[r+2].split(':')[1]
         else:
-            print("Brak: data def")
-        if "typ" in str.lower(self.dane[3]) or "obiekt" in str.lower(self.dane[3]):
-            self.type = self.dane[3].split(':')[1]
+            print("Brak: data def", self.lp)
+        if "typ" in str.lower(self.dane[r+3]) or "obiekt" in str.lower(self.dane[3]):
+            self.type = self.dane[r+3].split(':')[1]
         else:
-            print("Brak: type def")
+            print("Brak: type def", self.lp)
+        if self.type == "none" or self.type == '':
+            #print(self.lp)
+            try:
+                if "obie" in str(self.dane[-4:-1]).lower():
+                    self.type = "obiekt"
+                else:
+                    kody = []
+                    for k in self.point_data:
+                        kody.append(k.kod)
+                    napis = str(kody)
+                    if '40' in napis:
+                        self.type = "obiekt"
+                    else:
+                        pass
+            except:
+                pass
+    def get_far(self):
+        line = []
+        for poi in self.point_data:
+            if "ZWW" in str(poi.cos):
+                line.append(poi.x)
+                line.append(poi.y)
+        return(line[0],line[1],line[2],line[3])
+
+    def distance(self):
+        self.pierwszy_punkt = self.point_data[0]
+        self.pozost_punkty = self.point_data[1:]
+        self.punkty_odleglosci = {}
+        self.sortowane = []
+        x1, y1, z1 = self.pierwszy_punkt.xp, self.pierwszy_punkt.yp, self.pierwszy_punkt.z
+        for i in self.point_data:
+            x2, y2, z2 = i.xp, i.yp, i.z
+            dx = math.fabs(x2 - x1)
+            dy = math.fabs(y2 - y1)
+            dist = math.sqrt((dx**2) + (dy**2))
+            i.dist = dist
+        #self.point_data = sorted(self.point_data, key=operator.attrgetter('dist'))
+    def get_culvert(self):
+        self.geom = []
+        self.kor = []
+        self.kor_c = []
+        for pkt in self.point_data:
+            if "40" not in str(pkt.kod) and "41" not in str(pkt.kod) and "42" not in str(pkt.kod) and "66" not in str(pkt.kod):
+                self.kor.append((pkt.dist, pkt.z))
+            elif "40" in str(pkt.kod):
+                self.geom.append((pkt.dist, pkt.z))
+        print(len(self.geom))
+        self.max_d = max(self.geom, key=itemgetter(0))[0]
+        self.min_d = min(self.geom, key=itemgetter(0))[0]
+        print(self.min_d, self.max_d)
+        for element in self.kor:
+            if float(element[0]) > self.max_d+0.1 or float(element[0]) < self.min_d:
+                pass
+                #print(element)
+            else:
+                self.kor_c.append(element)
+        self.geom.reverse()
+        wykres = self.kor+self.geom
+        plt.plot(*zip(*wykres))
+        plt.show()
+
+class points2Line(object):
+    '''klasa zawierająca w sobie współrzędne dwóch punktów określających prostą, oraz
+    jednego punktu który będzie na nią rzutowany'''
+
+    def __init__(self, x1, y1, x2, y2, x=None, y=None):
+        self.x1 = float(x1)
+        self.y1 = float(y1)
+        self.x2 = float(x2)
+        self.y2 = float(y2)
+        self.x = float(x)
+        self.y = float(y)
+
+        #def computePoints(self):
+        licznik = ((self.x - self.x1) * (self.x2 - self.x1)) + ((self.y - self.y1) * (self.y2 - self.y1))
+        mianownik = ((self.x1 - self.x2) ** 2) + ((self.y1 - self.y2) ** 2)
+        u = licznik / mianownik
+        self.xp = ((self.x2 - self.x1) * u) + self.x1
+        self.yp = ((self.y2 - self.y1) * u) + self.y1
