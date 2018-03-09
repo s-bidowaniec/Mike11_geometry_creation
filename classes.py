@@ -1,5 +1,5 @@
 import math
-import operator
+import tkinter
 from operator import itemgetter
 import matplotlib.pyplot as plt
 
@@ -207,9 +207,9 @@ class XS_t(object):
         self.kor_c = []
         for pkt in self.point_data:
             if "40" not in str(pkt.kod) and "41" not in str(pkt.kod) and "42" not in str(pkt.kod) and "66" not in str(pkt.kod):
-                self.kor.append((pkt.dist, pkt.z))
+                self.kor.append((float(pkt.dist), float(pkt.z)))
             elif "40" in str(pkt.kod):
-                self.geom.append((pkt.dist, pkt.z))
+                self.geom.append((float(pkt.dist), float(pkt.z)))
         print(len(self.geom))
         self.max_d = max(self.geom, key=itemgetter(0))[0]
         self.min_d = min(self.geom, key=itemgetter(0))[0]
@@ -221,8 +221,8 @@ class XS_t(object):
             else:
                 self.kor_c.append(element)
         self.geom.reverse()
-        wykres = self.kor+self.geom
-        plt.plot(*zip(*wykres))
+        plt.plot(*zip(*self.kor))
+        plt.plot(*zip(*self.geom))
         plt.show()
 
 class points2Line(object):

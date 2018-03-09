@@ -10,7 +10,7 @@ def lineToList(line):
     stringList = line2.split(", ")
     return stringList, name
 
-file = open("C:\\Users\\charles\\Desktop\\linki\\Dane_przykladowe\\S01_Pielgrzymowka_Qn_bud.nwk11", 'r')
+file = open("przykladowy_NWK", 'r')
 readline = file.readlines()
 
 nwk = nwkFile()
@@ -104,6 +104,7 @@ print("zaczytano dane")
 changeType(nwk)
 
 print("All done")
+print(nwk.branchList[8].linkChannel.geometry)
 
 
         
