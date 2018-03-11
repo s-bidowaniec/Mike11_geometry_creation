@@ -18661,10 +18661,7 @@
 
    [STRUCTURE_MODULE]
       Structure_Version = 1, 1
-      [CROSSSECTIONS]
-         CrossSectionDataBridge = 'xns11'
-         CrossSectionFile = |.\Test.xns11|
-      EndSect  // CROSSSECTIONS
+
 
       [WEIR]
          [weir_data]

@@ -1,7 +1,7 @@
 import glob
 from classes import XS_t, points2Line
 import codecs
-path = r"/home/asus/PycharmProjects/linki/Data/rawxs/"
+path = r"/home/ciurski/PycharmProjects/dane/rawxs/"
 
 XS_txt = glob.glob(path+"*.txt")
 XS_base = []

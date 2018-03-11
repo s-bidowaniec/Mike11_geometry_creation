@@ -54,7 +54,7 @@ while i < len(readline):
         cl = cl.linkChannel
     
     elif "[Cross_Section]" in line:
-        cl.crossSection = linkCrossSection(cl)
+        cl.crossSection = CrossSection(cl)
         cl = cl.crossSection
 
     elif "[weir_data]" in line:
@@ -104,7 +104,7 @@ print("zaczytano dane")
 changeType(nwk)
 
 print("All done")
-print(nwk.branchList[8].linkChannel.geometry)
+print(nwk.branchList[8].linkChannel.crossSection.data)
 
 
         

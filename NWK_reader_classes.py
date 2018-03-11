@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-
+import time
 class nwkPoint(object):
     def __init__(self, no, x, y, val1, val2, val3, z = None):
         self.no = no
@@ -123,14 +123,15 @@ class culvert(object):
 
 
 ######################
-class linkCrossSection(object):
+class CrossSection(object):
     def __init__(self, parent = None):
         self.data = []
         self.end = "EndSect  // Cross_Section"
         self.parent = parent
 
     def addParameters(self, stringList, name, line):
-        self.data.append(stringList[1:])
+        self.data.append(str(stringList[1]))
+        self.data.append(str(stringList[2]))
 
 
 ######################
@@ -221,8 +222,14 @@ class nwkFile(object):
 
 def changeType(ob):
     attrDict = ob.__dict__
+
     for i in attrDict:
+        try:
+            print(attrDict[i].data)
+        except:
+            print(i)
         if type(attrDict[i]) == list:
+            print("a")
             for j in range(len(attrDict[i])):
                 if '__dict__' in dir(attrDict[i][j]):
                     changeType(attrDict[i][j])   
@@ -236,6 +243,7 @@ def changeType(ob):
                     pass
               
         elif type(attrDict[i]) == dict:
+            print("b")
             for j in attrDict[i]:
                 try:
                     if "." in attrDict[i][j]:
@@ -247,6 +255,7 @@ def changeType(ob):
                    
         try:
             if "." in attrDict[i]:
+                print("c")
                 attrDict[i] = float(attrDict[i])
             else:
                 attrDict[i] = int(attrDict[i])
@@ -254,10 +263,13 @@ def changeType(ob):
             pass
         
         try:
+            print("d")
             if '__dict__' in dir(attrDict[i]):
+                print(attrDict[i].data)
                 changeType(attrDict[i])
-                pass
             else:
                 pass
         except:
             pass
+
+    return (True)

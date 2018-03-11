@@ -119,6 +119,38 @@ def printowanie(list_lin, num):
 
 #bridges----------------------------------------------------------------------------------------------------------------
 
+def distance(x1, x2, y1, y2):
+    try:
+        return sqrt((x1 - x2) ** 2 + (y1 - y2) ** 2)
+    except:
+        return 0
+
+def is_between(X1, Y1, x, y, X2, Y2):
+    return round(distance(X1, x, Y1, y)) + round(distance(x, X2, y, Y2)) == round(distance(X1, X2, Y1, Y2))
+
+def line_intersection(X1, Y1, X2, Y2, X3, Y3, X4, Y4):
+    line1 = [[X1, Y1], [X2, Y2]]
+    line2 = [[X3, Y3], [X4, Y4]]
+    xdiff = (line1[0][0] - line1[1][0], line2[0][0] - line2[1][0])
+    ydiff = (line1[0][1] - line1[1][1], line2[0][1] - line2[1][1])
+
+    def det(a, b):
+        return a[0] * b[1] - a[1] * b[0]
+
+    div = det(xdiff, ydiff)
+    if div == 0:
+        x, y, b, c = None, None, None, None
+    else:
+        d = (det(*line1), det(*line2))
+        x = det(d, xdiff) / div
+        y = det(d, ydiff) / div
+        b = (is_between(X3, Y3, x, y, X4, Y4))
+        c = (is_between(X1, Y1, x, y, X2, Y2))
+
+    return (x, y, b, c)
+
+
+
 class point(object):
     def __init__(self, lp, x, y, z, kod="nul", cos="nul"):
         self.lp = lp
@@ -200,7 +232,17 @@ class XS_t(object):
             dy = math.fabs(y2 - y1)
             dist = math.sqrt((dx**2) + (dy**2))
             i.dist = dist
-        #self.point_data = sorted(self.point_data, key=operator.attrgetter('dist'))
+    def dist_sort(self):
+        self.point_data = sorted(self.point_data, key=operator.attrgetter('dist'))
+
+    def count_40(self):
+        for pkt in self.point_data:
+            licz == 0
+            if "40" in str(pkt.kod):
+                licz += 1
+        self.licz40 = licz
+
+
     def get_culvert(self):
         self.geom = []
         self.kor = []
@@ -224,6 +266,8 @@ class XS_t(object):
         plt.plot(*zip(*self.kor))
         plt.plot(*zip(*self.geom))
         plt.show()
+
+
 
 class points2Line(object):
     '''klasa zawierająca w sobie współrzędne dwóch punktów określających prostą, oraz
