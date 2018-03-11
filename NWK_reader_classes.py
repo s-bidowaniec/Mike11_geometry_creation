@@ -265,7 +265,7 @@ def changeType(ob):
         try:
             print("d")
             if '__dict__' in dir(attrDict[i]):
-                print(attrDict[i].data)
+                print(attrDict[i].par)
                 changeType(attrDict[i])
             else:
                 pass
