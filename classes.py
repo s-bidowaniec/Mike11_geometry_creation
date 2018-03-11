@@ -1,7 +1,8 @@
 import math
-import tkinter
 from operator import itemgetter
+
 import matplotlib.pyplot as plt
+
 
 def get_xy_delta(self):
     if self.right[0] > self.left[0]:
@@ -16,33 +17,36 @@ def get_xy_delta(self):
         y1, y2 = -2, 2
     else:
         y1, y2 = 0, 0
-    return(x1,y1,x2,y2)
+    return x1, y1, x2, y2
 
 
 class XS(object):
     def __init__(self):
         self.dane = []
+
     def kordy(self):
         self.left = self.cords.split()[1:3]
         self.right = self.cords.split()[3:5]
         elev_points = []
-        #print(len(self.dane))
+        # print(len(self.dane))
         for element in self.dane:
             try:
                 h = element.split()[1]
                 elev_points.append(h)
             except:
                 print(element)
-        #print(self.reach_code, self.km)
+        # print(self.reach_code, self.km)
         self.max_left = max(elev_points[0:5])
         self.min_left = min(elev_points[0:10])
         self.mean_left = float(self.max_left) / 5
         self.max_right = max(elev_points[-5:-1])
         self.min_right = min(elev_points[-10:-1])
         self.mean_right = float(self.max_right) / 5
+
     pass
 
-class link(object):
+
+class Link(object):
     def __init__(self, object1, object2):
         self.object1 = object1
         self.object2 = object2
@@ -75,13 +79,15 @@ class link(object):
             elif self.kolej == 2:
                 self.connections = [self.object2.river_code, self.object2.km, self.object1.river_code, self.object1.km]
                 x2, y2, x1, y1 = get_xy_delta(self.object1)
-            self.definitions = ["KP_"+str(self.rzad)+"_"+str(self.main_chan)+"_"+str(self.main_km)+"_"+self.main_site, self.topo,0,5,0,10000,1]
+            self.definitions = [
+                "KP_" + str(self.rzad) + "_" + str(self.main_chan) + "_" + str(self.main_km) + "_" + self.main_site,
+                self.topo, 0, 5, 0, 10000, 1]
             h_elev = float(max(self.object1.max_left, self.object2.max_right))
-            h2_elev = float((self.object2.min_right))
+            h2_elev = float(self.object2.min_right)
             self.geometry = [h_elev, h2_elev]
-            self.cross_section = [[0,0],[0.1, float(self.object1.len)], [3, float(self.object1.len)]]
-            self.points = [float(self.object1.left[0]) +x1, float(self.object1.left[1]) +y1,
-                           float(self.object1.left[0]) +x2, float(self.object1.left[1]) +y2]
+            self.cross_section = [[0, 0], [0.1, float(self.object1.len)], [3, float(self.object1.len)]]
+            self.points = [float(self.object1.left[0]) + x1, float(self.object1.left[1]) + y1,
+                           float(self.object1.left[0]) + x2, float(self.object1.left[1]) + y2]
 
 
 def printowanie(list_lin, num):
@@ -90,47 +96,51 @@ def printowanie(list_lin, num):
     f.write("   [POINTS]\n")
     for element in list_lin:
         point1 = str(element.points[0:2])
-        elem = [num+1,point1]
+        elem = [num + 1, point1]
         point_list.append(elem)
-        f.write("      point = "+str(elem).replace("[","").replace("]","").replace("'","")+", 1, 0.00, 0"+"\n")
+        f.write("      point = " + str(elem).replace("[", "").replace("]", "").replace("'", "") + ", 1, 0.00, 0" + "\n")
         point2 = str(element.points[2:4])
-        elem2 = [num+2, point2]
+        elem2 = [num + 2, point2]
         point_list.append(elem2)
-        f.write("      point = "+str(elem2).replace("[","").replace("]","").replace("'","")+", 1, 5.00, 0"+"\n")
-        num+=2
-        element.points2=[num-1, num]
+        f.write(
+            "      point = " + str(elem2).replace("[", "").replace("]", "").replace("'", "") + ", 1, 5.00, 0" + "\n")
+        num += 2
+        element.points2 = [num - 1, num]
     f.write("-------------\n\n")
     for element in list_lin:
         f.write("      [branch]\n")
-        f.write("         definitions = "+str(element.definitions).replace("[","").replace("]","") + "\n")
-        f.write("         connections = "+str(element.connections).replace("[","").replace("]","") + "\n")
-        f.write("         points = "+str(element.points2).replace("[","").replace("]","") + "\n")
+        f.write("         definitions = " + str(element.definitions).replace("[", "").replace("]", "") + "\n")
+        f.write("         connections = " + str(element.connections).replace("[", "").replace("]", "") + "\n")
+        f.write("         points = " + str(element.points2).replace("[", "").replace("]", "") + "\n")
         f.write("         [linkchannel]\n")
-        f.write("            Geometry = "+str(element.geometry).replace("[","").replace("]","") + ", 0\n")
+        f.write("            Geometry = " + str(element.geometry).replace("[", "").replace("]", "") + ", 0\n")
         f.write("            HeadLossFactors = 0.5, 1, 0, 1, 0.5, 1, 0, 1\n")
         f.write("            Bed_Resistance = 1, 0.03\n")
         f.write("            [Cross_Section]\n")
         for data in element.cross_section:
-            f.write("               Data = "+str(data).replace("[","").replace("]","") + "\n")
+            f.write("               Data = " + str(data).replace("[", "").replace("]", "") + "\n")
         f.write("            EndSect  // Cross_Section\n\n")
         f.write("         EndSect  // linkchannel\n\n")
         f.write("      EndSect  // branch\n\n")
-    return (point_list)
+    return point_list
 
-#bridges----------------------------------------------------------------------------------------------------------------
+
+# bridges----------------------------------------------------------------------------------------------------------------
 
 def distance(x1, x2, y1, y2):
     try:
-        return sqrt((x1 - x2) ** 2 + (y1 - y2) ** 2)
+        return math.sqrt((x1 - x2) ** 2 + (y1 - y2) ** 2)
     except:
         return 0
 
-def is_between(X1, Y1, x, y, X2, Y2):
-    return round(distance(X1, x, Y1, y)) + round(distance(x, X2, y, Y2)) == round(distance(X1, X2, Y1, Y2))
 
-def line_intersection(X1, Y1, X2, Y2, X3, Y3, X4, Y4):
-    line1 = [[X1, Y1], [X2, Y2]]
-    line2 = [[X3, Y3], [X4, Y4]]
+def is_between(x1, y1, x, y, x2, y2):
+    return round(distance(x1, x, y1, y)) + round(distance(x, x2, y, y2)) == round(distance(x1, x2, y1, y2))
+
+
+def line_intersection(x1, y1, x2, y2, x3, y3, x4, y4):
+    line1 = [[x1, y1], [x2, y2]]
+    line2 = [[x3, y3], [x4, y4]]
     xdiff = (line1[0][0] - line1[1][0], line2[0][0] - line2[1][0])
     ydiff = (line1[0][1] - line1[1][1], line2[0][1] - line2[1][1])
 
@@ -144,14 +154,13 @@ def line_intersection(X1, Y1, X2, Y2, X3, Y3, X4, Y4):
         d = (det(*line1), det(*line2))
         x = det(d, xdiff) / div
         y = det(d, ydiff) / div
-        b = (is_between(X3, Y3, x, y, X4, Y4))
-        c = (is_between(X1, Y1, x, y, X2, Y2))
+        b = (is_between(x3, y3, x, y, x4, y4))
+        c = (is_between(x1, y1, x, y, x2, y2))
 
-    return (x, y, b, c)
+    return x, y, b, c
 
 
-
-class point(object):
+class Point(object):
     def __init__(self, lp, x, y, z, kod="nul", cos="nul"):
         self.lp = lp
         self.x = x
@@ -160,7 +169,8 @@ class point(object):
         self.kod = kod
         self.cos = [cos]
 
-class XS_t(object):
+
+class XSt(object):
     def __init__(self, file):
         self.km = 0
         self.rzeka = "Riv"
@@ -169,35 +179,35 @@ class XS_t(object):
         self.dane = []
         self.point_data = []
         for line in file.read().split("\n"):
-            line2 = line.replace("\t\t","").replace("\r","")
+            line2 = line.replace("\t\t", "").replace("\r", "")
             numbers = sum(c.isdigit() for c in line2)
             if numbers < 14:
                 self.dane.append(line2)
 
             else:
-                self.point_data.append(point(*line2.split('\t')))
+                self.point_data.append(Point(*line2.split('\t')))
 
         r = 0
         while sum(c.islower() for c in self.dane[r]) < 1:
-            r+=1
+            r += 1
         if "rzek" in str.lower(self.dane[r]) or "zeka" in str.lower(self.dane[0]):
             self.rzeka = self.dane[r].split(':')[1]
         else:
             print("Brak: river def", self.lp)
-        if "przek" in str.lower(self.dane[r+1]) or "rzekr" in str.lower(self.dane[1]):
-            self.lp = self.dane[r+1].split(':')[1]
+        if "przek" in str.lower(self.dane[r + 1]) or "rzekr" in str.lower(self.dane[1]):
+            self.lp = self.dane[r + 1].split(':')[1]
         else:
             print("Brak: lp def", self.lp)
-        if "dat" in str.lower(self.dane[r+2]) or "ata" in str.lower(self.dane[2]):
-            self.data = self.dane[r+2].split(':')[1]
+        if "dat" in str.lower(self.dane[r + 2]) or "ata" in str.lower(self.dane[2]):
+            self.data = self.dane[r + 2].split(':')[1]
         else:
             print("Brak: data def", self.lp)
-        if "typ" in str.lower(self.dane[r+3]) or "obiekt" in str.lower(self.dane[3]):
-            self.type = self.dane[r+3].split(':')[1]
+        if "typ" in str.lower(self.dane[r + 3]) or "obiekt" in str.lower(self.dane[3]):
+            self.type = self.dane[r + 3].split(':')[1]
         else:
             print("Brak: type def", self.lp)
         if self.type == "none" or self.type == '':
-            #print(self.lp)
+            # print(self.lp)
             try:
                 if "obie" in str(self.dane[-4:-1]).lower():
                     self.type = "obiekt"
@@ -212,13 +222,14 @@ class XS_t(object):
                         pass
             except:
                 pass
+
     def get_far(self):
         line = []
         for poi in self.point_data:
             if "ZWW" in str(poi.cos):
                 line.append(poi.x)
                 line.append(poi.y)
-        return(line[0],line[1],line[2],line[3])
+        return line[0], line[1], line[2], line[3]
 
     def distance(self):
         self.pierwszy_punkt = self.point_data[0]
@@ -230,8 +241,9 @@ class XS_t(object):
             x2, y2, z2 = i.xp, i.yp, i.z
             dx = math.fabs(x2 - x1)
             dy = math.fabs(y2 - y1)
-            dist = math.sqrt((dx**2) + (dy**2))
+            dist = math.sqrt((dx ** 2) + (dy ** 2))
             i.dist = dist
+
     def dist_sort(self):
         self.point_data = sorted(self.point_data, key=operator.attrgetter('dist'))
 
@@ -242,13 +254,13 @@ class XS_t(object):
                 licz += 1
         self.licz40 = licz
 
-
     def get_culvert(self):
         self.geom = []
         self.kor = []
         self.kor_c = []
         for pkt in self.point_data:
-            if "40" not in str(pkt.kod) and "41" not in str(pkt.kod) and "42" not in str(pkt.kod) and "66" not in str(pkt.kod):
+            if "40" not in str(pkt.kod) and "41" not in str(pkt.kod) and "42" not in str(pkt.kod) and "66" not in str(
+                    pkt.kod):
                 self.kor.append((float(pkt.dist), float(pkt.z)))
             elif "40" in str(pkt.kod):
                 self.geom.append((float(pkt.dist), float(pkt.z)))
@@ -257,9 +269,9 @@ class XS_t(object):
         self.min_d = min(self.geom, key=itemgetter(0))[0]
         print(self.min_d, self.max_d)
         for element in self.kor:
-            if float(element[0]) > self.max_d+0.1 or float(element[0]) < self.min_d:
+            if float(element[0]) > self.max_d + 0.1 or float(element[0]) < self.min_d:
                 pass
-                #print(element)
+                # print(element)
             else:
                 self.kor_c.append(element)
         self.geom.reverse()
@@ -268,10 +280,9 @@ class XS_t(object):
         plt.show()
 
 
-
-class points2Line(object):
-    '''klasa zawierająca w sobie współrzędne dwóch punktów określających prostą, oraz
-    jednego punktu który będzie na nią rzutowany'''
+class Points2Line(object):
+    """klasa zawierająca w sobie współrzędne dwóch punktów określających prostą, oraz
+    jednego punktu który będzie na nią rzutowany"""
 
     def __init__(self, x1, y1, x2, y2, x=None, y=None):
         self.x1 = float(x1)
@@ -281,7 +292,7 @@ class points2Line(object):
         self.x = float(x)
         self.y = float(y)
 
-        #def computePoints(self):
+        # def computePoints(self):
         licznik = ((self.x - self.x1) * (self.x2 - self.x1)) + ((self.y - self.y1) * (self.y2 - self.y1))
         mianownik = ((self.x1 - self.x2) ** 2) + ((self.y1 - self.y2) ** 2)
         u = licznik / mianownik
