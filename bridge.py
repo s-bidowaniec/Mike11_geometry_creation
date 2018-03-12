@@ -1,13 +1,13 @@
 import glob
 from classes import XS_t, points2Line
 import codecs
-path = r"/home/ciurski/PycharmProjects/dane/rawxs/"
+path = r"E:\!!Modele_IsokII\Zlotna_161152\Geodezja\txt"
 
-XS_txt = glob.glob(path+"*.txt")
+XS_txt = glob.glob(path+"\*.txt")
 XS_base = []
 for XS_raw in XS_txt:
-    with codecs.open(XS_raw, 'r', encoding='cp1250', errors='ignore') as f:
-    #with open(XS_raw, 'r') as f:
+    #with codecs.open(XS_raw, 'r', encoding='cp1250', errors='ignore') as f:
+    with open(XS_raw, 'r') as f:
         XS_base.append(XS_t(f))
     f.close()
 

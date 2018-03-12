@@ -1,0 +1,1243 @@
+   [POINTS]
+      point = 14924, 281630.52, 321748.65, 1, 0.00, 0
+      point = 14925, 281626.52, 321752.65, 1, 5.00, 0
+      point = 14926, 281583.11, 321752.04, 1, 0.00, 0
+      point = 14927, 281579.11, 321756.04, 1, 5.00, 0
+      point = 14928, 281532.31, 321745.27, 1, 0.00, 0
+      point = 14929, 281528.31, 321749.27, 1, 5.00, 0
+      point = 14930, 281372.57, 321737.61, 1, 0.00, 0
+      point = 14931, 281376.57, 321741.61, 1, 5.00, 0
+      point = 14932, 281353.1, 321779.95, 1, 0.00, 0
+      point = 14933, 281357.1, 321783.95, 1, 5.00, 0
+      point = 14934, 281317.54, 321805.35, 1, 0.00, 0
+      point = 14935, 281321.54, 321809.35, 1, 5.00, 0
+      point = 14936, 281304.84, 321827.36, 1, 0.00, 0
+      point = 14937, 281308.84, 321831.36, 1, 5.00, 0
+      point = 14938, 281634.11, 321360.17, 1, 0.00, 0
+      point = 14939, 281638.11, 321356.17, 1, 5.00, 0
+      point = 14940, 281571.86, 321378.89, 1, 0.00, 0
+      point = 14941, 281575.86, 321374.89, 1, 5.00, 0
+      point = 14942, 281525.49, 321448.55, 1, 0.00, 0
+      point = 14943, 281521.49, 321444.55, 1, 5.00, 0
+      point = 14944, 281509.93, 321403.58, 1, 0.00, 0
+      point = 14945, 281505.93, 321399.58, 1, 5.00, 0
+      point = 14946, 283833.63, 320518.56, 1, 0.00, 0
+      point = 14947, 283837.63, 320522.56, 1, 5.00, 0
+      point = 14948, 281498.91, 321494.24, 1, 0.00, 0
+      point = 14949, 281494.91, 321490.24, 1, 5.00, 0
+      point = 14950, 281488.76, 321450.99, 1, 0.00, 0
+      point = 14951, 281484.76, 321446.99, 1, 5.00, 0
+      point = 14952, 281477.75, 321406.12, 1, 0.00, 0
+      point = 14953, 281473.75, 321402.12, 1, 5.00, 0
+      point = 14954, 281413.52, 321525.12, 1, 0.00, 0
+      point = 14955, 281409.52, 321521.12, 1, 5.00, 0
+      point = 14956, 281410.02, 321478.09, 1, 0.00, 0
+      point = 14957, 281406.02, 321474.09, 1, 5.00, 0
+      point = 14958, 281399.86, 321424.75, 1, 0.00, 0
+      point = 14959, 281395.86, 321420.75, 1, 5.00, 0
+      point = 14960, 281322.44, 321507.47, 1, 0.00, 0
+      point = 14961, 281318.44, 321503.47, 1, 5.00, 0
+      point = 14962, 281280.48, 321472.16, 1, 0.00, 0
+      point = 14963, 281276.48, 321468.16, 1, 5.00, 0
+      point = 14964, 281255.79, 321544.12, 1, 0.00, 0
+      point = 14965, 281251.79, 321540.12, 1, 5.00, 0
+      point = 14966, 281231.37, 321511.11, 1, 0.00, 0
+      point = 14967, 281227.37, 321507.11, 1, 5.00, 0
+      point = 14968, 281120.02, 321625.09, 1, 0.00, 0
+      point = 14969, 281116.02, 321621.09, 1, 5.00, 0
+      point = 14970, 281041.2, 321799.59, 1, 0.00, 0
+      point = 14971, 281037.2, 321795.59, 1, 5.00, 0
+      point = 14972, 280985.84, 321772.73, 1, 0.00, 0
+      point = 14973, 280981.84, 321768.73, 1, 5.00, 0
+      point = 14974, 281005.47, 321848.22, 1, 0.00, 0
+      point = 14975, 281001.47, 321844.22, 1, 5.00, 0
+      point = 14976, 280962.13, 321820.99, 1, 0.00, 0
+      point = 14977, 280958.13, 321816.99, 1, 5.00, 0
+      point = 14978, 280968.52, 321895.41, 1, 0.00, 0
+      point = 14979, 280964.52, 321891.41, 1, 5.00, 0
+      point = 14980, 280936.73, 321865.86, 1, 0.00, 0
+      point = 14981, 280932.73, 321861.86, 1, 5.00, 0
+      point = 14982, 280935.43, 321931.95, 1, 0.00, 0
+      point = 14983, 280931.43, 321927.95, 1, 5.00, 0
+      point = 14984, 280898.63, 321903.11, 1, 0.00, 0
+      point = 14985, 280894.63, 321899.11, 1, 5.00, 0
+      point = 14986, 280865.84, 321876.25, 1, 0.00, 0
+      point = 14987, 280869.84, 321880.25, 1, 5.00, 0
+      point = 14988, 280901.3, 321957.37, 1, 0.00, 0
+      point = 14989, 280897.3, 321953.37, 1, 5.00, 0
+      point = 14990, 280872.38, 321934.44, 1, 0.00, 0
+      point = 14991, 280868.38, 321930.44, 1, 5.00, 0
+      point = 14992, 280837.9, 321905.89, 1, 0.00, 0
+      point = 14993, 280841.9, 321909.89, 1, 5.00, 0
+      point = 14994, 280854.4, 322007.45, 1, 0.00, 0
+      point = 14995, 280850.4, 322003.45, 1, 5.00, 0
+      point = 14996, 280826.66, 321973.39, 1, 0.00, 0
+      point = 14997, 280822.66, 321969.39, 1, 5.00, 0
+      point = 14998, 280803.19, 321943.99, 1, 0.00, 0
+      point = 14999, 280807.19, 321947.99, 1, 5.00, 0
+      point = 15000, 280827.8, 322030.84, 1, 0.00, 0
+      point = 15001, 280823.8, 322026.84, 1, 5.00, 0
+      point = 15002, 280806.34, 322006.41, 1, 0.00, 0
+      point = 15003, 280802.34, 322002.41, 1, 5.00, 0
+      point = 15004, 280777.79, 321968.54, 1, 0.00, 0
+      point = 15005, 280781.79, 321972.54, 1, 5.00, 0
+      point = 15006, 280757.8, 322086.85, 1, 0.00, 0
+      point = 15007, 280761.8, 322090.85, 1, 5.00, 0
+      point = 15008, 281580.11, 321700.65, 1, 0.00, 0
+      point = 15009, 281584.11, 321704.65, 1, 5.00, 0
+      point = 15010, 281531.41, 321706.17, 1, 0.00, 0
+      point = 15011, 281535.41, 321710.17, 1, 5.00, 0
+      point = 15012, 281409.23, 321660.04, 1, 0.00, 0
+      point = 15013, 281413.23, 321664.04, 1, 5.00, 0
+      point = 15014, 281347.1, 321699.98, 1, 0.00, 0
+      point = 15015, 281351.1, 321703.98, 1, 5.00, 0
+      point = 15016, 281310.09, 321721.12, 1, 0.00, 0
+      point = 15017, 281314.09, 321725.12, 1, 5.00, 0
+      point = 15018, 281245.23, 321804.32, 1, 0.00, 0
+      point = 15019, 281249.23, 321808.32, 1, 5.00, 0
+      point = 15020, 281278.5, 321768.5, 1, 0.00, 0
+      point = 15021, 281282.5, 321772.5, 1, 5.00, 0
+      point = 15022, 281637.26, 321719.39, 1, 0.00, 0
+      point = 15023, 281633.26, 321723.39, 1, 5.00, 0
+      point = 15024, 283682.38, 320524.92, 1, 0.00, 0
+      point = 15025, 283686.38, 320528.92, 1, 5.00, 0
+      point = 15026, 283635.79, 320538.39, 1, 0.00, 0
+      point = 15027, 283639.79, 320542.39, 1, 5.00, 0
+      point = 15028, 283584.87, 320582.45, 1, 0.00, 0
+      point = 15029, 283588.87, 320586.45, 1, 5.00, 0
+      point = 15030, 283535.05, 320625.34, 1, 0.00, 0
+      point = 15031, 283539.05, 320629.34, 1, 5.00, 0
+      point = 15032, 283462.15, 320687.06, 1, 0.00, 0
+      point = 15033, 283466.15, 320691.06, 1, 5.00, 0
+      point = 15034, 283371.82, 320756.14, 1, 0.00, 0
+      point = 15035, 283375.82, 320760.14, 1, 5.00, 0
+      point = 15036, 283270.16, 320890.96, 1, 0.00, 0
+      point = 15037, 283274.16, 320894.96, 1, 5.00, 0
+      point = 15038, 283240.08, 320940.09, 1, 0.00, 0
+      point = 15039, 283244.08, 320944.09, 1, 5.00, 0
+      point = 15040, 283729.82, 320504.18, 1, 0.00, 0
+      point = 15041, 283733.82, 320508.18, 1, 5.00, 0
+      point = 15042, 283297.55, 320820.87, 1, 0.00, 0
+      point = 15043, 283301.55, 320824.87, 1, 5.00, 0
+      point = 15044, 283312.05, 320801.46, 1, 0.00, 0
+      point = 15045, 283316.05, 320805.46, 1, 5.00, 0
+      point = 15046, 283213.01, 320977.17, 1, 0.00, 0
+      point = 15047, 283217.01, 320981.17, 1, 5.00, 0
+-------------
+
+      [branch]
+         definitions = 'KP_2_ZLO_2834_L', 'ZLO_1', 0, 5, 0, 10000, 1
+         connections = 'LTZ_T1', 17.22, 'LTZ_T2', 8.71
+         points = 14924, 14925
+         [linkchannel]
+            Geometry = 576.22, 575.69, 0
+            HeadLossFactors = 0.5, 1, 0, 1, 0.5, 1, 0, 1
+            Bed_Resistance = 1, 0.03
+            [Cross_Section]
+               Data = 0, 0
+               Data = 0.1, 17.0
+               Data = 3, 17.0
+            EndSect  // Cross_Section
+
+         EndSect  // linkchannel
+
+      EndSect  // branch
+
+      [branch]
+         definitions = 'KP_2_ZLO_2891_L', 'ZLO_1', 0, 5, 0, 10000, 1
+         connections = 'LTZ_T1', 68.64, 'LTZ_T2', 54.78
+         points = 14926, 14927
+         [linkchannel]
+            Geometry = 573.8, 573.75, 0
+            HeadLossFactors = 0.5, 1, 0, 1, 0.5, 1, 0, 1
+            Bed_Resistance = 1, 0.03
+            [Cross_Section]
+               Data = 0, 0
+               Data = 0.1, 50.0
+               Data = 3, 50.0
+            EndSect  // Cross_Section
+
+         EndSect  // linkchannel
+
+      EndSect  // branch
+
+      [branch]
+         definitions = 'KP_2_ZLO_2942_L', 'ZLO_1', 0, 5, 0, 10000, 1
+         connections = 'LTZ_T1', 118.54, 'LTZ_T2', 105.55
+         points = 14928, 14929
+         [linkchannel]
+            Geometry = 572.22, 572.13, 0
+            HeadLossFactors = 0.5, 1, 0, 1, 0.5, 1, 0, 1
+            Bed_Resistance = 1, 0.03
+            [Cross_Section]
+               Data = 0, 0
+               Data = 0.1, 90.0
+               Data = 3, 90.0
+            EndSect  // Cross_Section
+
+         EndSect  // linkchannel
+
+      EndSect  // branch
+
+      [branch]
+         definitions = 'KP_2_ZLO_3208_L', 'ZLO_1', 0, 5, 0, 10000, 1
+         connections = 'LTZ_T1', 324.22, 'LTZ_T3', 16.56
+         points = 14930, 14931
+         [linkchannel]
+            Geometry = 573.82, 573.7, 0
+            HeadLossFactors = 0.5, 1, 0, 1, 0.5, 1, 0, 1
+            Bed_Resistance = 1, 0.03
+            [Cross_Section]
+               Data = 0, 0
+               Data = 0.1, 58.0
+               Data = 3, 58.0
+            EndSect  // Cross_Section
+
+         EndSect  // linkchannel
+
+      EndSect  // branch
+
+      [branch]
+         definitions = 'KP_2_ZLO_3262_L', 'ZLO_1', 0, 5, 0, 10000, 1
+         connections = 'LTZ_T1', 365.86, 'LTZ_T3', 58.27
+         points = 14932, 14933
+         [linkchannel]
+            Geometry = 574.86, 574.66, 0
+            HeadLossFactors = 0.5, 1, 0, 1, 0.5, 1, 0, 1
+            Bed_Resistance = 1, 0.03
+            [Cross_Section]
+               Data = 0, 0
+               Data = 0.1, 45.0
+               Data = 3, 45.0
+            EndSect  // Cross_Section
+
+         EndSect  // linkchannel
+
+      EndSect  // branch
+
+      [branch]
+         definitions = 'KP_2_ZLO_3313_L', 'ZLO_1', 0, 5, 0, 10000, 1
+         connections = 'LTZ_T1', 415.56, 'LTZ_T3', 101.81
+         points = 14934, 14935
+         [linkchannel]
+            Geometry = 575.45, 575.44, 0
+            HeadLossFactors = 0.5, 1, 0, 1, 0.5, 1, 0, 1
+            Bed_Resistance = 1, 0.03
+            [Cross_Section]
+               Data = 0, 0
+               Data = 0.1, 45.0
+               Data = 3, 45.0
+            EndSect  // Cross_Section
+
+         EndSect  // linkchannel
+
+      EndSect  // branch
+
+      [branch]
+         definitions = 'KP_2_ZLO_3358_L', 'ZLO_1', 0, 5, 0, 10000, 1
+         connections = 'LTZ_T1', 456.81, 'LTZ_T3', 124.51
+         points = 14936, 14937
+         [linkchannel]
+            Geometry = 576.4, 576.05, 0
+            HeadLossFactors = 0.5, 1, 0, 1, 0.5, 1, 0, 1
+            Bed_Resistance = 1, 0.03
+            [Cross_Section]
+               Data = 0, 0
+               Data = 0.1, 20.0
+               Data = 3, 20.0
+            EndSect  // Cross_Section
+
+         EndSect  // linkchannel
+
+      EndSect  // branch
+
+      [branch]
+         definitions = 'KP_1_ZLO_2834_P', 'ZLO_1', 0, 5, 0, 10000, 1
+         connections = 'Zlotna', 2834.74, 'PTZ_T3', 9.84
+         points = 14938, 14939
+         [linkchannel]
+            Geometry = 576.97, 576.32, 0
+            HeadLossFactors = 0.5, 1, 0, 1, 0.5, 1, 0, 1
+            Bed_Resistance = 1, 0.03
+            [Cross_Section]
+               Data = 0, 0
+               Data = 0.1, 26.0
+               Data = 3, 26.0
+            EndSect  // Cross_Section
+
+         EndSect  // linkchannel
+
+      EndSect  // branch
+
+      [branch]
+         definitions = 'KP_1_ZLO_2891_P', 'ZLO_1', 0, 5, 0, 10000, 1
+         connections = 'Zlotna', 2891.55, 'PTZ_T3', 72.78
+         points = 14940, 14941
+         [linkchannel]
+            Geometry = 577.05, 576.22, 0
+            HeadLossFactors = 0.5, 1, 0, 1, 0.5, 1, 0, 1
+            Bed_Resistance = 1, 0.03
+            [Cross_Section]
+               Data = 0, 0
+               Data = 0.1, 65.0
+               Data = 3, 65.0
+            EndSect  // Cross_Section
+
+         EndSect  // linkchannel
+
+      EndSect  // branch
+
+      [branch]
+         definitions = 'KP_1_ZLO_2942_P', 'ZLO_1', 0, 5, 0, 10000, 1
+         connections = 'Zlotna', 2942.37, 'PTZ_T2', 3.92
+         points = 14942, 14943
+         [linkchannel]
+            Geometry = 574.41, 573.53, 0
+            HeadLossFactors = 0.5, 1, 0, 1, 0.5, 1, 0, 1
+            Bed_Resistance = 1, 0.03
+            [Cross_Section]
+               Data = 0, 0
+               Data = 0.1, 14.0
+               Data = 3, 14.0
+            EndSect  // Cross_Section
+
+         EndSect  // linkchannel
+
+      EndSect  // branch
+
+      [branch]
+         definitions = 'KP_2_ZLO_2942_P', 'ZLO_1', 0, 5, 0, 10000, 1
+         connections = 'PTZ_T2', 3.92, 'PTZ_T3', 140.32
+         points = 14944, 14945
+         [linkchannel]
+            Geometry = 577.41, 576.5, 0
+            HeadLossFactors = 0.5, 1, 0, 1, 0.5, 1, 0, 1
+            Bed_Resistance = 1, 0.03
+            [Cross_Section]
+               Data = 0, 0
+               Data = 0.1, 51.0
+               Data = 3, 51.0
+            EndSect  // Cross_Section
+
+         EndSect  // linkchannel
+
+      EndSect  // branch
+
+      [branch]
+         definitions = 'KP_1_ZLO_295_L', 'ZLO_1', 0, 5, 0, 10000, 1
+         connections = 'Zlotna', 295.98, 'LTZ_01', 716.49
+         points = 14946, 14947
+         [linkchannel]
+            Geometry = 537.77, 537.54, 0
+            HeadLossFactors = 0.5, 1, 0, 1, 0.5, 1, 0, 1
+            Bed_Resistance = 1, 0.03
+            [Cross_Section]
+               Data = 0, 0
+               Data = 0.1, 116.0
+               Data = 3, 116.0
+            EndSect  // Cross_Section
+
+         EndSect  // linkchannel
+
+      EndSect  // branch
+
+      [branch]
+         definitions = 'KP_1_ZLO_3013_P', 'ZLO_1', 0, 5, 0, 10000, 1
+         connections = 'Zlotna', 3013.66, 'PTZ_T1', 14.05
+         points = 14948, 14949
+         [linkchannel]
+            Geometry = 571.75, 571.4, 0
+            HeadLossFactors = 0.5, 1, 0, 1, 0.5, 1, 0, 1
+            Bed_Resistance = 1, 0.03
+            [Cross_Section]
+               Data = 0, 0
+               Data = 0.1, 35.0
+               Data = 3, 35.0
+            EndSect  // Cross_Section
+
+         EndSect  // linkchannel
+
+      EndSect  // branch
+
+      [branch]
+         definitions = 'KP_2_ZLO_3013_P', 'ZLO_1', 0, 5, 0, 10000, 1
+         connections = 'PTZ_T1', 14.05, 'PTZ_T2', 37.58
+         points = 14950, 14951
+         [linkchannel]
+            Geometry = 574.7, 574.05, 0
+            HeadLossFactors = 0.5, 1, 0, 1, 0.5, 1, 0, 1
+            Bed_Resistance = 1, 0.03
+            [Cross_Section]
+               Data = 0, 0
+               Data = 0.1, 57.0
+               Data = 3, 57.0
+            EndSect  // Cross_Section
+
+         EndSect  // linkchannel
+
+      EndSect  // branch
+
+      [branch]
+         definitions = 'KP_3_ZLO_3013_P', 'ZLO_1', 0, 5, 0, 10000, 1
+         connections = 'PTZ_T2', 37.58, 'PTZ_T3', 176.09
+         points = 14952, 14953
+         [linkchannel]
+            Geometry = 578.4, 577.91, 0
+            HeadLossFactors = 0.5, 1, 0, 1, 0.5, 1, 0, 1
+            Bed_Resistance = 1, 0.03
+            [Cross_Section]
+               Data = 0, 0
+               Data = 0.1, 58.0
+               Data = 3, 58.0
+            EndSect  // Cross_Section
+
+         EndSect  // linkchannel
+
+      EndSect  // branch
+
+      [branch]
+         definitions = 'KP_1_ZLO_3072_P', 'ZLO_1', 0, 5, 0, 10000, 1
+         connections = 'Zlotna', 3072.36, 'PTZ_T1', 99.1
+         points = 14954, 14955
+         [linkchannel]
+            Geometry = 572.66, 572.18, 0
+            HeadLossFactors = 0.5, 1, 0, 1, 0.5, 1, 0, 1
+            Bed_Resistance = 1, 0.03
+            [Cross_Section]
+               Data = 0, 0
+               Data = 0.1, 42.0
+               Data = 3, 42.0
+            EndSect  // Cross_Section
+
+         EndSect  // linkchannel
+
+      EndSect  // branch
+
+      [branch]
+         definitions = 'KP_2_ZLO_3072_P', 'ZLO_1', 0, 5, 0, 10000, 1
+         connections = 'PTZ_T1', 99.1, 'PTZ_T2', 118.82
+         points = 14956, 14957
+         [linkchannel]
+            Geometry = 576.51, 575.77, 0
+            HeadLossFactors = 0.5, 1, 0, 1, 0.5, 1, 0, 1
+            Bed_Resistance = 1, 0.03
+            [Cross_Section]
+               Data = 0, 0
+               Data = 0.1, 98.0
+               Data = 3, 98.0
+            EndSect  // Cross_Section
+
+         EndSect  // linkchannel
+
+      EndSect  // branch
+
+      [branch]
+         definitions = 'KP_3_ZLO_3072_P', 'ZLO_1', 0, 5, 0, 10000, 1
+         connections = 'PTZ_T2', 118.82, 'PTZ_T3', 257.14
+         points = 14958, 14959
+         [linkchannel]
+            Geometry = 579.31, 578.7, 0
+            HeadLossFactors = 0.5, 1, 0, 1, 0.5, 1, 0, 1
+            Bed_Resistance = 1, 0.03
+            [Cross_Section]
+               Data = 0, 0
+               Data = 0.1, 121.0
+               Data = 3, 121.0
+            EndSect  // Cross_Section
+
+         EndSect  // linkchannel
+
+      EndSect  // branch
+
+      [branch]
+         definitions = 'KP_1_ZLO_3111_P', 'ZLO_1', 0, 5, 0, 10000, 1
+         connections = 'Zlotna', 3111.77, 'PTZ_T2', 235.34
+         points = 14960, 14961
+         [linkchannel]
+            Geometry = 575.6, 574.41, 0
+            HeadLossFactors = 0.5, 1, 0, 1, 0.5, 1, 0, 1
+            Bed_Resistance = 1, 0.03
+            [Cross_Section]
+               Data = 0, 0
+               Data = 0.1, 92.0
+               Data = 3, 92.0
+            EndSect  // Cross_Section
+
+         EndSect  // linkchannel
+
+      EndSect  // branch
+
+      [branch]
+         definitions = 'KP_2_ZLO_3111_P', 'ZLO_1', 0, 5, 0, 10000, 1
+         connections = 'PTZ_T2', 235.34, 'PTZ_T3', 419.06
+         points = 14962, 14963
+         [linkchannel]
+            Geometry = 578.41, 577.56, 0
+            HeadLossFactors = 0.5, 1, 0, 1, 0.5, 1, 0, 1
+            Bed_Resistance = 1, 0.03
+            [Cross_Section]
+               Data = 0, 0
+               Data = 0.1, 115.0
+               Data = 3, 115.0
+            EndSect  // Cross_Section
+
+         EndSect  // linkchannel
+
+      EndSect  // branch
+
+      [branch]
+         definitions = 'KP_1_ZLO_3208_P', 'ZLO_1', 0, 5, 0, 10000, 1
+         connections = 'Zlotna', 3208.1, 'PTZ_T2', 303.17
+         points = 14964, 14965
+         [linkchannel]
+            Geometry = 574.54, 574.26, 0
+            HeadLossFactors = 0.5, 1, 0, 1, 0.5, 1, 0, 1
+            Bed_Resistance = 1, 0.03
+            [Cross_Section]
+               Data = 0, 0
+               Data = 0.1, 33.0
+               Data = 3, 33.0
+            EndSect  // Cross_Section
+
+         EndSect  // linkchannel
+
+      EndSect  // branch
+
+      [branch]
+         definitions = 'KP_2_ZLO_3208_P', 'ZLO_1', 0, 5, 0, 10000, 1
+         connections = 'PTZ_T2', 303.17, 'PTZ_T3', 487.86
+         points = 14966, 14967
+         [linkchannel]
+            Geometry = 575.6, 575.42, 0
+            HeadLossFactors = 0.5, 1, 0, 1, 0.5, 1, 0, 1
+            Bed_Resistance = 1, 0.03
+            [Cross_Section]
+               Data = 0, 0
+               Data = 0.1, 112.0
+               Data = 3, 112.0
+            EndSect  // Cross_Section
+
+         EndSect  // linkchannel
+
+      EndSect  // branch
+
+      [branch]
+         definitions = 'KP_1_ZLO_3358_P', 'ZLO_1', 0, 5, 0, 10000, 1
+         connections = 'Zlotna', 3358.91, 'PTZ_T3', 643.65
+         points = 14968, 14969
+         [linkchannel]
+            Geometry = 578.11, 577.87, 0
+            HeadLossFactors = 0.5, 1, 0, 1, 0.5, 1, 0, 1
+            Bed_Resistance = 1, 0.03
+            [Cross_Section]
+               Data = 0, 0
+               Data = 0.1, 77.0
+               Data = 3, 77.0
+            EndSect  // Cross_Section
+
+         EndSect  // linkchannel
+
+      EndSect  // branch
+
+      [branch]
+         definitions = 'KP_1_ZLO_3505_P', 'ZLO_1', 0, 5, 0, 10000, 1
+         connections = 'Zlotna', 3505.73, 'PTZ_T4', 11.43
+         points = 14970, 14971
+         [linkchannel]
+            Geometry = 584.23, 583.23, 0
+            HeadLossFactors = 0.5, 1, 0, 1, 0.5, 1, 0, 1
+            Bed_Resistance = 1, 0.03
+            [Cross_Section]
+               Data = 0, 0
+               Data = 0.1, 21.0
+               Data = 3, 21.0
+            EndSect  // Cross_Section
+
+         EndSect  // linkchannel
+
+      EndSect  // branch
+
+      [branch]
+         definitions = 'KP_2_ZLO_3505_P', 'ZLO_1', 0, 5, 0, 10000, 1
+         connections = 'PTZ_T4', 11.43, 'PTZ_T5', 12.96
+         points = 14972, 14973
+         [linkchannel]
+            Geometry = 587.75, 587.2, 0
+            HeadLossFactors = 0.5, 1, 0, 1, 0.5, 1, 0, 1
+            Bed_Resistance = 1, 0.03
+            [Cross_Section]
+               Data = 0, 0
+               Data = 0.1, 19.0
+               Data = 3, 19.0
+            EndSect  // Cross_Section
+
+         EndSect  // linkchannel
+
+      EndSect  // branch
+
+      [branch]
+         definitions = 'KP_1_ZLO_3589_P', 'ZLO_1', 0, 5, 0, 10000, 1
+         connections = 'Zlotna', 3589.6, 'PTZ_T4', 66.56
+         points = 14974, 14975
+         [linkchannel]
+            Geometry = 585.18, 584.1, 0
+            HeadLossFactors = 0.5, 1, 0, 1, 0.5, 1, 0, 1
+            Bed_Resistance = 1, 0.03
+            [Cross_Section]
+               Data = 0, 0
+               Data = 0.1, 54.0
+               Data = 3, 54.0
+            EndSect  // Cross_Section
+
+         EndSect  // linkchannel
+
+      EndSect  // branch
+
+      [branch]
+         definitions = 'KP_2_ZLO_3589_P', 'ZLO_1', 0, 5, 0, 10000, 1
+         connections = 'PTZ_T4', 66.56, 'PTZ_T5', 64.94
+         points = 14976, 14977
+         [linkchannel]
+            Geometry = 588.83, 586.88, 0
+            HeadLossFactors = 0.5, 1, 0, 1, 0.5, 1, 0, 1
+            Bed_Resistance = 1, 0.03
+            [Cross_Section]
+               Data = 0, 0
+               Data = 0.1, 52.0
+               Data = 3, 52.0
+            EndSect  // Cross_Section
+
+         EndSect  // linkchannel
+
+      EndSect  // branch
+
+      [branch]
+         definitions = 'KP_1_ZLO_3642_P', 'ZLO_1', 0, 5, 0, 10000, 1
+         connections = 'Zlotna', 3642.96, 'PTZ_T4', 120.4
+         points = 14978, 14979
+         [linkchannel]
+            Geometry = 585.38, 583.87, 0
+            HeadLossFactors = 0.5, 1, 0, 1, 0.5, 1, 0, 1
+            Bed_Resistance = 1, 0.03
+            [Cross_Section]
+               Data = 0, 0
+               Data = 0.1, 26.0
+               Data = 3, 26.0
+            EndSect  // Cross_Section
+
+         EndSect  // linkchannel
+
+      EndSect  // branch
+
+      [branch]
+         definitions = 'KP_2_ZLO_3642_P', 'ZLO_1', 0, 5, 0, 10000, 1
+         connections = 'PTZ_T4', 120.4, 'PTZ_T5', 117.9
+         points = 14980, 14981
+         [linkchannel]
+            Geometry = 589.59, 588.67, 0
+            HeadLossFactors = 0.5, 1, 0, 1, 0.5, 1, 0, 1
+            Bed_Resistance = 1, 0.03
+            [Cross_Section]
+               Data = 0, 0
+               Data = 0.1, 58.0
+               Data = 3, 58.0
+            EndSect  // Cross_Section
+
+         EndSect  // linkchannel
+
+      EndSect  // branch
+
+      [branch]
+         definitions = 'KP_1_ZLO_3689_P', 'ZLO_1', 0, 5, 0, 10000, 1
+         connections = 'Zlotna', 3689.82, 'PTZ_T5', 182.64
+         points = 14982, 14983
+         [linkchannel]
+            Geometry = 585.7, 585.24, 0
+            HeadLossFactors = 0.5, 1, 0, 1, 0.5, 1, 0, 1
+            Bed_Resistance = 1, 0.03
+            [Cross_Section]
+               Data = 0, 0
+               Data = 0.1, 53.0
+               Data = 3, 53.0
+            EndSect  // Cross_Section
+
+         EndSect  // linkchannel
+
+      EndSect  // branch
+
+      [branch]
+         definitions = 'KP_2_ZLO_3689_P', 'ZLO_1', 0, 5, 0, 10000, 1
+         connections = 'PTZ_T5', 182.64, 'PTZ_T6', 11.33
+         points = 14984, 14985
+         [linkchannel]
+            Geometry = 590.98, 590.19, 0
+            HeadLossFactors = 0.5, 1, 0, 1, 0.5, 1, 0, 1
+            Bed_Resistance = 1, 0.03
+            [Cross_Section]
+               Data = 0, 0
+               Data = 0.1, 14.0
+               Data = 3, 14.0
+            EndSect  // Cross_Section
+
+         EndSect  // linkchannel
+
+      EndSect  // branch
+
+      [branch]
+         definitions = 'KP_1_DOP_10_P', 'Dop', 0, 5, 0, 10000, 1
+         connections = 'Doplyw', 10.96, 'PTZ_T6', 11.33
+         points = 14986, 14987
+         [linkchannel]
+            Geometry = 593.4, 592.68, 0
+            HeadLossFactors = 0.5, 1, 0, 1, 0.5, 1, 0, 1
+            Bed_Resistance = 1, 0.03
+            [Cross_Section]
+               Data = 0, 0
+               Data = 0.1, 14.0
+               Data = 3, 14.0
+            EndSect  // Cross_Section
+
+         EndSect  // linkchannel
+
+      EndSect  // branch
+
+      [branch]
+         definitions = 'KP_1_ZLO_3735_P', 'ZLO_1', 0, 5, 0, 10000, 1
+         connections = 'Zlotna', 3735.18, 'PTZ_T5', 223.95
+         points = 14988, 14989
+         [linkchannel]
+            Geometry = 588.89, 586.43, 0
+            HeadLossFactors = 0.5, 1, 0, 1, 0.5, 1, 0, 1
+            Bed_Resistance = 1, 0.03
+            [Cross_Section]
+               Data = 0, 0
+               Data = 0.1, 52.0
+               Data = 3, 52.0
+            EndSect  // Cross_Section
+
+         EndSect  // linkchannel
+
+      EndSect  // branch
+
+      [branch]
+         definitions = 'KP_2_ZLO_3735_P', 'ZLO_1', 0, 5, 0, 10000, 1
+         connections = 'PTZ_T5', 223.95, 'PTZ_T6', 52.51
+         points = 14990, 14991
+         [linkchannel]
+            Geometry = 592.1, 591.27, 0
+            HeadLossFactors = 0.5, 1, 0, 1, 0.5, 1, 0, 1
+            Bed_Resistance = 1, 0.03
+            [Cross_Section]
+               Data = 0, 0
+               Data = 0.1, 47.0
+               Data = 3, 47.0
+            EndSect  // Cross_Section
+
+         EndSect  // linkchannel
+
+      EndSect  // branch
+
+      [branch]
+         definitions = 'KP_1_DOP_50_P', 'Dop', 0, 5, 0, 10000, 1
+         connections = 'Doplyw', 50.5, 'PTZ_T6', 52.51
+         points = 14992, 14993
+         [linkchannel]
+            Geometry = 594.97, 593.63, 0
+            HeadLossFactors = 0.5, 1, 0, 1, 0.5, 1, 0, 1
+            Bed_Resistance = 1, 0.03
+            [Cross_Section]
+               Data = 0, 0
+               Data = 0.1, 45.0
+               Data = 3, 45.0
+            EndSect  // Cross_Section
+
+         EndSect  // linkchannel
+
+      EndSect  // branch
+
+      [branch]
+         definitions = 'KP_1_ZLO_3797_P', 'ZLO_1', 0, 5, 0, 10000, 1
+         connections = 'Zlotna', 3797.42, 'PTZ_T5', 288.33
+         points = 14994, 14995
+         [linkchannel]
+            Geometry = 589.63, 588.75, 0
+            HeadLossFactors = 0.5, 1, 0, 1, 0.5, 1, 0, 1
+            Bed_Resistance = 1, 0.03
+            [Cross_Section]
+               Data = 0, 0
+               Data = 0.1, 50.0
+               Data = 3, 50.0
+            EndSect  // Cross_Section
+
+         EndSect  // linkchannel
+
+      EndSect  // branch
+
+      [branch]
+         definitions = 'KP_2_ZLO_3797_P', 'ZLO_1', 0, 5, 0, 10000, 1
+         connections = 'PTZ_T5', 288.33, 'PTZ_T6', 106.34
+         points = 14996, 14997
+         [linkchannel]
+            Geometry = 594.15, 593.2, 0
+            HeadLossFactors = 0.5, 1, 0, 1, 0.5, 1, 0, 1
+            Bed_Resistance = 1, 0.03
+            [Cross_Section]
+               Data = 0, 0
+               Data = 0.1, 44.0
+               Data = 3, 44.0
+            EndSect  // Cross_Section
+
+         EndSect  // linkchannel
+
+      EndSect  // branch
+
+      [branch]
+         definitions = 'KP_1_DOP_102_P', 'Dop', 0, 5, 0, 10000, 1
+         connections = 'Doplyw', 102.19, 'PTZ_T6', 106.34
+         points = 14998, 14999
+         [linkchannel]
+            Geometry = 596.53, 595.38, 0
+            HeadLossFactors = 0.5, 1, 0, 1, 0.5, 1, 0, 1
+            Bed_Resistance = 1, 0.03
+            [Cross_Section]
+               Data = 0, 0
+               Data = 0.1, 44.0
+               Data = 3, 44.0
+            EndSect  // Cross_Section
+
+         EndSect  // linkchannel
+
+      EndSect  // branch
+
+      [branch]
+         definitions = 'KP_1_ZLO_3827_P', 'ZLO_1', 0, 5, 0, 10000, 1
+         connections = 'Zlotna', 3827.43, 'PTZ_T5', 324.78
+         points = 15000, 15001
+         [linkchannel]
+            Geometry = 591.48, 589.7, 0
+            HeadLossFactors = 0.5, 1, 0, 1, 0.5, 1, 0, 1
+            Bed_Resistance = 1, 0.03
+            [Cross_Section]
+               Data = 0, 0
+               Data = 0.1, 18.0
+               Data = 3, 18.0
+            EndSect  // Cross_Section
+
+         EndSect  // linkchannel
+
+      EndSect  // branch
+
+      [branch]
+         definitions = 'KP_2_ZLO_3827_P', 'ZLO_1', 0, 5, 0, 10000, 1
+         connections = 'PTZ_T5', 324.78, 'PTZ_T6', 141.74
+         points = 15002, 15003
+         [linkchannel]
+            Geometry = 592.91, 592.59, 0
+            HeadLossFactors = 0.5, 1, 0, 1, 0.5, 1, 0, 1
+            Bed_Resistance = 1, 0.03
+            [Cross_Section]
+               Data = 0, 0
+               Data = 0.1, 17.0
+               Data = 3, 17.0
+            EndSect  // Cross_Section
+
+         EndSect  // linkchannel
+
+      EndSect  // branch
+
+      [branch]
+         definitions = 'KP_1_DOP_138_P', 'Dop', 0, 5, 0, 10000, 1
+         connections = 'Doplyw', 138.55, 'PTZ_T6', 141.74
+         points = 15004, 15005
+         [linkchannel]
+            Geometry = 597.23, 596.65, 0
+            HeadLossFactors = 0.5, 1, 0, 1, 0.5, 1, 0, 1
+            Bed_Resistance = 1, 0.03
+            [Cross_Section]
+               Data = 0, 0
+               Data = 0.1, 66.0
+               Data = 3, 66.0
+            EndSect  // Cross_Section
+
+         EndSect  // linkchannel
+
+      EndSect  // branch
+
+      [branch]
+         definitions = 'KP_1_DOP_235_C', 'Dop', 0, 5, 0, 10000, 1
+         connections = 'Doplyw', 235.66, 'Zlotna', 3921.24
+         points = 15006, 15007
+         [linkchannel]
+            Geometry = 595.59, 592.64, 0
+            HeadLossFactors = 0.5, 1, 0, 1, 0.5, 1, 0, 1
+            Bed_Resistance = 1, 0.03
+            [Cross_Section]
+               Data = 0, 0
+               Data = 0.1, 48.0
+               Data = 3, 48.0
+            EndSect  // Cross_Section
+
+         EndSect  // linkchannel
+
+      EndSect  // branch
+
+      [branch]
+         definitions = 'KP_1_ZLO_2891_L', 'ZLO_1', 0, 5, 0, 10000, 1
+         connections = 'Zlotna', 2891.55, 'LTZ_T1', 68.64
+         points = 15008, 15009
+         [linkchannel]
+            Geometry = 570.37, 570.15, 0
+            HeadLossFactors = 0.5, 1, 0, 1, 0.5, 1, 0, 1
+            Bed_Resistance = 1, 0.03
+            [Cross_Section]
+               Data = 0, 0
+               Data = 0.1, 40.0
+               Data = 3, 40.0
+            EndSect  // Cross_Section
+
+         EndSect  // linkchannel
+
+      EndSect  // branch
+
+      [branch]
+         definitions = 'KP_1_ZLO_2942_L', 'ZLO_1', 0, 5, 0, 10000, 1
+         connections = 'Zlotna', 2942.37, 'LTZ_T1', 118.54
+         points = 15010, 15011
+         [linkchannel]
+            Geometry = 570.82, 570.52, 0
+            HeadLossFactors = 0.5, 1, 0, 1, 0.5, 1, 0, 1
+            Bed_Resistance = 1, 0.03
+            [Cross_Section]
+               Data = 0, 0
+               Data = 0.1, 48.0
+               Data = 3, 48.0
+            EndSect  // Cross_Section
+
+         EndSect  // linkchannel
+
+      EndSect  // branch
+
+      [branch]
+         definitions = 'KP_1_ZLO_3152_L', 'ZLO_1', 0, 5, 0, 10000, 1
+         connections = 'Zlotna', 3152.52, 'LTZ_T1', 249.15
+         points = 15012, 15013
+         [linkchannel]
+            Geometry = 572.37, 572.33, 0
+            HeadLossFactors = 0.5, 1, 0, 1, 0.5, 1, 0, 1
+            Bed_Resistance = 1, 0.03
+            [Cross_Section]
+               Data = 0, 0
+               Data = 0.1, 48.0
+               Data = 3, 48.0
+            EndSect  // Cross_Section
+
+         EndSect  // linkchannel
+
+      EndSect  // branch
+
+      [branch]
+         definitions = 'KP_1_ZLO_3208_L', 'ZLO_1', 0, 5, 0, 10000, 1
+         connections = 'Zlotna', 3208.1, 'LTZ_T1', 324.22
+         points = 15014, 15015
+         [linkchannel]
+            Geometry = 573.71, 573.35, 0
+            HeadLossFactors = 0.5, 1, 0, 1, 0.5, 1, 0, 1
+            Bed_Resistance = 1, 0.03
+            [Cross_Section]
+               Data = 0, 0
+               Data = 0.1, 46.0
+               Data = 3, 46.0
+            EndSect  // Cross_Section
+
+         EndSect  // linkchannel
+
+      EndSect  // branch
+
+      [branch]
+         definitions = 'KP_1_ZLO_3262_L', 'ZLO_1', 0, 5, 0, 10000, 1
+         connections = 'Zlotna', 3262.36, 'LTZ_T1', 365.86
+         points = 15016, 15017
+         [linkchannel]
+            Geometry = 574.4, 574.18, 0
+            HeadLossFactors = 0.5, 1, 0, 1, 0.5, 1, 0, 1
+            Bed_Resistance = 1, 0.03
+            [Cross_Section]
+               Data = 0, 0
+               Data = 0.1, 34.0
+               Data = 3, 34.0
+            EndSect  // Cross_Section
+
+         EndSect  // linkchannel
+
+      EndSect  // branch
+
+      [branch]
+         definitions = 'KP_1_ZLO_3358_L', 'ZLO_1', 0, 5, 0, 10000, 1
+         connections = 'Zlotna', 3358.91, 'LTZ_T1', 456.81
+         points = 15018, 15019
+         [linkchannel]
+            Geometry = 576.65, 576.55, 0
+            HeadLossFactors = 0.5, 1, 0, 1, 0.5, 1, 0, 1
+            Bed_Resistance = 1, 0.03
+            [Cross_Section]
+               Data = 0, 0
+               Data = 0.1, 61.0
+               Data = 3, 61.0
+            EndSect  // Cross_Section
+
+         EndSect  // linkchannel
+
+      EndSect  // branch
+
+      [branch]
+         definitions = 'KP_1_ZLO_3313_L', 'ZLO_1', 0, 5, 0, 10000, 1
+         connections = 'Zlotna', 3313.7, 'LTZ_T1', 415.56
+         points = 15020, 15021
+         [linkchannel]
+            Geometry = 575.67, 575.29, 0
+            HeadLossFactors = 0.5, 1, 0, 1, 0.5, 1, 0, 1
+            Bed_Resistance = 1, 0.03
+            [Cross_Section]
+               Data = 0, 0
+               Data = 0.1, 48.0
+               Data = 3, 48.0
+            EndSect  // Cross_Section
+
+         EndSect  // linkchannel
+
+      EndSect  // branch
+
+      [branch]
+         definitions = 'KP_1_ZLO_2834_L', 'ZLO_1', 0, 5, 0, 10000, 1
+         connections = 'Zlotna', 2834.74, 'LTZ_T1', 17.22
+         points = 15022, 15023
+         [linkchannel]
+            Geometry = 573.76, 573.53, 0
+            HeadLossFactors = 0.5, 1, 0, 1, 0.5, 1, 0, 1
+            Bed_Resistance = 1, 0.03
+            [Cross_Section]
+               Data = 0, 0
+               Data = 0.1, 69.0
+               Data = 3, 69.0
+            EndSect  // Cross_Section
+
+         EndSect  // linkchannel
+
+      EndSect  // branch
+
+      [branch]
+         definitions = 'KP_1_ZLO_405_L', 'ZLO_1', 0, 5, 0, 10000, 1
+         connections = 'Zlotna', 405.12, 'LTZ_01', 633.1
+         points = 15024, 15025
+         [linkchannel]
+            Geometry = 537.82, 537.54, 0
+            HeadLossFactors = 0.5, 1, 0, 1, 0.5, 1, 0, 1
+            Bed_Resistance = 1, 0.03
+            [Cross_Section]
+               Data = 0, 0
+               Data = 0.1, 30.0
+               Data = 3, 30.0
+            EndSect  // Cross_Section
+
+         EndSect  // linkchannel
+
+      EndSect  // branch
+
+      [branch]
+         definitions = 'KP_1_ZLO_448_L', 'ZLO_1', 0, 5, 0, 10000, 1
+         connections = 'Zlotna', 448.03, 'LTZ_01', 594.44
+         points = 15026, 15027
+         [linkchannel]
+            Geometry = 538.39, 537.68, 0
+            HeadLossFactors = 0.5, 1, 0, 1, 0.5, 1, 0, 1
+            Bed_Resistance = 1, 0.03
+            [Cross_Section]
+               Data = 0, 0
+               Data = 0.1, 47.0
+               Data = 3, 47.0
+            EndSect  // Cross_Section
+
+         EndSect  // linkchannel
+
+      EndSect  // branch
+
+      [branch]
+         definitions = 'KP_1_ZLO_515_L', 'ZLO_1', 0, 5, 0, 10000, 1
+         connections = 'Zlotna', 515.11, 'LTZ_01', 529.03
+         points = 15028, 15029
+         [linkchannel]
+            Geometry = 539.07, 537.54, 0
+            HeadLossFactors = 0.5, 1, 0, 1, 0.5, 1, 0, 1
+            Bed_Resistance = 1, 0.03
+            [Cross_Section]
+               Data = 0, 0
+               Data = 0.1, 66.0
+               Data = 3, 66.0
+            EndSect  // Cross_Section
+
+         EndSect  // linkchannel
+
+      EndSect  // branch
+
+      [branch]
+         definitions = 'KP_1_ZLO_581_L', 'ZLO_1', 0, 5, 0, 10000, 1
+         connections = 'Zlotna', 581.39, 'LTZ_01', 465.62
+         points = 15030, 15031
+         [linkchannel]
+            Geometry = 539.67, 538.2, 0
+            HeadLossFactors = 0.5, 1, 0, 1, 0.5, 1, 0, 1
+            Bed_Resistance = 1, 0.03
+            [Cross_Section]
+               Data = 0, 0
+               Data = 0.1, 80.0
+               Data = 3, 80.0
+            EndSect  // Cross_Section
+
+         EndSect  // linkchannel
+
+      EndSect  // branch
+
+      [branch]
+         definitions = 'KP_1_ZLO_676_L', 'ZLO_1', 0, 5, 0, 10000, 1
+         connections = 'Zlotna', 676.67, 'LTZ_01', 381.82
+         points = 15032, 15033
+         [linkchannel]
+            Geometry = 539.86, 538.01, 0
+            HeadLossFactors = 0.5, 1, 0, 1, 0.5, 1, 0, 1
+            Bed_Resistance = 1, 0.03
+            [Cross_Section]
+               Data = 0, 0
+               Data = 0.1, 104.0
+               Data = 3, 104.0
+            EndSect  // Cross_Section
+
+         EndSect  // linkchannel
+
+      EndSect  // branch
+
+      [branch]
+         definitions = 'KP_1_ZLO_791_L', 'ZLO_1', 0, 5, 0, 10000, 1
+         connections = 'Zlotna', 791.05, 'LTZ_01', 269.71
+         points = 15034, 15035
+         [linkchannel]
+            Geometry = 540.63, 538.86, 0
+            HeadLossFactors = 0.5, 1, 0, 1, 0.5, 1, 0, 1
+            Bed_Resistance = 1, 0.03
+            [Cross_Section]
+               Data = 0, 0
+               Data = 0.1, 94.0
+               Data = 3, 94.0
+            EndSect  // Cross_Section
+
+         EndSect  // linkchannel
+
+      EndSect  // branch
+
+      [branch]
+         definitions = 'KP_1_ZLO_972_L', 'ZLO_1', 0, 5, 0, 10000, 1
+         connections = 'Zlotna', 972.33, 'LTZ_01', 97.61
+         points = 15036, 15037
+         [linkchannel]
+            Geometry = 541.4, 539.89, 0
+            HeadLossFactors = 0.5, 1, 0, 1, 0.5, 1, 0, 1
+            Bed_Resistance = 1, 0.03
+            [Cross_Section]
+               Data = 0, 0
+               Data = 0.1, 45.0
+               Data = 3, 45.0
+            EndSect  // Cross_Section
+
+         EndSect  // linkchannel
+
+      EndSect  // branch
+
+      [branch]
+         definitions = 'KP_1_ZLO_1027_L', 'ZLO_1', 0, 5, 0, 10000, 1
+         connections = 'Zlotna', 1027.26, 'LTZ_01', 43.45
+         points = 15038, 15039
+         [linkchannel]
+            Geometry = 541.34, 539.81, 0
+            HeadLossFactors = 0.5, 1, 0, 1, 0.5, 1, 0, 1
+            Bed_Resistance = 1, 0.03
+            [Cross_Section]
+               Data = 0, 0
+               Data = 0.1, 42.0
+               Data = 3, 42.0
+            EndSect  // Cross_Section
+
+         EndSect  // linkchannel
+
+      EndSect  // branch
+
+      [branch]
+         definitions = 'KP_1_ZLO_359_L', 'ZLO_1', 0, 5, 0, 10000, 1
+         connections = 'Zlotna', 359.47, 'LTZ_01', 670.24
+         points = 15040, 15041
+         [linkchannel]
+            Geometry = 537.85, 537.54, 0
+            HeadLossFactors = 0.5, 1, 0, 1, 0.5, 1, 0, 1
+            Bed_Resistance = 1, 0.03
+            [Cross_Section]
+               Data = 0, 0
+               Data = 0.1, 54.0
+               Data = 3, 54.0
+            EndSect  // Cross_Section
+
+         EndSect  // linkchannel
+
+      EndSect  // branch
+
+      [branch]
+         definitions = 'KP_1_ZLO_898_L', 'ZLO_1', 0, 5, 0, 10000, 1
+         connections = 'Zlotna', 898.55, 'LTZ_01', 157.08
+         points = 15042, 15043
+         [linkchannel]
+            Geometry = 541.08, 539.61, 0
+            HeadLossFactors = 0.5, 1, 0, 1, 0.5, 1, 0, 1
+            Bed_Resistance = 1, 0.03
+            [Cross_Section]
+               Data = 0, 0
+               Data = 0.1, 53.0
+               Data = 3, 53.0
+            EndSect  // Cross_Section
+
+         EndSect  // linkchannel
+
+      EndSect  // branch
+
+      [branch]
+         definitions = 'KP_1_ZLO_866_L', 'ZLO_1', 0, 5, 0, 10000, 1
+         connections = 'Zlotna', 866.07, 'LTZ_01', 180.75
+         points = 15044, 15045
+         [linkchannel]
+            Geometry = 540.86, 539.0, 0
+            HeadLossFactors = 0.5, 1, 0, 1, 0.5, 1, 0, 1
+            Bed_Resistance = 1, 0.03
+            [Cross_Section]
+               Data = 0, 0
+               Data = 0.1, 53.0
+               Data = 3, 53.0
+            EndSect  // Cross_Section
+
+         EndSect  // linkchannel
+
+      EndSect  // branch
+
+      [branch]
+         definitions = 'KP_1_ZLO_1073_L', 'ZLO_1', 0, 5, 0, 10000, 1
+         connections = 'Zlotna', 1073.23, 'LTZ_01', 0.0
+         points = 15046, 15047
+         [linkchannel]
+            Geometry = 541.29, 540.2, 0
+            HeadLossFactors = 0.5, 1, 0, 1, 0.5, 1, 0, 1
+            Bed_Resistance = 1, 0.03
+            [Cross_Section]
+               Data = 0, 0
+               Data = 0.1, 49.0
+               Data = 3, 49.0
+            EndSect  // Cross_Section
+
+         EndSect  // linkchannel
+
+      EndSect  // branch
+
