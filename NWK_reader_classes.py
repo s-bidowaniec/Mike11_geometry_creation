@@ -130,8 +130,7 @@ class CrossSection(object):
         self.parent = parent
 
     def add_parameters(self, string_list, name, line):
-        self.data.append(str(string_list[1]))
-        self.data.append(str(string_list[2]))
+        self.data.append([string_list[1], string_list[2]])
 
 
 ######################
@@ -203,6 +202,7 @@ class NwkFile(object):
         self.weirList = []
         self.culvertList = []
         self.start = ''
+        self.maxPoint = 0
         self.end = None
 
     def add_start(self, value):
@@ -216,59 +216,17 @@ class NwkFile(object):
         val2 = float(string_list[5])
         val3 = int(string_list[6])
 
+        if no > self.maxPoint:
+            self.maxPoint = no
+
         self.pointList.append(NwkPoint(no, x, y, val1, val2, val3))
 
+    def check_points_numbers(self):
+        self.recuredPointList = []
+        for i in self.pointList:
+            self.recuredPointList.append(i.no)
+        for i in self.recuredPointList:
+            if self.recuredPointList.count(i) > 1:
+                print("Powtarzające się punkty: ", i, u"w liczbie ", self.recuredPointList.count(i))
 
-def change_type(ob):
-    attr_dict = ob.__dict__
 
-    for i in attr_dict:
-        try:
-            print(attr_dict[i].data)
-        except:
-            print(i)
-        if type(attr_dict[i]) == list:
-            print("a")
-            for j in range(len(attr_dict[i])):
-                if '__dict__' in dir(attr_dict[i][j]):
-                    change_type(attr_dict[i][j])
-
-                try:
-                    if "." in attr_dict[i][j]:
-                        attr_dict[i][j] = float(attr_dict[i][j])
-                    else:
-                        attr_dict[i][j] = int(attr_dict[i][j])
-                except:
-                    pass
-
-        elif type(attr_dict[i]) == dict:
-            print("b")
-            for j in attr_dict[i]:
-                try:
-                    if "." in attr_dict[i][j]:
-                        attr_dict[i][j] = float(attr_dict[i][j])
-                    else:
-                        attr_dict[i][j] = int(attr_dict[i][j])
-                except:
-                    pass
-
-        try:
-            if "." in attr_dict[i]:
-                print("c")
-                attr_dict[i] = float(attr_dict[i])
-            else:
-                attr_dict[i] = int(attr_dict[i])
-        except:
-            pass
-
-        try:
-            print("d")
-            if '__dict__' in dir(attr_dict[i]):
-                print(attr_dict[i].par)
-                change_type(attr_dict[i])
-            else:
-                pass
-        except:
-            pass
-
-    return True

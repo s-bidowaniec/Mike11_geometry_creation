@@ -8,8 +8,17 @@ def line_to_list(line):
     line2 = line.replace(" =", ",")
     line2 = line2.replace("'", "")
     line2 = line2.replace("\n", "")
-    string_list = line2.split(", ")
-    return string_list, name
+    data_list = line2.split(", ")
+    for i in range(len(data_list)):
+        try:
+            if "." in data_list[i]:
+                data_list[i] = float(data_list[i])
+            else:
+                data_list[i] = int(data_list[i])
+        except:
+            pass
+
+    return data_list, name
 
 
 file = open("przykladowy_NWK", 'r')
@@ -43,7 +52,7 @@ while i < len(readline):
         i += 1
         continue
 
-    stringList, name = line_to_list(line)
+    data_list, name = line_to_list(line)
 
     if "[branch]" in line:
         nwk.branchList.append(Branch())
@@ -95,16 +104,9 @@ while i < len(readline):
         cl = cl.parent
 
     else:
-        cl.add_paramaters(stringList, name, line)
+        cl.add_parameters(data_list, name, line)
     i += 1
 
 
-print("zaczytano dane")
-
-# Przetwarzanie typow danych
-change_type(nwk)
-
 print("All done")
 print(nwk.branchList[8].linkChannel.crossSection.data)
-
-print("All done")
