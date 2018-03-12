@@ -98,13 +98,8 @@ while i < len(readline):
         cl.addParameters(stringList, name, line)
     i += 1
 
-print("zaczytano dane")
-
-### Przetwarzanie typow danych
-changeType(nwk)
-
 print("All done")
-print(nwk.branchList[8].linkChannel.crossSection.data)
+
 
 
         
