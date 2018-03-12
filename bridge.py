@@ -1,4 +1,5 @@
 import codecs
+
 import glob
 
 from classes import XSt, Points2Line
@@ -11,6 +12,16 @@ for XS_raw in XS_txt:
     with codecs.open(XS_raw, 'r', encoding='cp1250', errors='ignore') as f:
         # with open(XS_raw, 'r') as f:
         XS_base.append(XSt(f))
+
+path = r"E:\!!Modele_IsokII\Pielgrzymowka_11468\Geodezja\txt"
+
+XS_txt = glob.glob(path+"\*.txt")
+XS_base = []
+for XS_raw in XS_txt:
+    #with codecs.open(XS_raw, 'r', encoding='cp1250', errors='ignore') as f:
+    with open(XS_raw, 'r') as f:
+        XS_base.append(XS_t(f))
+
     f.close()
 
 print(len(XS_base))
