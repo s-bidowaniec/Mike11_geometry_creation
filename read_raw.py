@@ -1,6 +1,6 @@
 import os
 from classes import XS, link, printowanie
-file = open(r'E:\Robocze\!!python\Zlotna_161152\Mike\V0\S01_Zlotna_test_raw.txt','r')
+file = open(r'link_gen_test_xns.txt','r')
 lines = file.readlines()
 row = 0
 XSnum = 0
