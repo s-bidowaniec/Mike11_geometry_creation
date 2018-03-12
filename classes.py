@@ -1,6 +1,5 @@
 import math
 from rdp import rdp
-import tkinter
 from operator import itemgetter
 import matplotlib.pyplot as plt
 
@@ -122,12 +121,12 @@ def printowanie(list_lin, num):
 
 def distance(x1, x2, y1, y2):
     try:
-        return math.sqrt((x1 - x2) ** 2 + (y1 - y2) ** 2)
+        return sqrt((x1 - x2) ** 2 + (y1 - y2) ** 2)
     except:
         return 0
 
 def is_between(X1, Y1, x, y, X2, Y2):
-    return round((distance(X1, x, Y1, y)), 0) + round(distance(x, X2, y, Y2), 0) == round(distance(X1, X2, Y1, Y2), 0)
+    return round(distance(X1, x, Y1, y)) + round(distance(x, X2, y, Y2)) == round(distance(X1, X2, Y1, Y2))
 
 def line_intersection(X1, Y1, X2, Y2, X3, Y3, X4, Y4):
     line1 = [[X1, Y1], [X2, Y2]]
@@ -154,7 +153,7 @@ def line_intersection(X1, Y1, X2, Y2, X3, Y3, X4, Y4):
 
 class point(object):
     def __init__(self, lp, x, y, z, kod="nul", cos="nul"):
-        self.lp = int(round(float(lp)))
+        self.lp = int(lp)
         self.x = float(x)
         self.y = float(y)
         self.z = float(z)
@@ -163,41 +162,25 @@ class point(object):
 
 class XS_t(object):
     def __init__(self, file):
-        #print(file)
+        print(file)
         self.km = 0
         self.rzeka = "Riv"
         self.data = "01.01.1990"
         self.type = "none"
         self.dane = []
         self.point_data = []
-        licznik = 0
-        for line in file.read().split('\n'):
-            napis = line.replace('\t', ' ').replace('  ', ' ')
-            napis = list(napis)
-            while licznik < len(napis):
-                if napis[licznik] == ' ':
-                    try:
-                        while napis[licznik + 1] == ' ':
-                            del napis[licznik]
-                    except:
-                        pass
-                licznik += 1
-            if len(napis) > 0 and napis[0] == " ":
-                del napis[0]
-            napis = "".join(napis)  # koniec usuwania powielonych znakow podzialu, zamiana listy na string
-            #print(napis)
-            line2 = napis.replace("\r","")
+        for line in file.read().split("\n"):
+            line2 = line.replace("\t\t","").replace("\r","")
             numbers = sum(c.isdigit() for c in line2)
-            print(line2)
             if numbers < 14:
                 self.dane.append(line2)
 
             else:
                 try:
-                    float(line2.split(' ')[0])
-                    self.point_data.append(point(*line2.split(' ')[:]))
+                    int(float(line2.split('\t')[0]))
+                    self.point_data.append(point(*line2.split('\t')[:]))
                 except:
-                    self.point_data.append(point(*line2.split(' ')[1:]))
+                    self.point_data.append(point(*line2.split('\t')[1:]))
 
 
         r = 0
@@ -237,14 +220,10 @@ class XS_t(object):
                 pass
     def get_far(self):
         line = []
-        flag = 0
         for poi in self.point_data:
             if "ZWW" in str(poi.cos):
                 line.append(poi.x)
                 line.append(poi.y)
-                flag +=1
-        if flag < 1:
-            print ("brak ZWW "+str(self.lp))
         return(line[0],line[1],line[2],line[3])
 
     def distance(self):
@@ -275,32 +254,26 @@ class XS_t(object):
         self.kor = []
         self.kor_c = []
         for pkt in self.point_data:
-            if "40" not in str(pkt.kod) and "41" not in str(pkt.kod) and "42" not in str(pkt.kod) and "66" not in str(pkt.kod)and "7d" not in str(pkt.kod)and "50" not in str(pkt.kod)and "51" not in str(pkt.kod):
+            if "40" not in str(pkt.kod) and "41" not in str(pkt.kod) and "42" not in str(pkt.kod) and "66" not in str(pkt.kod):
                 self.kor.append((float(pkt.dist), float(pkt.z)))
-            elif "40" in str(pkt.kod) or "50" in str(pkt.kod):
+            elif "40" in str(pkt.kod):
                 self.geom.append((float(pkt.dist), float(pkt.z)))
-
-        self.geom = rdp(self.geom, epsilon=0.5)
-        point2=[100,1000]
-        point3=[0,1000]
-        for i in range(len(self.kor)-1):
-            for x in range(len(self.geom)-1):
-                point = line_intersection(self.kor[i][0], self.kor[i][1], self.kor[i+1][0], self.kor[i+1][1],
-                                          self.geom[x][0], self.geom[x][1], self.geom[x+1][0], self.geom[x+1][1])
-                print(point)
-                if point[1] < point2[1] and point[-1] == True and point[0] < self.geom[-1][0]:
-                    point2=point
-                point = line_intersection(self.kor[i][0], self.kor[i][1], self.kor[i + 1][0], self.kor[i + 1][1],
-                                      self.geom[x+1][0], self.geom[x+1][1], self.geom[x][0], self.geom[x][1])
-                if point[1] < point3[1] and point[-1] == True and point[0] > self.geom[-1][0]:
-                    point3 = point
-
-        #print(point)
+        print(len(self.geom))
+        self.max_d = max(self.geom, key=itemgetter(0))[0]
+        self.min_d = min(self.geom, key=itemgetter(0))[0]
+        print(self.min_d, self.max_d)
+        for element in self.kor:
+            if float(element[0]) > self.max_d+0.1 or float(element[0]) < self.min_d:
+                pass
+                #print(element)
+            else:
+                self.kor_c.append(element)
+        self.geom.reverse()
         plt.plot(*zip(*self.kor))
         plt.plot(*zip(*self.geom))
-        plt.plot([point2[0]], [point2[1]],'ro')
-        plt.plot([point3[0]], [point3[1]], 'ro')
         plt.show()
+
+
 
 class points2Line(object):
     '''klasa zawierająca w sobie współrzędne dwóch punktów określających prostą, oraz
