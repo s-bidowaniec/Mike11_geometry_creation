@@ -153,15 +153,16 @@ def line_intersection(X1, Y1, X2, Y2, X3, Y3, X4, Y4):
 
 class point(object):
     def __init__(self, lp, x, y, z, kod="nul", cos="nul"):
-        self.lp = lp
-        self.x = x
-        self.y = y
-        self.z = z
-        self.kod = kod
+        self.lp = int(lp)
+        self.x = float(x)
+        self.y = float(y)
+        self.z = float(z)
+        self.kod = str(kod)
         self.cos = [cos]
 
 class XS_t(object):
     def __init__(self, file):
+        print(file)
         self.km = 0
         self.rzeka = "Riv"
         self.data = "01.01.1990"
@@ -175,7 +176,12 @@ class XS_t(object):
                 self.dane.append(line2)
 
             else:
-                self.point_data.append(point(*line2.split('\t')))
+                try:
+                    int(float(line2.split('\t')[0]))
+                    self.point_data.append(point(*line2.split('\t')[:]))
+                except:
+                    self.point_data.append(point(*line2.split('\t')[1:]))
+
 
         r = 0
         while sum(c.islower() for c in self.dane[r]) < 1:

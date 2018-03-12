@@ -1,7 +1,7 @@
 import glob
 from classes import XS_t, points2Line
 import codecs
-path = r"E:\!!Modele_IsokII\Zlotna_161152\Geodezja\txt"
+path = r"E:\!!Modele_IsokII\Pielgrzymowka_11468\Geodezja\txt"
 
 XS_txt = glob.glob(path+"\*.txt")
 XS_base = []
