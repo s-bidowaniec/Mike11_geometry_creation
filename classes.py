@@ -148,7 +148,7 @@ def line_intersection(X1, Y1, X2, Y2, X3, Y3, X4, Y4):
         b = (is_between(X3, Y3, x, y, X4, Y4))
         c = (is_between(X1, Y1, x, y, X2, Y2))
 
-    return (x, y, b, c)
+    return [x, y, b, c]
 
 
 
@@ -281,23 +281,40 @@ class XS_t(object):
             else:
                 self.kor_c.append(element)
         self.geom = rdp(self.geom, epsilon=0.5)
+        if self.geom[0][0] < self.geom[-1][0]:
+            self.geom.reverse()
 
-        pointL = [500,500]
-        pointR = [0,500]
-        for i in range(len(self.kor)-1):
-            point = line_intersection(self.kor[i][0], self.kor[i][1], self.kor[i+1][0], self.kor[i+1][1], self.geom[0][0], self.geom[0][1], self.geom[1][0], self.geom[1][1])
-            if point[-1] == True and point[0] < pointL[0]:
-                pointL=point
-            point = line_intersection(self.kor[i][0], self.kor[i][1], self.kor[i + 1][0], self.kor[i + 1][1],
-                                      self.geom[-1][0], self.geom[-1][1], self.geom[-2][0], self.geom[-2][1])
-            if point[-1] == True and point[0] > pointR[0]:
-                pointR = point
-        print(pointL)
+        if len(self.geom) > 1:
+            pointLis=[]
+            for i in range(len(self.kor)-1):
+                for x in range(len(self.geom)-1):
+                    point = line_intersection(self.kor[i][0], self.kor[i][1], self.kor[i+1][0], self.kor[i+1][1], self.geom[x][0], self.geom[x][1], self.geom[x+1][0], self.geom[x+1][1])
+                    if point[-1] == True:
+                        pointLis.append(point)
+                        pointL = point
+
+        for pkt in pointLis:
+            print("----")
+            print(self.geom[0][0],self.geom[0][1])
+            print(pkt)
+            dis1 = distance(self.geom[0][0],pkt[0], self.geom[0][1], pkt[1])
+            pkt.append(dis1)
+            dis2 = distance(self.geom[-1][0],pkt[0], self.geom[-1][1], pkt[1])
+            pkt.append(dis2)
+            print(dis1,dis2, " ---")
+
+        pointL = pointLis[values.index(min(x[-2] for x in pointLis))]
+        pointR = min(x[-1] for x in pointLis)
+
+
         plt.plot(*zip(*self.kor))
         plt.plot(*zip(*self.geom))
-        plt.plot(pointL[0],pointL[1], 'ro')
+
+        plt.plot(pointL[0], pointL[1], 'ro')
         plt.plot(pointR[0], pointR[1], 'ro')
+
         plt.show()
+
 
 
 
