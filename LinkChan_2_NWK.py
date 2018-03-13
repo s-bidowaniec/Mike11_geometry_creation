@@ -199,8 +199,6 @@ print("Raw data zaczytane")
 
 
 ############################################## KP ##########################################################
-############################################## KP ##########################################################
-############################################## KP ##########################################################
 
 
 from NWK_reader_classes import *
@@ -248,7 +246,7 @@ while "[branch]" not in readline[i]:
     i += 1
 
 # zaczytywanie poszczególnych klas
-while i < len(readline):
+while i < len(readline) and "EndSect  // CULVERTS" not in readline[i]:
     line = readline[i]
 
     if not line.split():
@@ -310,23 +308,29 @@ while i < len(readline):
         cl.add_parameters(data_list, name, line)
     i += 1
 
+while i < len(readline):
+    nwk.finish = nwk.finish + readline[i]
+    i += 1
 
 print("NWK zaczytane")
 
 
 ### iterowanie listy zawierającej klasy nowych link channeli
 for i in linki:                         #   iterowanie listy zawierającej klasy nowych link channeli
+
+    '''
     print("definiotnions", i.definitions)
     print("connections", i.connections)
     print("geometry", i.geometry)
     print("XS", i.cross_section)
     print("points", i.points)
+    '''
 
     ## dodawanie parametów do klasy NwkFile
     newPoint1 = nwk.maxPoint+1                          #   numer nowego punktu
     newPoint2 = nwk.maxPoint+2
-    nwk.pointList.append(NwkPoint(newPoint1, i.points[0], i.points[1], 0, "km", 0))        #   add point to list
-    nwk.pointList.append(NwkPoint(newPoint2, i.points[2], i.points[3], 0, "km", 0))
+    nwk.pointList.append(NwkPoint(newPoint1, i.points[0], i.points[1], 0, 0, 0))        #   add point to list
+    nwk.pointList.append(NwkPoint(newPoint2, i.points[2], i.points[3], 0, 0, 0))
     nwk.maxPoint += 2
 
     ## dodawanie parametów do klasy branch
@@ -334,7 +338,7 @@ for i in linki:                         #   iterowanie listy zawierającej klasy
     cl = nwk.branchList[-1]
     cl.riverName, cl.topoID, cl.val1, cl.val2, cl.val3, cl.val4, cl.val5 = tuple(i.definitions)
     cl.connectRiver, cl.point, cl.connectTopoID, cl.point2 = tuple(i.connections)
-    cl.pointsNumbersList.extend([newPoint1, newPoint2])
+    cl.pointList.extend([newPoint1, newPoint2])
 
     ## dodawanie parametów do klasy LinkChannel
     cl.linkChannel = LinkChannel(cl)
@@ -349,14 +353,9 @@ for i in linki:                         #   iterowanie listy zawierającej klasy
     cl = cl.crossSection
     cl.data.extend(i.cross_section)
 
+### Drukowanie utworzonej struktury do pliku *.nwk
+file = open("wyniki_NWK.nwk11", "w")
+nwk.print_to_nwk(file)
+file.close()
+
 print("done")
-
-
-
-
-
-
-
-
-
-

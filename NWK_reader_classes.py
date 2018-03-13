@@ -12,6 +12,13 @@ class NwkPoint(object):
         self.z = z
         self.end = None
 
+    def values_2_string(self):
+        dataDict = self.__dict__
+        for i in dataDict:
+            if type(dataDict[i]) == int or type(dataDict[i]) == float:
+                dataDict[i] = str(dataDict[i])
+
+
 
 ######################
 class Elevation(object):
@@ -22,6 +29,20 @@ class Elevation(object):
 
     def add_paramaters(self, string_list, name, line):
         self.data.append(string_list[1:])
+
+    def values_2_string(self):
+        for i in range(len(self.data)):
+            for j in range(len(self.data[i])):
+                if type(self.data[i][j]) == int or type(self.data[i][j]) == float:
+                    self.data[i][j] = str(self.data[i][j])
+
+    def print_to_nwk(self, file):
+        '''write parameters to *.nwk file'''
+        self.values_2_string()
+        file.write("               [Elevation]\n")
+        for i in self.data:
+            file.write("                  Data = " + ", ".join(i) + "\n")
+        file.write("               EndSect  // Elevation\n\n")
 
 
 ######################
@@ -35,6 +56,22 @@ class ReservoirData(object):
     def add_parameters(self, string_list, name, line):
         self.data[name] = string_list[1:]
 
+    def values_2_string(self):
+        for i in self.data:
+            for j in range(len(self.data[i])):
+                if type(self.data[i][j]) == int or type(self.data[i][j]) == float:
+                    self.data[i][j] = str(self.data[i][j])
+
+    def print_to_nwk(self, file):
+        '''write parameters to *.nwk file'''
+        self.values_2_string()
+        file.write("            [ReservoirData]\n")
+        for i in self.data:
+            file.write("               " + i + " = " + ", ".join(self.data[i]) + "\n")
+        self.elevation.print_to_nwk(file)
+        file.write("            EndSect  // ReservoirData\n\n")
+
+
 
 ######################
 class LevelWidth(object):
@@ -46,6 +83,20 @@ class LevelWidth(object):
     def add_parameters(self, string_list, name, line):
         self.data.append(string_list[1:])
 
+    def values_2_string(self):
+        for i in range(len(self.data)):
+            for j in range(len(self.data[i])):
+                if type(self.data[i][j]) == int or type(self.data[i][j]) == float:
+                    self.data[i][j] = str(self.data[i][j])
+
+    def print_to_nwk(self, file):
+        '''write parameters to *.nwk file'''
+        self.values_2_string()
+        file.write("               [Level_Width]\n")
+        for i in self.data:
+            file.write("                  Data = " + ", ".join(i) + "\n")
+        file.write("               EndSect  // Level_Width\n\n")
+
 
 ######################
 class Irregular(object):
@@ -56,6 +107,20 @@ class Irregular(object):
 
     def add_parameters(self, string_list, name, line):
         self.data.append(string_list[1:])
+
+    def values_2_string(self):
+        for i in range(len(self.data)):
+            for j in range(len(self.data[i])):
+                if type(self.data[i][j]) == int or type(self.data[i][j]) == float:
+                    self.data[i][j] = str(self.data[i][j])
+
+    def print_to_nwk(self, file):
+        '''write parameters to *.nwk file'''
+        self.values_2_string()
+        file.write("               [Irregular]\n")
+        for i in self.data:
+            file.write("                  Data = " + ", ".join(i) + "\n")
+        file.write("               EndSect  // Irregular\n\n")
 
 
 ######################
@@ -69,6 +134,24 @@ class Geometry(object):
 
     def add_parameters(self, string_list, name, line):
         self.data[name] = string_list[1:]
+
+    def values_2_string(self):
+        for i in self.data:
+            for j in range(len(self.data[i])):
+                if type(self.data[i][j]) == int or type(self.data[i][j]) == float:
+                    self.data[i][j] = str(self.data[i][j])
+
+    def print_to_nwk(self, file):
+        '''write parameters to *.nwk file'''
+        self.values_2_string()
+        file.write("            [Geometry]\n")
+        for i in self.data:
+            file.write("               " + i + " = " + ", ".join(self.data[i]) + "\n")
+        if self.irregular:
+            self.irregular.print_to_nwk(file)
+        elif self.levelWidth:
+            self.levelWidth.print_to_nwk(file)
+        file.write("            EndSect  // Geometry\n\n")
 
 
 ######################
@@ -96,6 +179,24 @@ class Weir(object):
         # print(u"Blad funkcji addParameters klasy weir:")
         # print(line)
 
+    def values_2_string(self):
+        for i in self.weirParams:
+            for j in range(len(self.weirParams[i])):
+                if type(self.weirParams[i][j]) == int or type(self.weirParams[i][j]) == float:
+                    self.weirParams[i][j] = str(self.weirParams[i][j])
+
+    def print_to_nwk(self, file):
+        '''write parameters to *.nwk file'''
+        self.values_2_string()
+        file.write("         [weir_data]\n")
+        file.write("            Location = '{0}', {1}, '{2}', '{3}'\n".format(self.riverName, self.km,
+                                                                              self.topoID, self.ID))
+        self.reservoir.print_to_nwk(file)
+        for i in self.weirParams:
+            file.write("            " + i + " = " + ", ".join(self.weirParams[i]) + "\n")
+        self.geometry.print_to_nwk(file)
+        file.write("            [QH_Relations]\n            EndSect  // QH_Relations\n\n \
+                            EndSect  // weir_data\n\n")
 
 ######################
 class Culvert(object):
@@ -115,11 +216,41 @@ class Culvert(object):
             self.topoID = string_list[4]
 
         elif name in ["HorizOffset", "Attributes", "HeadLossFactors"]:
-            self.culvertParams[name] = line[1:]
+            self.culvertParams[name] = string_list[1:]
 
         # else:
         # print(u"Blad funkcji addParameters klasy weir:")
         # print(line)
+
+    def values_2_string(self):
+        for i in self.culvertParams:
+            for j in range(len(self.culvertParams[i])):
+                if type(self.culvertParams[i][j]) == int or type(self.culvertParams[i][j]) == float:
+                    self.culvertParams[i][j] = str(self.culvertParams[i][j])
+
+    def print_to_nwk(self, file):
+        '''write parameters to *.nwk file'''
+        self.values_2_string()
+        file.write("         [culvert_data]\n")
+        file.write("            Location = '{0}', {1}, '{2}', '{3}'\n".format(self.riverName, self.km,
+                                                                              self.ID, self.topoID))
+        self.reservoir.print_to_nwk(file)
+        file.write("            HorizOffset = " + ", ".join(self.culvertParams["HorizOffset"]) + "\n")
+        file.write("            Attributes = " + ", ".join(self.culvertParams["Attributes"]) + "\n")
+        self.geometry.print_to_nwk(file)
+        file.write("            HeadLossFactors = " + ", ".join(self.culvertParams["HeadLossFactors"]) + "\n")
+        file.write("            [Flow_Conditions]\n               [QHRelations_Positive_Flow]\n \
+              EndSect  // QHRelations_Positive_Flow\n\n \
+              [QHRelations_Negative_Flow]\n \
+              EndSect  // QHRelations_Negative_Flow\n\n \
+              [Hydraulic_Parameters]\n \
+              EndSect  // Hydraulic_Parameters\n\n \
+              [OrificeCoef_Positive_Flow] \n \
+              EndSect  // OrificeCoef_Positive_Flow\n\n \
+              [OrificeCoef_Negative_Flow]\n \
+              EndSect  // OrificeCoef_Negative_Flow\n\n \
+           EndSect  // Flow_Conditions\n\n \
+        EndSect  // culvert_data\n\n")
 
 
 ######################
@@ -131,6 +262,22 @@ class CrossSection(object):
 
     def add_parameters(self, string_list, name, line):
         self.data.append([string_list[1], string_list[2]])
+
+    def values_2_string(self):
+        '''change data types from int or float to string'''
+        for i in range(len(self.data)):
+            for j in range(len(self.data[i])):
+                if type(self.data[i][j]) == int or type(self.data[i][j]) == float:
+                    self.data[i][j] = str(self.data[i][j])
+
+
+    def print_to_nwk(self, file):
+        '''write parameters to *.nwk file'''
+        self.values_2_string()
+        file.write("            [Cross_Section]\n")
+        for i in self.data:
+            file.write("               Data = " + ", ".join(i) + "\n")
+        file.write("            EndSect  // Cross_Section\n\n")
 
 
 ######################
@@ -155,11 +302,38 @@ class LinkChannel(object):
         # print(u"Blad funkcji addParameters klasy linkChannel:")
         # print(line)
 
+    def values_2_string(self):
+        for i in range(len(self.geometry)):
+            if type(self.geometry[i]) == int or type(self.geometry[i]) == float:
+                self.geometry[i] = str(self.geometry[i])
+
+        for i in range(len(self.HeadLossFactors)):
+            if type(self.HeadLossFactors[i]) == int or type(self.HeadLossFactors[i]) == float:
+                self.HeadLossFactors[i] = str(self.HeadLossFactors[i])
+
+        for i in range(len(self.BedResistance)):
+            if type(self.BedResistance[i]) == int or type(self.BedResistance[i]) == float:
+                self.BedResistance[i] = str(self.BedResistance[i])
+
+    def print_to_nwk(self, file):
+        '''write parameters to *.nwk file'''
+        self.values_2_string()
+        file.write("         [linkchannel]\n")
+        file.write("            Geometry = " + ", ".join(self.geometry) + "\n")
+        file.write("            HeadLossFactors = " + ", ".join(self.HeadLossFactors) + "\n")
+        file.write("            Bed_Resistance = " + ", ".join(self.BedResistance) + "\n")
+
+        if self.crossSection:
+            self.crossSection.print_to_nwk(file)
+
+        file.write("            [QH_Relations]\n")
+        file.write("""            EndSect  // QH_Relations\n\n         EndSect  // linkchannel\n\n""")
+
 
 ######################
 class Branch(object):
     def __init__(self, parent=None):
-        self.pointsNumbersList = []
+        self.pointList = []
         self.linkChannel = None
         self.end = "EndSect  // branch"
         self.parent = parent
@@ -177,10 +351,10 @@ class Branch(object):
 
         elif "connections" in line:
             if string_list[1] == '':
-                self.connectRiver = None
-                self.point = None
-                self.connectTopoID = None
-                self.point2 = None
+                self.connectRiver = "''"
+                self.point = "-1e-155"
+                self.connectTopoID = "''"
+                self.point2 = "-1e-155"
             else:
                 self.connectRiver = string_list[1]
                 self.point = float(string_list[2])  # sprawdzić czy float czy int
@@ -188,10 +362,39 @@ class Branch(object):
                 self.point2 = float(string_list[4])  # sprawdzić czy float czy int
 
         elif "points" in line:
-            self.pointsNumbersList.extend(string_list[1:])
+            self.pointList.extend(string_list[1:])
         # else:
         # print(u"Blad funkcji addParameters klasy branch:")
         # print(line)
+
+    def values_2_string(self):
+        dataDict = self.__dict__
+        for i in dataDict:
+            if type(dataDict[i]) == int or type(dataDict[i]) == float:
+                dataDict[i] = str(dataDict[i])
+
+        for i in range(len(self.pointList)):
+            if type(self.pointList[i]) == int or type(self.pointList[i]) == float:
+                self.pointList[i] = str(self.pointList[i])
+
+    def print_to_nwk(self, file):
+        '''write parameters to *.nwk file'''
+        self.values_2_string()
+        file.write("      [branch]\n")
+        file.write("        definitions = '{0}', '{1}', "
+                   "{2}, {3}, {4}, {5}, {6}\n".format(self.riverName, self.topoID, self.val1,
+                                                      self.val2, self.val3, self.val4, self.val5))
+
+        file.write("        connections = '{0}', {1}, "
+                   "'{2}', {3}\n".format(self.connectRiver, self.point,
+                                         self.connectTopoID, self.point2))
+
+        file.write("        points = " + ", ".join(self.pointList)+"\n")
+
+        if self.linkChannel:
+            self.linkChannel.print_to_nwk(file)
+
+        file.write("      EndSect  // branch\n\n")
 
 
 ######################
@@ -202,6 +405,7 @@ class NwkFile(object):
         self.weirList = []
         self.culvertList = []
         self.start = ''
+        self.finish = ''
         self.maxPoint = 0
         self.end = None
 
@@ -228,5 +432,37 @@ class NwkFile(object):
         for i in self.recuredPointList:
             if self.recuredPointList.count(i) > 1:
                 print("Powtarzające się punkty: ", i, u"w liczbie ", self.recuredPointList.count(i))
+
+    def values_2_string(self):
+        pass
+
+    def print_to_nwk(self, file):
+        '''write parameters to *.nwk file'''
+        file.write(self.start)
+        file.write("   [POINTS]\n")
+        for i in self.pointList:
+            i.values_2_string()
+            file.write("      point = {0}, {1}, "
+                       "{2}, {3}, {4}, {5}\n".format(i.no, i.x, i.y, i.val1, i.val2, i.val3))
+        file.write("   EndSect  // POINTS\n\n   [BRANCHES]\n")
+
+        for i in self.branchList:
+            i.print_to_nwk(file)
+
+        file.write("""   EndSect  // BRANCHES\n\n   [STRUCTURE_MODULE]\n      \
+        Structure_Version = 1, 1\n\n\n      [WEIR]\n""")
+
+        for i in self.weirList:
+            i.print_to_nwk(file)
+
+        file.write("""      EndSect  // WEIR\n\n      [CULVERTS]\n""")
+
+        for i in self.culvertList:
+            i.print_to_nwk(file)
+
+        file.write(self.finish)
+
+
+
 
 
