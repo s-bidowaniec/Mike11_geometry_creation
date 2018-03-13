@@ -12,8 +12,11 @@ def distance(x1, x2, y1, y2):
 
 def line_intersection(x1, y1, x2, y2, x3, y3, x4, y4):
     def is_between(x1, y1, x, y, x2, y2):
-        return round(distance(x1, x, y1, y)) + round(distance(x, x2, y, y2)) == round(distance(x1, x2, y1, y2))
-
+        val = round(distance(x1, x, y1, y)) + round(distance(x, x2, y, y2)) == round(distance(x1, x2, y1, y2))
+        if val == False:
+            if x1 < x < x2 or x1 > x > x2 and y1 < y < y2 or y1 > y > y2:
+                val = True
+        return val
     line1 = [[x1, y1], [x2, y2]]
     line2 = [[x3, y3], [x4, y4]]
     xdiff = (line1[0][0] - line1[1][0], line2[0][0] - line2[1][0])
@@ -43,5 +46,5 @@ def line_intersection(x1, y1, x2, y2, x3, y3, x4, y4):
     return x, y, b, c
 
 
-print(line_intersection(0, 0, 100, 100, 0, 20, 10, 20))
+print(line_intersection(8.974359638093873, 568.846, 5.8740769834033735, 568.748, 12.330033277438403, 567.604, 12.317551181900837, 569.321))
 plt.close()

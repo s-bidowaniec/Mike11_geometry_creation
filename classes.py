@@ -123,11 +123,18 @@ def distance(x1, x2, y1, y2):
     try:
         return math.sqrt((x1 - x2) ** 2 + (y1 - y2) ** 2)
     except:
-        return 0
+        return False
 
-def is_between(X1, Y1, x, y, X2, Y2):
+def is_between(x1, y1, x, y, x2, y2):
     #print(round(distance(X1, x, Y1, y)) + round(distance(x, X2, y, Y2)), round(distance(X1, X2, Y1, Y2)))
-    return round(distance(X1, x, Y1, y), 0) + round(distance(x, X2, y, Y2), 0) == round(distance(X1, X2, Y1, Y2), 0)
+    val = round(distance(x1, x, y1, y)) + round(distance(x, x2, y, y2)) == round(distance(x1, x2, y1, y2))
+    if val == False:
+        if x1 < x < x2 or x1 > x > x2 and y1 < y < y2 or y1 > y > y2:
+            val = True
+        elif x == x1 and y == y1 or x == x2 and y == y2:
+            val == True
+    return val
+
 
 def line_intersection(X1, Y1, X2, Y2, X3, Y3, X4, Y4):
     line1 = [[X1, Y1], [X2, Y2]]
@@ -259,31 +266,23 @@ class XS_t(object):
             if "40" in str(pkt.kod):
                 licz += 1
         self.licz40 = licz
-
-
+################################################################################################################
+### funkcja tworzaca obiekt typu culvert z przekroju geodezyjnego
     def get_culvert(self):
         self.geom = []
         self.kor = []
         self.kor_c = []
+        '''podzial na pkt koryta i obiektu'''
         for pkt in self.point_data:
             if "40" not in str(pkt.kod) and "41" not in str(pkt.kod) and "42" not in str(pkt.kod) and "66" not in str(pkt.kod) and "7d" not in str(pkt.kod) and "50" not in str(pkt.kod) and "51" not in str(pkt.kod):
-                self.kor.append((float(pkt.dist), float(pkt.z)))
+                self.kor.append([float(pkt.dist), float(pkt.z)])
             elif "40" in str(pkt.kod):
-                self.geom.append((float(pkt.dist), float(pkt.z)))
-        #print(len(self.geom))
-        self.max_d = max(self.geom, key=itemgetter(0))[0]
-        self.min_d = min(self.geom, key=itemgetter(0))[0]
-        #print(self.min_d, self.max_d)
-        for element in self.kor:
-            if float(element[0]) > self.max_d+0.1 or float(element[0]) < self.min_d:
-                pass
-                #print(element)
-            else:
-                self.kor_c.append(element)
+                self.geom.append([float(pkt.dist), float(pkt.z)])
+        '''algorytm do redukcji punktow, zmienia zageszczone zygzaki na prosta'''
         self.geom = rdp(self.geom, epsilon=0.5)
         if self.geom[0][0] < self.geom[-1][0]:
             self.geom.reverse()
-
+        '''jesli wiecej niz jeden punkt opisujacy zpod konstrukcji, tworzy liste punktow przeciecia prostych z konstrukcji na lini koryta'''
         if len(self.geom) > 1:
             pointLis=[]
             for i in range(len(self.kor)-1):
@@ -291,33 +290,53 @@ class XS_t(object):
                     point = line_intersection(self.kor[i][0], self.kor[i][1], self.kor[i+1][0], self.kor[i+1][1], self.geom[x][0], self.geom[x][1], self.geom[x+1][0], self.geom[x+1][1])
                     if point[-1] == True:
                         pointLis.append(point)
-                        pointL = point
 
-        for pkt in pointLis:
-            print("----")
-            print(self.geom[0][0],self.geom[0][1])
-            print(pkt)
-            dis1 = distance(self.geom[0][0],pkt[0], self.geom[0][1], pkt[1])
-            pkt.append(dis1)
-            dis2 = distance(self.geom[-1][0],pkt[0], self.geom[-1][1], pkt[1])
-            pkt.append(dis2)
-            print(dis1,dis2, " ---")
+            '''obliczenie odleglosci wygenerowanych punktow od punktow skrajnych konstrukcji'''
+            for pkt in pointLis:
+                if self.geom[0] == self.geom[-1]:
+                    raise ('kryzys 2')
+                #print("----")
+                #print(self.geom[0][0],self.geom[0][1])
+                #print(pkt)
+                dis1 = distance(self.geom[0][0],pkt[0], self.geom[0][1], pkt[1])
+                pkt.append(dis1)
+                dis2 = distance(self.geom[-1][0],pkt[0], self.geom[-1][1], pkt[1])
+                pkt.append(dis2)
+                #print(dis1,dis2, " ---")
+            """wybor punktow najblizszych, z usunieciem prawa lewa"""
+            midle_station = self.geom[int(len(self.geom)/2)][0]
+            right_l = sorted(pointLis, key=itemgetter(-2))
+            left_l = sorted(pointLis, key=itemgetter(-1))
+            print(midle_station)
+            print(left_l)
+            del_right_l = []
+            del_left_l = []
+            for i in range(len(pointLis)-1):
+                if right_l[i][0] > midle_station:
+                    del_right_l.append(i)
+                if left_l[i][0] < midle_station:
+                    del_left_l.append(i)
 
-        pointL = pointLis[values.index(min(x[-2] for x in pointLis))]
-        pointR = min(x[-1] for x in pointLis)
+
+            pointR = right_l[0]
+            pointL = left_l[0]
+            if pointL == pointR:
+                print ('kryzys', pointL, pointR)
+                print(self.geom)
+                print(self.kor)
+                print(pointLis)
+            '''wydruk roboczy'''
+            plt.plot(*zip(*self.kor))
+            plt.plot(*zip(*self.geom))
+            plt.plot(pointL[0], pointL[1], 'ro')
+            plt.plot(pointR[0], pointR[1], 'ro')
+            plt.show()
+            '''jesli wystepuje jeden punkt pomiarowy'''
+        elif len(self.geom) == 1:
+            pass
 
 
-        plt.plot(*zip(*self.kor))
-        plt.plot(*zip(*self.geom))
-
-        plt.plot(pointL[0], pointL[1], 'ro')
-        plt.plot(pointR[0], pointR[1], 'ro')
-
-        plt.show()
-
-
-
-
+############################################################################################
 class points2Line(object):
     '''klasa zawierająca w sobie współrzędne dwóch punktów określających prostą, oraz
     jednego punktu który będzie na nią rzutowany'''
