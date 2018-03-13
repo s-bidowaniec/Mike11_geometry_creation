@@ -121,12 +121,13 @@ def printowanie(list_lin, num):
 
 def distance(x1, x2, y1, y2):
     try:
-        return sqrt((x1 - x2) ** 2 + (y1 - y2) ** 2)
+        return math.sqrt((x1 - x2) ** 2 + (y1 - y2) ** 2)
     except:
         return 0
 
 def is_between(X1, Y1, x, y, X2, Y2):
-    return round(distance(X1, x, Y1, y)) + round(distance(x, X2, y, Y2)) == round(distance(X1, X2, Y1, Y2))
+    #print(round(distance(X1, x, Y1, y)) + round(distance(x, X2, y, Y2)), round(distance(X1, X2, Y1, Y2)))
+    return round(distance(X1, x, Y1, y), 0) + round(distance(x, X2, y, Y2), 0) == round(distance(X1, X2, Y1, Y2), 0)
 
 def line_intersection(X1, Y1, X2, Y2, X3, Y3, X4, Y4):
     line1 = [[X1, Y1], [X2, Y2]]
@@ -153,7 +154,7 @@ def line_intersection(X1, Y1, X2, Y2, X3, Y3, X4, Y4):
 
 class point(object):
     def __init__(self, lp, x, y, z, kod="nul", cos="nul"):
-        self.lp = int(lp)
+        self.lp = int(float(lp))
         self.x = float(x)
         self.y = float(y)
         self.z = float(z)
@@ -265,23 +266,37 @@ class XS_t(object):
         self.kor = []
         self.kor_c = []
         for pkt in self.point_data:
-            if "40" not in str(pkt.kod) and "41" not in str(pkt.kod) and "42" not in str(pkt.kod) and "66" not in str(pkt.kod):
+            if "40" not in str(pkt.kod) and "41" not in str(pkt.kod) and "42" not in str(pkt.kod) and "66" not in str(pkt.kod) and "7d" not in str(pkt.kod) and "50" not in str(pkt.kod) and "51" not in str(pkt.kod):
                 self.kor.append((float(pkt.dist), float(pkt.z)))
             elif "40" in str(pkt.kod):
                 self.geom.append((float(pkt.dist), float(pkt.z)))
-        print(len(self.geom))
+        #print(len(self.geom))
         self.max_d = max(self.geom, key=itemgetter(0))[0]
         self.min_d = min(self.geom, key=itemgetter(0))[0]
-        print(self.min_d, self.max_d)
+        #print(self.min_d, self.max_d)
         for element in self.kor:
             if float(element[0]) > self.max_d+0.1 or float(element[0]) < self.min_d:
                 pass
                 #print(element)
             else:
                 self.kor_c.append(element)
-        self.geom.reverse()
+        self.geom = rdp(self.geom, epsilon=0.5)
+
+        pointL = [500,500]
+        pointR = [0,500]
+        for i in range(len(self.kor)-1):
+            point = line_intersection(self.kor[i][0], self.kor[i][1], self.kor[i+1][0], self.kor[i+1][1], self.geom[0][0], self.geom[0][1], self.geom[1][0], self.geom[1][1])
+            if point[-1] == True and point[0] < pointL[0]:
+                pointL=point
+            point = line_intersection(self.kor[i][0], self.kor[i][1], self.kor[i + 1][0], self.kor[i + 1][1],
+                                      self.geom[-1][0], self.geom[-1][1], self.geom[-2][0], self.geom[-2][1])
+            if point[-1] == True and point[0] > pointR[0]:
+                pointR = point
+        print(pointL)
         plt.plot(*zip(*self.kor))
         plt.plot(*zip(*self.geom))
+        plt.plot(pointL[0],pointL[1], 'ro')
+        plt.plot(pointR[0], pointR[1], 'ro')
         plt.show()
 
 
