@@ -170,17 +170,28 @@ class XS_t(object):
         self.dane = []
         self.point_data = []
         for line in file.read().split("\n"):
-            line2 = line.replace("\t\t","").replace("\r","")
+            napis = list(line.replace("\t","  "))
+            licznik = 0
+            while licznik < len(napis):
+                if napis[licznik] == ' ':
+                    try:
+                        while napis[licznik + 1] == ' ':
+                            del napis[licznik]
+                    except:
+                        pass
+                licznik += 1
+            napis = "".join(napis).replace('*', '').replace('\r\n','')  # koniec usuwania powielonych znakow podzialu, zamiana listy na string
+            line2 = napis.replace("\t"," ").replace("  "," ")
             numbers = sum(c.isdigit() for c in line2)
             if numbers < 14:
                 self.dane.append(line2)
 
             else:
                 try:
-                    int(float(line2.split('\t')[0]))
-                    self.point_data.append(point(*line2.split('\t')[:]))
+                    int(float(line2.split(' ')[0]))
+                    self.point_data.append(point(*line2.split(' ')[:]))
                 except:
-                    self.point_data.append(point(*line2.split('\t')[1:]))
+                    self.point_data.append(point(*line2.split(' ')[1:]))
 
 
         r = 0
