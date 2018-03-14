@@ -4,7 +4,7 @@ import xlsxwriter
 import codecs
 
 
-path = r"E:\!!Modele_IsokII\Pielgrzymowka_11468\Geodezja\txt"
+path = r"C:\Users\sbidowaniec\PycharmProjects\xlsx_XS_txt\Wynik"
 
 XS_txt = glob.glob(path+"\*.txt")
 XS_base = []
@@ -18,7 +18,7 @@ for XS_raw in XS_txt:
 workbook = xlsxwriter.Workbook('mosty_biala_2.xlsx')
 for num in range(len(XS_base)):
 
-    if "most" in XS_base[num].type:
+    if "kładka" in XS_base[num].type or "most" in XS_base[num].type or "rurociąg" in XS_base[num].type:
         #sprowadzenie pkt na prosta
         x1, x2, y1, y2 = (XS_base[num].get_far())
         for pkt in XS_base[num].point_data:

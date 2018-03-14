@@ -192,6 +192,7 @@ class XS_t(object):
         self.type = "none"
         self.dane = []
         self.point_data = []
+        self.geom2 = []
         for line in file.read().split("\n"):
             napis = list(line.replace("\t","  "))
             licznik = 0
@@ -240,13 +241,30 @@ class XS_t(object):
             print("Brak: data def", self.lp)
         if "typ" in str.lower(self.dane[r+3]) or "obiekt" in str.lower(self.dane[3]):
             self.type = self.dane[r+3].split(':')[1]
-        elif "kąt" in str.lower(self.dane[r+3]) or "krzyzowan" in str.lower(self.dane[3]):
-            self.kat = self.dane[r + 3].split(':')[1]
+        elif "kąt" in str.lower(self.dane[r+4]) or "krzyzowan" in str.lower(self.dane[3]):
+            self.kat = self.dane[r + 4].split(':')[1]
+
         try:
-            if "typ" in str.lower(self.dane[r+4]) or "obiekt" in str.lower(self.dane[4]):
-                self.type = self.dane[r+4].split(':')[1]
+            if "foto" in str.lower(self.dane[r+4]):
+                self.foto = self.dane[r+4].split(':')[1]
         except:
             pass
+        try:
+            if "admin" in str.lower(self.dane[r+5]):
+                self.admin = self.dane[r+5].split(':')[1]
+        except:
+            self.admin = "None"
+        try:
+            if "uwagi" in str.lower(self.dane[r+6]):
+                self.uwagi = self.dane[r+6].split(':')[1]
+        except:
+            self.uwagi = "None"
+        try:
+            if "szer" in str.lower(self.dane[r+7]):
+                self.szer = self.dane[r+7].split(':')[1]
+        except:
+            self.szer = "None"
+
 
         if self.type == "none" or self.type == '':
             print("Brak: type def", self.lp)
@@ -267,7 +285,8 @@ class XS_t(object):
     def get_far(self):
         line = []
         for poi in self.point_data:
-            if "ZWW" in str(poi.cos):
+            #print(poi.cos, poi.x, poi.y)
+            if "zww" in str(poi.cos).lower():
                 line.append(poi.x)
                 line.append(poi.y)
         return(line[0],line[1],line[2],line[3])
@@ -291,14 +310,19 @@ class XS_t(object):
     ################################################################################################################
     """obliczanie dlugosci przekroju i dolnej pikiety"""
     def get_culver_len(self):
+
         for pkt in self.point_data:
-            if "66" in pkt.kod or "7d" in pkt.kod:
+            if "66" in pkt.kod or "7" in pkt.kod:
                 print(pkt.y, pkt.xp, pkt.x, pkt.yp)
                 self.culvert_len = math.sqrt((float(pkt.y) - float(pkt.xp)) ** 2 + (float(pkt.x) - float(pkt.yp)) ** 2)
                 self.culvert_downS = pkt.z
 
     '''generuje punkty przeciecia'''
     def gen_pkt(self):
+        if len(self.geom) == 0:
+            print("geom error")
+            time.sleep(5)
+            self.geom = self.geom2
         '''jesli jeden pkt spodu konstrukcji dodanie pomocniczych'''
         if len(self.geom) == 1:
             self.geom.insert(0,[self.geom[0][0] - 0.5, self.geom[0][1]])
@@ -370,21 +394,26 @@ class XS_t(object):
         '''podzial na pkt koryta i obiektu, pobranie najnizszego punktu z koryta'''
         self.culvert_upS = 1000
         for pkt in self.point_data:
-            if "40" not in str(pkt.kod) and "41" not in str(pkt.kod) and "42" not in str(pkt.kod) and "66" not in str(pkt.kod) and "7d" not in str(pkt.kod) and "50" not in str(pkt.kod) and "51" not in str(pkt.kod):
+            lista_geo = []
+            #if "40" not in str(pkt.kod) and "41" not in str(pkt.kod) and "42" not in str(pkt.kod) and "66" not in str(pkt.kod) and "7d" not in str(pkt.kod) and "50" not in str(pkt.kod) and "51" not in str(pkt.kod):
+            if "K" in str(pkt.kod) or "T" in str(pkt.kod) or pkt.kod == None:
                 self.kor.append([float(pkt.dist), float(pkt.z)])
                 if pkt.z < self.culvert_upS:
                     self.culvert_upS = pkt.z
-            elif "40" in str(pkt.kod):
+            if "40" in str(pkt.kod):
+                self.geom2.append([float(pkt.dist), float(pkt.z)])
+            if "40" in str(pkt.kod) and "None" in str(pkt.cos):
                 self.geom.append([float(pkt.dist), float(pkt.z)])
-            elif "41" in str(pkt.kod):
+            if "41" in str(pkt.kod):
                 self.deck.append([float(pkt.dist), float(pkt.z)])
         '''algorytm do redukcji punktow, zmienia zageszczone zygzaki na prosta'''
-        self.geom = rdp(self.geom, epsilon=0.5)
+        self.geom = rdp(self.geom, epsilon=0.8)
         self.deck = rdp(self.deck, epsilon=5)
-
-        if self.geom[0][0] < self.geom[-1][0]:
-            self.geom.reverse()
-
+        try:
+            if self.geom[0][0] < self.geom[-1][0]:
+                self.geom.reverse()
+        except:
+            pass
         pointR, pointL = self.gen_pkt()
 
         if pointR[-4] == True:
@@ -468,6 +497,27 @@ class XS_t(object):
         worksheet.write(5, 1, str(self.culvert_upS))
         worksheet.write(6, 0, 'Downstream:')
         worksheet.write(6, 1, str(self.culvert_downS))
+        try:
+            worksheet.write(0, 3, 'Foto:')
+            worksheet.write(0, 4, str(self.foto))
+        except:
+            pass
+        try:
+            worksheet.write(1, 3, 'Admin:')
+            worksheet.write(1, 4, str(self.admin))
+        except:
+            pass
+        try:
+            worksheet.write(2, 3, 'Uwagi:')
+            worksheet.write(2, 4, str(self.uwagi))
+        except:
+            pass
+        try:
+            worksheet.write(3, 3, 'Szer:')
+            worksheet.write(3, 4, str(self.szer))
+        except:
+            pass
+
         chart1 = workbook.add_chart({'type': 'scatter', 'subtype': 'straight'})
         for row, line in enumerate(self.kor):
             for col, cell in enumerate(line):
