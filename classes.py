@@ -1,6 +1,7 @@
 import math
 from rdp import rdp
 from operator import itemgetter
+import time
 import matplotlib.pyplot as plt
 
 def get_xy_delta(self):
@@ -169,17 +170,22 @@ def line_intersection(X1, Y1, X2, Y2, X3, Y3, X4, Y4):
 
 
 class point(object):
-    def __init__(self, lp, x, y, z, kod="nul", cos="nul"):
-        self.lp = int(float(lp))
-        self.x = float(x)
-        self.y = float(y)
-        self.z = float(z)
+    def __init__(self, lp, x, y, z, kod="nul", cos="nul", ogon='nul'):
+        self.lp = int(float(lp.replace("o","0").replace("O","0")))
+        self.x = float(x.replace("o","0").replace("O","0"))
+        self.y = float(y.replace("o","0").replace("O","0"))
+        self.z = float(z.replace("o","0").replace("O","0"))
         self.kod = str(kod)
         self.cos = [cos]
 
 class XS_t(object):
     def __init__(self, file):
-        print(file)
+        name = str(file).replace("\\"," ").split()[-3]
+        name = name.replace(".", " ").replace("_", " ").split()
+        for element in name:
+            if element[0].isdigit():
+                name = element
+        self.name = name
         self.km = 0
         self.rzeka = "Riv"
         self.data = "01.01.1990"
@@ -204,11 +210,18 @@ class XS_t(object):
                 self.dane.append(line2)
 
             else:
+                line3 = line2.split(' ')
+                if len(line3)>6:
+                    cos = line3[6:]
+                    line3=line3[:6]
+                    line3.append(cos)
+                #print(line3)
                 try:
-                    int(float(line2.split(' ')[0]))
-                    self.point_data.append(point(*line2.split(' ')[:]))
+                    int(float(line3[0]))
+                    self.point_data.append(point(*line3[:]))
                 except:
-                    self.point_data.append(point(*line2.split(' ')[1:]))
+                    print(line3)
+                    self.point_data.append(point(*line3[1:]))
 
         r = 0
         while sum(c.islower() for c in self.dane[r]) < 1:
@@ -227,10 +240,16 @@ class XS_t(object):
             print("Brak: data def", self.lp)
         if "typ" in str.lower(self.dane[r+3]) or "obiekt" in str.lower(self.dane[3]):
             self.type = self.dane[r+3].split(':')[1]
-        else:
-            print("Brak: type def", self.lp)
+        elif "kąt" in str.lower(self.dane[r+3]) or "krzyzowan" in str.lower(self.dane[3]):
+            self.kat = self.dane[r + 3].split(':')[1]
+        try:
+            if "typ" in str.lower(self.dane[r+4]) or "obiekt" in str.lower(self.dane[4]):
+                self.type = self.dane[r+4].split(':')[1]
+        except:
+            pass
+
         if self.type == "none" or self.type == '':
-            #print(self.lp)
+            print("Brak: type def", self.lp)
             try:
                 if "obie" in str(self.dane[-4:-1]).lower():
                     self.type = "obiekt"
@@ -268,12 +287,7 @@ class XS_t(object):
     def dist_sort(self):
         self.point_data = sorted(self.point_data, key=operator.attrgetter('dist'))
 
-    def count_40(self):
-        for pkt in self.point_data:
-            licz == 0
-            if "40" in str(pkt.kod):
-                licz += 1
-        self.licz40 = licz
+
     ################################################################################################################
     """obliczanie dlugosci przekroju i dolnej pikiety"""
     def get_culver_len(self):
@@ -288,7 +302,7 @@ class XS_t(object):
         '''jesli jeden pkt spodu konstrukcji dodanie pomocniczych'''
         if len(self.geom) == 1:
             self.geom.insert(0,[self.geom[0][0] - 0.5, self.geom[0][1]])
-            #self.geom.append([self.geom[0][0] + 0.5, self.geom[0][1]])
+            self.geom.append([self.geom[0][0] + 0.5, self.geom[0][1]])
         '''jesli wiecej niz jeden punkt opisujacy zpod konstrukcji, tworzy liste punktow przeciecia prostych z konstrukcji na lini koryta'''
         if len(self.geom) > 1:
             pointLis = []
@@ -299,7 +313,7 @@ class XS_t(object):
                                               self.geom[x + 1][0], self.geom[x + 1][1])
                     if point[-1] == True:
                         pointLis.append(point)
-
+            print("line 312 point len: ", len(pointLis))
             '''obliczenie odleglosci wygenerowanych punktow od punktow skrajnych konstrukcji'''
             for pkt in pointLis:
                 if self.geom[0] == self.geom[-1]:
@@ -327,6 +341,20 @@ class XS_t(object):
             """sortowanie po odleglosci od konca"""
             right_l = sorted(right_l2, key=itemgetter(-2))
             left_l = sorted(left_l2, key=itemgetter(-1))
+            "sprawdzenie wystapienia przeciec po obu stronach"
+            if len(left_l) < 1 or len(right_l) < 1:
+                print("przeciecia po lewej: {}\nprzeciecia po prawej: {}".format(len(left_l), len(right_l)))
+            if len(left_l) < 1:
+                z =self.geom[0][1]
+                stat = self.kor[0][0]
+                print(z,stat)
+                left_l.insert(0, [stat,z, False, False, 0,0])
+            if len(right_l) < 1:
+                z = self.geom[-1][1]
+                stat = self.kor[-1][0]
+                print(z, stat)
+                right_l.append([stat, z, False, False, 0,0])
+                #time.sleep(5)
             """przypisanie konkretnych punktow R i L"""
             pointR = right_l[0]
             pointL = left_l[0]
@@ -334,6 +362,7 @@ class XS_t(object):
 
         ### funkcja tworzaca obiekt typu culvert z przekroju geodezyjnego
     def get_culvert(self):
+        print(self.lp)
         self.geom = []
         self.deck = []
         self.kor = []
@@ -352,6 +381,7 @@ class XS_t(object):
         '''algorytm do redukcji punktow, zmienia zageszczone zygzaki na prosta'''
         self.geom = rdp(self.geom, epsilon=0.5)
         self.deck = rdp(self.deck, epsilon=5)
+
         if self.geom[0][0] < self.geom[-1][0]:
             self.geom.reverse()
 
@@ -390,27 +420,86 @@ class XS_t(object):
         self.geom.insert(-1, [pointL[0], pointL[1]])
         self.geom.insert(0, [pointR[0], pointR[1]])
         """uciecie koryta"""
+        lewy = None
+        prawy = None
         for i in range(len(self.kor)-1):
             if is_between2(self.kor[i][0], self.kor[i][1], pointL[0], pointL[1], self.kor[i+1][0], self.kor[i+1][1]):
-                lewy = i+1
+                lewy = i
         for i in range(len(self.kor)-1):
             if is_between2(self.kor[i][0], self.kor[i][1], pointR[0], pointR[1], self.kor[i+1][0], self.kor[i+1][1]):
                 prawy = i+1
-
-        self.kor_c = self.kor[lewy+1:prawy]
+        if lewy != None and prawy != None:
+            self.kor_c = self.kor[lewy+1:prawy]
+        elif lewy != None and prawy == None:
+            self.kor_c = self.kor[lewy + 1:]
+        elif lewy == None and prawy != None:
+            self.kor_c = self.kor[:prawy]
         """dodanie pkt tnacych do koryta"""
         self.kor_c.insert(0, [pointL[0], pointL[1]])
         self.kor_c.append([pointR[0], pointR[1]])
-        self.culvertXS = rdp(self.kor_c+self.geom, epsilon=0.2)
+        self.culvertXS = self.kor_c+rdp(self.geom, epsilon=0.2)
         print(self.get_culver_len(),"----")
         print("dlugosc obiektu: ",round(self.culvert_len, 2))
         print("upstream z:",self.culvert_upS,"downstream z: ", self.culvert_downS)
         #plt.plot(*zip(*self.kor), color='brown')
+        """
         plt.plot(*zip(*self.culvertXS))
         plt.plot(*zip(*self.deck))
         plt.plot(pointL[0], pointL[1], 'ro')
         plt.plot(pointR[0], pointR[1], 'bo')
         plt.show()
+        """
+    def excel_print(self, workbook):
+        worksheet = workbook.add_worksheet(str(self.name))
+        bold = workbook.add_format({'bold': 1})
+        headings = ['Koryto Stat','Koryto Elev', 'Przepust Stat', 'Przepust Elev', 'Przelew Stat', 'Przelew Elev']
+        worksheet.write_row('A10', headings, bold)
+        worksheet.write(0, 0, 'Rzeka:')
+        worksheet.write(0, 1, str(self.rzeka))
+        worksheet.write(1, 0, 'Data pom:')
+        worksheet.write(1, 1, str(self.data))
+        worksheet.write(2, 0, 'Typ:')
+        worksheet.write(2, 1, str(self.type))
+        worksheet.write(3, 0, 'Lp:')
+        worksheet.write(3, 1, str(self.lp))
+        worksheet.write(4, 0, 'Długość:')
+        worksheet.write(4, 1, str(self.culvert_len))
+        worksheet.write(5, 0, 'Upstream:')
+        worksheet.write(5, 1, str(self.culvert_upS))
+        worksheet.write(6, 0, 'Downstream:')
+        worksheet.write(6, 1, str(self.culvert_downS))
+        chart1 = workbook.add_chart({'type': 'scatter', 'subtype': 'straight'})
+        for row, line in enumerate(self.kor):
+            for col, cell in enumerate(line):
+                worksheet.write(row+10, col, cell)
+
+        chart1.add_series({
+            'name': 'Koryto',
+            'categories': [self.name, 10, 0, row+10, 0],
+            'values': [self.name, 10, 1, row+10, 1],
+        })
+
+        for row, line in enumerate(self.culvertXS):
+            for col, cell in enumerate(line):
+                worksheet.write(row+10, col+2, cell)
+
+        chart1.add_series({
+            'name': 'Przepust',
+            'categories': [self.name, 10, 2, row + 10, 2],
+            'values': [self.name, 10, 3, row + 10, 3],
+        })
+        for row, line in enumerate(self.deck):
+            for col, cell in enumerate(line):
+                worksheet.write(row+10, col+4, cell)
+        chart1.add_series({
+            'name': 'Przelew',
+            'categories': [self.name, 10, 4, row + 10, 4],
+            'values': [self.name, 10, 5, row + 10, 5],
+        })
+        chart1.set_style(10)
+        chart1.set_size({'width': 720, 'height': 576})
+        worksheet.insert_chart('G1', chart1, {'x_offset': 25, 'y_offset': 15})
+        #workbook.close()
 
 
 ############################################################################################
