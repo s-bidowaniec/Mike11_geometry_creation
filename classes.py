@@ -2,6 +2,7 @@ import math
 from rdp import rdp
 from operator import itemgetter
 import time
+import xlsxwriter
 import matplotlib.pyplot as plt
 
 def get_xy_delta(self):
@@ -23,6 +24,7 @@ def get_xy_delta(self):
 class XS(object):
     def __init__(self):
         self.dane = []
+        self.cs = 0
     def kordy(self):
         self.left = self.cords.split()[1:3]
         self.right = self.cords.split()[3:5]
@@ -43,7 +45,7 @@ class XS(object):
         self.mean_right = float(self.max_right) / 5
     pass
 
-class link(object):
+class Link(object):
     def __init__(self, object1, object2):
         self.object1 = object1
         self.object2 = object2
@@ -118,6 +120,30 @@ def printowanie(list_lin, num):
         f.write("      EndSect  // branch\n\n")
     return (point_list)
 
+def raport_XS(XS_list):
+    workbook = xlsxwriter.Workbook('raport_XS.xlsx')
+    worksheet = workbook.add_worksheet('raport_XS')
+    bold = workbook.add_format({'bold': 1})
+    headings = ['Nazwa rzeki', 'Topo ID', 'Kilometraż', 'ID Przekroju', 'Typ przekroju'] # 'Radius Type', 'Datum'
+    worksheet.write_row('A1', headings, bold)
+    i = 1
+    for XS in XS_list:
+        worksheet.write(i, 0, XS.river_code) # row col
+        worksheet.write(i, 1, XS.reach_code)
+        worksheet.write(i, 2, XS.km)
+
+        if len(XS.id) >2:
+            worksheet.write(i, 3, XS.id)
+        else:
+            worksheet.write(i, 3, 'Pomiar geodezyjny')
+        if XS.cs == 0:
+            worksheet.write(i, 4, 'otwarty')
+        else:
+            worksheet.write(i, 4, 'zamknięty')
+        #worksheet.write(i, 5, XS.rt)
+        #worksheet.write(i, 6, XS.datum)
+        i+=1
+    workbook.close()
 #bridges----------------------------------------------------------------------------------------------------------------
 
 def distance(x1, x2, y1, y2):
