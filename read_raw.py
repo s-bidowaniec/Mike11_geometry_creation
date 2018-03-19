@@ -1,17 +1,16 @@
+from classes import raport_XS, XS, Link, printowanie
+import xlsxwriter
+file = open(r'E:\!!Modele_IsokII\11468_PIELGRZYMOWKA\raport_xs.txt', 'r')
 
-from classes import XS, Link, printowanie
 
-file = open(r'E:\Robocze\!!python\Zlotna_161152\Mike\V0\S01_Zlotna_test_raw.txt', 'r')
-
-import os
-from classes import XS, link, printowanie
-file = open(r'link_gen_test_xns.txt','r')
+#file = open(r'link_gen_test_xns.txt','r')
 
 lines = file.readlines()
 row = 0
 XSnum = 0
 XS_dat = []
 for line in lines:
+
     if row == 0:
         if '**' in line:
             row = -1
@@ -22,36 +21,37 @@ for line in lines:
         XS_dat[XSnum].river_code = line.replace("\n", "")
     elif row == 2:
         XS_dat[XSnum].km = float(line)
-    elif row == 4:
+    elif 'COORDINATES' in old:
         XS_dat[XSnum].cords = line
-    elif row == 6:
-        XS_dat[XSnum].fd = line
-    elif row == 8:
-        XS_dat[XSnum].pd = line
-    elif row == 10:
-        XS_dat[XSnum].datum = line
-    elif row == 12:
-        XS_dat[XSnum].rt = line
-    elif row == 14:
-        XS_dat[XSnum].dx = line
-    elif row == 16:
-        XS_dat[XSnum].id = line
-    elif row == 18:
-        XS_dat[XSnum].inter = line
-    elif row == 20:
-        XS_dat[XSnum].angle = line
-    elif row == 22:
-        XS_dat[XSnum].rn = line
-    elif row == 23:
-        XS_dat[XSnum].Profile = line
-    elif row > 23 and 'LEVEL PARAMS' not in line and '*****' not in line:
+    elif 'FLOW DIRECTION' in old:
+        XS_dat[XSnum].fd = line #flow direction
+    elif 'PROTECT DATA' in old:
+        XS_dat[XSnum].pd = line #protect data
+    elif 'DATUM' in old:
+        XS_dat[XSnum].datum = line #datum
+    elif 'CLOSED SECTION' in old:
+        XS_dat[XSnum].cs = line #closed
+    elif 'RADIUS TYPE' in old:
+        XS_dat[XSnum].rt = line # radius type
+    elif 'DIVIDE X-Section' in old:
+        XS_dat[XSnum].dx = line # divide xs
+    elif 'SECTION ID' in old:
+        XS_dat[XSnum].id = str(line).replace(" ","") # section id
+    elif 'INTERPOLATED' in old:
+        XS_dat[XSnum].inter = line # interpolated
+    elif 'ANGLE' in old:
+        XS_dat[XSnum].angle = line # angle
+    elif 'RESISTANCE NUMBERS' in old:
+        XS_dat[XSnum].rn = line # resistance number
+    elif 'PROFILE        25' in old:
+        XS_dat[XSnum].Profile = str(line).split()[-1] # profile
+    elif sum(c.isdigit() for c in line) > 13 and row > 5:
         XS_dat[XSnum].dane.append(line)
-        # print(line)
     elif 'LEVEL PARAMS' in line:
         row_num = row
         row = -100
     elif row == -100 and 'LEVEL PARAMS' not in line:
-        XS_dat[XSnum].lp = line
+        XS_dat[XSnum].lp = line # level params
         row = int(row_num)
     elif '**' in line:
         row = -1
@@ -59,7 +59,7 @@ for line in lines:
     else:
         pass
     row += 1
-
+    old = line
 # przypisanie przekroją wspolrzednych left i right oraz max z na krancach
 list_km = []
 for i in range(len(XS_dat)):
@@ -188,6 +188,7 @@ for element in linki:
     # topo bezposrednio z cieku glownego
     element.data_definition()
 
+raport_XS(XS_dat)
 print(len(linki))
 
 print(printowanie(linki, 14923))

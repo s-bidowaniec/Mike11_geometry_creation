@@ -95,7 +95,7 @@ while i < len(readline):
         cl = cl.parent
 
     else:
-        cl.add_paramaters(stringList, name, line)
+        cl.add_parameters(stringList, name, line)
     i += 1
 
 
