@@ -1,6 +1,6 @@
 from classes import raport_XS, XS, Link, printowanie
 import xlsxwriter
-file = open(r'E:\!!Modele_IsokII\11468_PIELGRZYMOWKA\raport_xs.txt', 'r')
+file = open(r'E:\!!Modele_IsokII\Zlotna_161152\Mike\V0\link_gen_test_xns.txt', 'r')
 
 
 #file = open(r'link_gen_test_xns.txt','r')
@@ -191,4 +191,4 @@ for element in linki:
 raport_XS(XS_dat)
 print(len(linki))
 
-print(printowanie(linki, 14923))
+print(printowanie(linki, 12374))

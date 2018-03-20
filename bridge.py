@@ -15,10 +15,10 @@ for XS_raw in XS_txt:
     f.close()
 
 #stworzenie pliku do zapisu danych o obiektach
-workbook = xlsxwriter.Workbook('mosty_biala_2.xlsx')
+workbook = xlsxwriter.Workbook('boru.xlsx')
 for num in range(len(XS_base)):
 
-    if "kładka" in XS_base[num].type or "most" in XS_base[num].type or "rurociąg" in XS_base[num].type:
+    if "przepust" in XS_base[num].type or "most" in XS_base[num].type or "rurociąg" in XS_base[num].type:
         #sprowadzenie pkt na prosta
         x1, x2, y1, y2 = (XS_base[num].get_far())
         for pkt in XS_base[num].point_data:

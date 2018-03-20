@@ -105,6 +105,7 @@ print("zaczytano dane")
 change_type(nwk)
 
 print("All done")
-print(nwk.branchList[8].linkChannel.crossSection.data)
+print(nwk.culvertList[0].culvertParams)
+print(nwk.culvertList[0].riverName)
 
 print("All done")

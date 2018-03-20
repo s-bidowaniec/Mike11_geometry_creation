@@ -338,7 +338,7 @@ class XS_t(object):
     def get_culver_len(self):
 
         for pkt in self.point_data:
-            if "66" in pkt.kod or "7" in pkt.kod:
+            if "66" in pkt.kod or "7d" in pkt.kod:
                 print(pkt.y, pkt.xp, pkt.x, pkt.yp)
                 self.culvert_len = math.sqrt((float(pkt.y) - float(pkt.xp)) ** 2 + (float(pkt.x) - float(pkt.yp)) ** 2)
                 self.culvert_downS = pkt.z
@@ -421,14 +421,14 @@ class XS_t(object):
         self.culvert_upS = 1000
         for pkt in self.point_data:
             lista_geo = []
-            #if "40" not in str(pkt.kod) and "41" not in str(pkt.kod) and "42" not in str(pkt.kod) and "66" not in str(pkt.kod) and "7d" not in str(pkt.kod) and "50" not in str(pkt.kod) and "51" not in str(pkt.kod):
-            if "K" in str(pkt.kod) or "T" in str(pkt.kod) or pkt.kod == None:
+            if "40" not in str(pkt.kod) and "41" not in str(pkt.kod) and "42" not in str(pkt.kod) and "66" not in str(pkt.kod) and "7d" not in str(pkt.kod) and "50" not in str(pkt.kod) and "51" not in str(pkt.kod)and "52" not in str(pkt.kod):
+            #if "K" in str(pkt.kod) or "T" in str(pkt.kod) or pkt.kod == None:
                 self.kor.append([float(pkt.dist), float(pkt.z)])
                 if pkt.z < self.culvert_upS:
                     self.culvert_upS = pkt.z
             if "40" in str(pkt.kod):
                 self.geom2.append([float(pkt.dist), float(pkt.z)])
-            if "40" in str(pkt.kod) and "None" in str(pkt.cos):
+            if "40" in str(pkt.kod): # and "None" in str(pkt.cos):
                 self.geom.append([float(pkt.dist), float(pkt.z)])
             if "41" in str(pkt.kod):
                 self.deck.append([float(pkt.dist), float(pkt.z)])
@@ -494,8 +494,11 @@ class XS_t(object):
         self.kor_c.append([pointR[0], pointR[1]])
         self.culvertXS = self.kor_c+rdp(self.geom, epsilon=0.2)
         print(self.get_culver_len(),"----")
-        print("dlugosc obiektu: ",round(self.culvert_len, 2))
-        print("upstream z:",self.culvert_upS,"downstream z: ", self.culvert_downS)
+        try:
+            print("dlugosc obiektu: ",round(self.culvert_len, 2))
+        except:
+            pass
+        #print("upstream z:",self.culvert_upS,"downstream z: ", self.culvert_downS)
         #plt.plot(*zip(*self.kor), color='brown')
         """
         plt.plot(*zip(*self.culvertXS))
@@ -505,7 +508,7 @@ class XS_t(object):
         plt.show()
         """
     def excel_print(self, workbook):
-        worksheet = workbook.add_worksheet(str(self.name))
+        worksheet = workbook.add_worksheet(str(self.name)+str(self.lp))
         bold = workbook.add_format({'bold': 1})
         headings = ['Koryto Stat','Koryto Elev', 'Przepust Stat', 'Przepust Elev', 'Przelew Stat', 'Przelew Elev']
         worksheet.write_row('A10', headings, bold)
@@ -517,12 +520,15 @@ class XS_t(object):
         worksheet.write(2, 1, str(self.type))
         worksheet.write(3, 0, 'Lp:')
         worksheet.write(3, 1, str(self.lp))
-        worksheet.write(4, 0, 'Długość:')
-        worksheet.write(4, 1, str(self.culvert_len))
-        worksheet.write(5, 0, 'Upstream:')
-        worksheet.write(5, 1, str(self.culvert_upS))
-        worksheet.write(6, 0, 'Downstream:')
-        worksheet.write(6, 1, str(self.culvert_downS))
+        try:
+            worksheet.write(4, 0, 'Długość:')
+            worksheet.write(4, 1, str(self.culvert_len))
+            worksheet.write(5, 0, 'Upstream:')
+            worksheet.write(5, 1, str(self.culvert_upS))
+            worksheet.write(6, 0, 'Downstream:')
+            worksheet.write(6, 1, str(self.culvert_downS))
+        except:
+            pass
         try:
             worksheet.write(0, 3, 'Foto:')
             worksheet.write(0, 4, str(self.foto))
@@ -551,8 +557,8 @@ class XS_t(object):
 
         chart1.add_series({
             'name': 'Koryto',
-            'categories': [self.name, 10, 0, row+10, 0],
-            'values': [self.name, 10, 1, row+10, 1],
+            'categories': [self.name+str(self.lp), 10, 0, row+10, 0],
+            'values': [self.name+str(self.lp), 10, 1, row+10, 1],
         })
 
         for row, line in enumerate(self.culvertXS):
@@ -561,16 +567,16 @@ class XS_t(object):
 
         chart1.add_series({
             'name': 'Przepust',
-            'categories': [self.name, 10, 2, row + 10, 2],
-            'values': [self.name, 10, 3, row + 10, 3],
+            'categories': [self.name+str(self.lp), 10, 2, row + 10, 2],
+            'values': [self.name+str(self.lp), 10, 3, row + 10, 3],
         })
         for row, line in enumerate(self.deck):
             for col, cell in enumerate(line):
                 worksheet.write(row+10, col+4, cell)
         chart1.add_series({
             'name': 'Przelew',
-            'categories': [self.name, 10, 4, row + 10, 4],
-            'values': [self.name, 10, 5, row + 10, 5],
+            'categories': [self.name+str(self.lp), 10, 4, row + 10, 4],
+            'values': [self.name+str(self.lp), 10, 5, row + 10, 5],
         })
         chart1.set_style(10)
         chart1.set_size({'width': 720, 'height': 576})

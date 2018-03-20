@@ -121,7 +121,6 @@ class Culvert(object):
         # print(u"Blad funkcji addParameters klasy weir:")
         # print(line)
 
-
 ######################
 class CrossSection(object):
     def __init__(self, parent=None):
@@ -223,12 +222,7 @@ def change_type(ob):
     attr_dict = ob.__dict__
 
     for i in attr_dict:
-        try:
-            print(attr_dict[i].data)
-        except:
-            print(i)
         if type(attr_dict[i]) == list:
-            print("a")
             for j in range(len(attr_dict[i])):
                 if '__dict__' in dir(attr_dict[i][j]):
                     change_type(attr_dict[i][j])
@@ -242,7 +236,6 @@ def change_type(ob):
                     pass
 
         elif type(attr_dict[i]) == dict:
-            print("b")
             for j in attr_dict[i]:
                 try:
                     if "." in attr_dict[i][j]:
@@ -254,7 +247,6 @@ def change_type(ob):
 
         try:
             if "." in attr_dict[i]:
-                print("c")
                 attr_dict[i] = float(attr_dict[i])
             else:
                 attr_dict[i] = int(attr_dict[i])
@@ -262,7 +254,6 @@ def change_type(ob):
             pass
 
         try:
-            print("d")
             if '__dict__' in dir(attr_dict[i]):
                 print(attr_dict[i].par)
                 change_type(attr_dict[i])
