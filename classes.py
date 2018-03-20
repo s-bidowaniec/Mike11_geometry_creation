@@ -3,6 +3,7 @@ from rdp import rdp
 from operator import itemgetter
 import time
 import xlsxwriter
+import collections
 import matplotlib.pyplot as plt
 
 def get_xy_delta(self):
@@ -20,10 +21,34 @@ def get_xy_delta(self):
         y1, y2 = 0, 0
     return(x1,y1,x2,y2)
 
+class PktN(object):
+    def __init__(self, record):
+        self.station = record['Fraction']*record['Shape_Leng']
+        self.manning = record['N_Value']
 
-class XS(object):
+class ManningXS(object):
+    def __init__(self, record):
+        self.punkty = collections.OrderedDict()
+        self.riverCode, self.reachCode, self.km = record['RiverCode'], record['ReachCode'], record['ProfileM']
+        station = record['Fraction'] * record['Shape_Leng']
+        self.punkty[station] = PktN(record)
+
+    def dodaj(self, record):
+        station = record['Fraction'] * record['Shape_Leng']
+        self.punkty[station]=PktN(record)
+
+class Pkt(object):
+    def __init__(self, line):
+        if len(line.split()) != 7:
+            print(len(line.split()))
+            print(line,'\n','-----------')
+        #self.station, self.z, self.manning.py, self.kod = zip(*line.split()[:-3])
+        self.station, self.z, self.manning, self.kod = line.split()[0], line.split()[1],line.split()[2],line.split()[3]
+
+class Xs(object):
     def __init__(self):
         self.dane = []
+        self.points=[]
         self.cs = 0
     def kordy(self):
         self.left = self.cords.split()[1:3]
@@ -36,15 +61,44 @@ class XS(object):
                 elev_points.append(h)
             except:
                 print(element)
-        #print(self.reach_code, self.km)
         self.max_left = max(elev_points[0:5])
         self.min_left = min(elev_points[0:10])
         self.mean_left = float(self.max_left) / 5
         self.max_right = max(elev_points[-5:-1])
         self.min_right = min(elev_points[-10:-1])
         self.mean_right = float(self.max_right) / 5
-    pass
+    def rdp_pkt(self, epsilon):
+        self.pointsRdp=[]
+        set = [[float(i.station), float(i.z)] for i in self.points]
+        set2 = rdp(set, epsilon=epsilon)
+        set3 = [i[0] for i in set2]
+        print('Redukcja RDP o {} punktów.'.format(len(set)-len(set2)))
 
+        for pkt in self.points:
+            if str(pkt.station) in str(set3):
+                self.pointsRdp.append(pkt)
+        self.points = self.pointsRdp
+    def print_txt(self, file):
+        file.write('*******************************\n')
+        file.write('{}\n'.format(self.reachCode))
+        file.write('{}\n'.format(self.riverCode))
+        file.write('               {}\n'.format(self.km))
+        file.write('COORDINATES\n')
+        file.write('{}'.format(self.cords))
+        file.write('FLOW DIRECTION\n{}'.format(self.fd))
+        file.write('PROTECT DATA\n{}'.format(self.pd))
+        file.write('DATUM\n{}'.format(self.datum))
+        file.write('RADIUS TYPE\n{}'.format(self.rt))
+        file.write('DIVIDE X-Section\n{}'.format(self.dx))
+        file.write('DIVIDE X-Section\n{}'.format(self.dx))
+        file.write('SECTION ID\n    {}'.format(self.id))
+        file.write('INTERPOLATED\n{}'.format(self.inter))
+        file.write('ANGLE\n{}'.format(self.angle))
+        file.write('RESISTANCE NUMBERS\n{}'.format(self.rn))
+        file.write('PROFILE        {}\n'.format(self.profile))
+        for pkt in self.points:
+            file.write('  {}   {}   {}     {}     0     0.000     0\n'.format(pkt.station, pkt.z, pkt.manning, pkt.kod))
+        file.write('LEVEL PARAMS\n{}'.format(self.lp))
 class Link(object):
     def __init__(self, object1, object2):
         self.object1 = object1
@@ -89,7 +143,7 @@ class Link(object):
 
 def printowanie(list_lin, num):
     point_list = []
-    f = open('branche.txt', 'w')
+    f = open('linki.txt', 'w')
     f.write("   [POINTS]\n")
     for element in list_lin:
         point1 = str(element.points[0:2])
