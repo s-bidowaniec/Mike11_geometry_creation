@@ -72,33 +72,43 @@ class Xs(object):
         set = [[float(i.station), float(i.z)] for i in self.points]
         set2 = rdp(set, epsilon=epsilon)
         set3 = [i[0] for i in set2]
-        print('Redukcja RDP o {} punktów.'.format(len(set)-len(set2)))
-
+        print('Redukcja RDP o {} punktów z {}, river: {} km: {}.'.format(len(set)-len(set2), len(set), self.riverCode, self.km))
+        manningOld = 0
         for pkt in self.points:
             if str(pkt.station) in str(set3):
                 self.pointsRdp.append(pkt)
+            elif pkt.manning != manningOld:
+                self.pointsRdp.append(pkt)
+                print('Zachowano punkt zmiany manninga z {} na {} w station: {}.'.format(manningOld, pkt.manning, pkt.station))
+            manningOld = pkt.manning
         self.points = self.pointsRdp
-    def print_txt(self, file):
-        file.write('*******************************\n')
-        file.write('{}\n'.format(self.reachCode))
-        file.write('{}\n'.format(self.riverCode))
-        file.write('               {}\n'.format(self.km))
-        file.write('COORDINATES\n')
+    def print_txt(self, file, zaok, rr):
+        file.write('{}\r\n'.format(self.reachCode))
+        file.write('{}\r\n'.format(self.riverCode))
+        file.write('               {}\r\n'.format(round(float(self.km), zaok)))
+        file.write('COORDINATES\r\n')
         file.write('{}'.format(self.cords))
-        file.write('FLOW DIRECTION\n{}'.format(self.fd))
-        file.write('PROTECT DATA\n{}'.format(self.pd))
-        file.write('DATUM\n{}'.format(self.datum))
-        file.write('RADIUS TYPE\n{}'.format(self.rt))
-        file.write('DIVIDE X-Section\n{}'.format(self.dx))
-        file.write('DIVIDE X-Section\n{}'.format(self.dx))
-        file.write('SECTION ID\n    {}'.format(self.id))
-        file.write('INTERPOLATED\n{}'.format(self.inter))
-        file.write('ANGLE\n{}'.format(self.angle))
-        file.write('RESISTANCE NUMBERS\n{}'.format(self.rn))
-        file.write('PROFILE        {}\n'.format(self.profile))
+        file.write('FLOW DIRECTION\r\n{}'.format(self.fd))
+        file.write('PROTECT DATA\r\n{}'.format(self.pd))
+        file.write('DATUM\r\n{}'.format(self.datum))
+        file.write('RADIUS TYPE\r\n{}'.format(self.rt))
+        file.write('DIVIDE X-Section\r\n{}'.format(self.dx))
+        file.write('SECTION ID\r\n    {}'.format(self.id))
+        file.write('INTERPOLATED\r\n{}'.format(self.inter))
+        file.write('ANGLE\r\n{}'.format(self.angle))
+        if rr == None:
+            file.write('RESISTANCE NUMBERS\r\n   2  1     1.000     1.000     1.000    1.000    1.000\r\n')
+        else:
+            file.write('RESISTANCE NUMBERS\r\n   2  0     1.000     1.000     1.000    1.000    1.000\r\n')
+        file.write('PROFILE        {}\r\n'.format(self.profile))
         for pkt in self.points:
-            file.write('  {}   {}   {}     {}     0     0.000     0\n'.format(pkt.station, pkt.z, pkt.manning, pkt.kod))
-        file.write('LEVEL PARAMS\n{}'.format(self.lp))
+            if rr == None:
+                file.write('  {}   {}   {}     {}     0     0.000     0\r\n'.format(pkt.station, pkt.z, pkt.manning, pkt.kod))
+            else:
+                file.write(
+                    '  {}   {}   {}     {}     0     0.000     0\r\n'.format(pkt.station, pkt.z, float(pkt.manning)/rr, pkt.kod))
+        file.write('LEVEL PARAMS\r\n{}'.format(self.lp))
+        file.write('*******************************\r\n')
 class Link(object):
     def __init__(self, object1, object2):
         self.object1 = object1
@@ -449,7 +459,7 @@ class XS_t(object):
             if len(left_l) < 1 or len(right_l) < 1:
                 print("przeciecia po lewej: {}\nprzeciecia po prawej: {}".format(len(left_l), len(right_l)))
             if len(left_l) < 1:
-                z =self.geom[0][1]
+                z = self.geom[0][1]
                 stat = self.kor[0][0]
                 print(z,stat)
                 left_l.insert(0, [stat,z, False, False, 0,0])
@@ -506,7 +516,7 @@ class XS_t(object):
             self.geom = new_elem
             pointR, pointL = self.gen_pkt()
             print(pointR)
-            print(dyst, '----')
+            print(dyst, 'R----')
 
         if pointL[-4] == True:
             dyst = pointL[0] - self.geom[-1][0]
@@ -518,7 +528,7 @@ class XS_t(object):
             self.geom = new_elem
             pointR, pointL = self.gen_pkt()
             print(pointL)
-            print(dyst, '----')
+            print(dyst, 'L----')
         """jesli punkt lewy i prawy sa rowne error"""
         if pointL == pointR:
             print ('kryzys', pointL, pointR)
@@ -526,7 +536,7 @@ class XS_t(object):
             print(self.kor)
             print(pointLis)
         """dodanie punktow do geometri"""
-        self.geom.insert(-1, [pointL[0], pointL[1]])
+        self.geom.append([pointL[0], pointL[1]])
         self.geom.insert(0, [pointR[0], pointR[1]])
         """uciecie koryta"""
         lewy = None
@@ -536,31 +546,24 @@ class XS_t(object):
                 lewy = i
         for i in range(len(self.kor)-1):
             if is_between2(self.kor[i][0], self.kor[i][1], pointR[0], pointR[1], self.kor[i+1][0], self.kor[i+1][1]):
-                prawy = i+1
+                prawy = i
         if lewy != None and prawy != None:
-            self.kor_c = self.kor[lewy+1:prawy]
+            self.kor_c = self.kor[lewy:prawy+1]
         elif lewy != None and prawy == None:
-            self.kor_c = self.kor[lewy + 1:]
+            self.kor_c = self.kor[lewy:]
         elif lewy == None and prawy != None:
-            self.kor_c = self.kor[:prawy]
+            self.kor_c = self.kor[:prawy+1]
         """dodanie pkt tnacych do koryta"""
         self.kor_c.insert(0, [pointL[0], pointL[1]])
         self.kor_c.append([pointR[0], pointR[1]])
-        self.culvertXS = self.kor_c+rdp(self.geom, epsilon=0.2)
-        print(self.get_culver_len(),"----")
+        wydruk_test = sorted(self.geom2, key=itemgetter(-2))
+        self.culvertXS = rdp(wydruk_test, epsilon=0.0)#self.kor_c +
+        print(self.get_culver_len(),"Len----")
         try:
             print("dlugosc obiektu: ",round(self.culvert_len, 2))
         except:
             pass
-        #print("upstream z:",self.culvert_upS,"downstream z: ", self.culvert_downS)
-        #plt.plot(*zip(*self.kor), color='brown')
-        """
-        plt.plot(*zip(*self.culvertXS))
-        plt.plot(*zip(*self.deck))
-        plt.plot(pointL[0], pointL[1], 'ro')
-        plt.plot(pointR[0], pointR[1], 'bo')
-        plt.show()
-        """
+
     def excel_print(self, workbook):
         worksheet = workbook.add_worksheet(str(self.name)+str(self.lp))
         bold = workbook.add_format({'bold': 1})
