@@ -473,7 +473,7 @@ class NwkFile(object):
             print u"nie można zaimportować modułu do RDP"
             pass
 
-        self.rdpOutList = rdp(self.pointsToRdp)
+        self.rdpOutList = rdp(self.pointsToRdp, epsilon = 0.08)
         self.pointsToRemove = []
         i = 0
 
