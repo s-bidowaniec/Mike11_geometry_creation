@@ -462,6 +462,46 @@ class NwkFile(object):
 
         file.write(self.finish)
 
+    def nwk_rdp(self):
+        self.pointsToRdp = []
+        for i in self.pointList:
+            self.pointsToRdp.extend([i.x, i.y])
+
+        try:
+            from rdp import rdp
+        except:
+            print u"nie można zaimportować modułu do RDP"
+            pass
+
+        self.rdpOutList = rdp(self.pointsToRdp)
+        self.pointsToRemove = []
+        i = 0
+
+        while i < len(self.pointList):
+            usunac = True
+            for j in self.rdpOutList:
+                if i.x == j[0] and i.y == j[1]:
+                    usunac = False
+
+            if usunac:
+                self.pointsToRemove.append(i.no)
+                del self.pointList[i]
+                usunac = False
+            else:
+                i += 1
+
+        for i in self.branchList:
+            while j < range(len(i.pointList)):
+                if i.pointList[j] in self.pointsToRemove:
+                    del i.pointList[j]
+                else:
+                    i += 1
+
+
+
+
+
+
 
 
 
