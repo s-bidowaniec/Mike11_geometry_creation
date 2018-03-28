@@ -386,8 +386,8 @@ class Branch(object):
                                                       self.val2, self.val3, self.val4, self.val5))
 
         file.write("        connections = '{0}', {1}, "
-                   "'{2}', {3}\n".format(self.connectRiver, self.point,
-                                         self.connectTopoID, self.point2))
+                   "'{2}', {3}\n".format(self.connectRiver.replace("'", ""), self.point,
+                                         self.connectTopoID.replace("'",""), self.point2))
 
         file.write("        points = " + ", ".join(self.pointList)+"\n")
 
@@ -448,10 +448,11 @@ class NwkFile(object):
 
         for i in self.branchList:
             i.print_to_nwk(file)
-
+        ### wersja z istniejącymi przepustami:
+        '''
         file.write("""   EndSect  // BRANCHES\n\n   [STRUCTURE_MODULE]\n      \
         Structure_Version = 1, 1\n\n\n      [WEIR]\n""")
-
+        
         for i in self.weirList:
             i.print_to_nwk(file)
 
@@ -461,16 +462,32 @@ class NwkFile(object):
             i.print_to_nwk(file)
 
         file.write(self.finish)
+        '''
+
+        ###wersja bez przepustów:
+        file.write("""   EndSect  // BRANCHES
+        
+   [STRUCTURE_MODULE]
+      Structure_Version = 1, 1
+      [CROSSSECTIONS]
+         CrossSectionDataBridge = 'xns11'
+         CrossSectionFile = |.|
+      EndSect  // CROSSSECTIONS
+   EndSect  // STRUCTURE_MODULE
+
+EndSect  // MIKE_11_Network_editor""")
 
     def nwk_rdp(self):
+        '''
         self.pointsToRdp = []
         for i in self.pointList:
-            self.pointsToRdp.extend([i.x, i.y])
-
+            self.pointsToRdp.append([float(i.x), float(i.y)])
+        '''
+        self.pointsToRdp = [[i.x, i.y] for i in self.pointList]
         try:
             from rdp import rdp
         except:
-            print u"nie można zaimportować modułu do RDP"
+            print(u"nie można zaimportować modułu do RDP")
             pass
 
         self.rdpOutList = rdp(self.pointsToRdp, epsilon = 0.08)
@@ -480,22 +497,25 @@ class NwkFile(object):
         while i < len(self.pointList):
             usunac = True
             for j in self.rdpOutList:
-                if i.x == j[0] and i.y == j[1]:
+                if self.pointList[i].x == j[0] and self.pointList[i].y == j[1]:
                     usunac = False
 
             if usunac:
-                self.pointsToRemove.append(i.no)
+                self.pointsToRemove.append(self.pointList[i].no)
                 del self.pointList[i]
                 usunac = False
             else:
                 i += 1
 
         for i in self.branchList:
-            while j < range(len(i.pointList)):
+            j = 0
+            while j < len(i.pointList):
                 if i.pointList[j] in self.pointsToRemove:
+
                     del i.pointList[j]
                 else:
-                    i += 1
+                    j += 1
+
 
 
 

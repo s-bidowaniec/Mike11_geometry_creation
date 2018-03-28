@@ -4,11 +4,11 @@
 
 from classes import XS, Link, printowanie
 
-file = open("D:\Skrypty\Mike_NWK\linik_gen\link_gen_test_xns.txt", 'r')
+#file = open("D:\Skrypty\Mike_NWK\linik_gen\link_gen_test_xns.txt", 'r')
 
 import os
 #from classes import XS, link, printowanie
-file = open(r"D:\Skrypty\Mike_NWK\linik_gen\link_gen_test_xns.txt",'r')
+file = open(r"D:\Skrypty\Mike_NWK\Dane_przykladowe\Krynka_v2_raw.txt",'r')
 
 lines = file.readlines()
 row = 0
@@ -222,7 +222,7 @@ def line_to_list(line):
     return data_list, name
 
 
-file = open("przykladowy_NWK", 'r')
+file = open("D:\\Skrypty\\Mike_NWK\\Dane_przykladowe\\Krynka_v2.nwk11", 'r')
 readline = file.readlines()
 
 nwk = NwkFile()
@@ -352,6 +352,8 @@ for i in linki:                         #   iterowanie listy zawierającej klasy
     cl.crossSection = CrossSection(cl)
     cl = cl.crossSection
     cl.data.extend(i.cross_section)
+
+nwk.nwk_rdp()
 
 ### Drukowanie utworzonej struktury do pliku *.nwk
 file = open("wyniki_NWK.nwk11", "w")
