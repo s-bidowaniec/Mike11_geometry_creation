@@ -519,13 +519,13 @@ EndSect  // MIKE_11_Network_editor""")
     def sort_points(self):
         slownik = {}
         for j, i in enumerate(self.pointList):
-            slownik[i.no] = j
-            i.no = j
+            slownik[i.no] = j+1
+            i.no = j+1
 
         for i in self.branchList:
             for j in range(len(i.pointList)):
                 numer = i.pointList[j]
-                i.pointList[j] = slownik(numer)
+                i.pointList[j] = slownik[numer]
 
 
 
