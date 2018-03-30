@@ -354,6 +354,7 @@ for i in linki:                         #   iterowanie listy zawierającej klasy
     cl.data.extend(i.cross_section)
 
 nwk.nwk_rdp()
+nwk.sort_points()
 
 ### Drukowanie utworzonej struktury do pliku *.nwk
 file = open("wyniki_NWK.nwk11", "w")
