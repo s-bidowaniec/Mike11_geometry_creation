@@ -1,11 +1,11 @@
 
 from classes import XS, Link, printowanie
 
-file = open(r'E:\Robocze\!!python\Zlotna_161152\Mike\V0\S01_Zlotna_test_raw.txt', 'r')
+file = open("D:\Skrypty\Mike_NWK\linik_gen\link_gen_test_xns.txt", 'r')
 
 import os
-from classes import XS, link, printowanie
-file = open(r'link_gen_test_xns.txt','r')
+#from classes import XS, link, printowanie
+file = open(r"D:\Skrypty\Mike_NWK\linik_gen\link_gen_test_xns.txt",'r')
 
 lines = file.readlines()
 row = 0

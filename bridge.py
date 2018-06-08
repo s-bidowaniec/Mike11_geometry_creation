@@ -4,15 +4,17 @@ import glob
 
 from classes import XSt, Points2Line
 
-path = r"/home/ciurski/PycharmProjects/dane/rawxs/"
+path = r"Y:\ISOK_PRZEKROJE_KORYTOWE\CMPIS_WROCLAW\Rzeki_niemodelowane\Stradunia\txt"
 
-XS_txt = glob.glob(path + "*.txt")
+XS_txt = glob.glob(path + "\*.txt")
+#print(XS_txt)
 XS_base = []
 for XS_raw in XS_txt:
-    with codecs.open(XS_raw, 'r', encoding='cp1250', errors='ignore') as f:
-        # with open(XS_raw, 'r') as f:
+    #with codecs.open(XS_raw, 'r', encoding='cp1250', errors='ignore') as f:
+    with open(XS_raw, 'r') as f:
         XS_base.append(XSt(f))
-
+    f.close()
+"""
 path = r"E:\!!Modele_IsokII\Pielgrzymowka_11468\Geodezja\txt"
 
 XS_txt = glob.glob(path+"\*.txt")
@@ -21,10 +23,10 @@ for XS_raw in XS_txt:
     #with codecs.open(XS_raw, 'r', encoding='cp1250', errors='ignore') as f:
     with open(XS_raw, 'r') as f:
         XS_base.append(XS_t(f))
+"""
+    #f.close()
 
-    f.close()
-
-print(len(XS_base))
+#print(len(XS_base))
 for num in range(len(XS_base)):
 
     if "most" in XS_base[num].type:

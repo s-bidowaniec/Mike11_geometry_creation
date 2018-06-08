@@ -1,4 +1,4 @@
-import math
+import math, collections
 from operator import itemgetter
 
 import matplotlib.pyplot as plt
@@ -17,35 +17,99 @@ def get_xy_delta(self):
         y1, y2 = -2, 2
     else:
         y1, y2 = 0, 0
-    return x1, y1, x2, y2
+
+    deltaX = (x1-x2)/4
+    deltaY = (y1-y2)/4
 
 
-class XS(object):
+    return x1+deltaY, y1-deltaX, x2+deltaY, y2-deltaX
+
+class Pkt(object):
+    def __init__(self, line="0, 0, 0, <#0>"):
+        if line is str and len(line.split()) != 7:
+            print(len(line.split()))
+            print(line,'\n','-----------')
+        #self.station, self.z, self.manning.py, self.kod = zip(*line.split()[:-3])
+        self.station, self.z, self.manning, self.kod = line.split()[0], line.split()[1],line.split()[2],line.split()[3]
+        #return '{} {}'.format(self.station, self.z)
+
+class Xs(object):
     def __init__(self):
         self.dane = []
-
+        self.points=[]
+        self.cs = 0
     def kordy(self):
         self.left = self.cords.split()[1:3]
         self.right = self.cords.split()[3:5]
         elev_points = []
-        # print(len(self.dane))
+        #print(len(self.dane))
         for element in self.dane:
             try:
                 h = element.split()[1]
                 elev_points.append(h)
             except:
                 print(element)
-        # print(self.reach_code, self.km)
         self.max_left = max(elev_points[0:5])
         self.min_left = min(elev_points[0:10])
         self.mean_left = float(self.max_left) / 5
         self.max_right = max(elev_points[-5:-1])
         self.min_right = min(elev_points[-10:-1])
         self.mean_right = float(self.max_right) / 5
-
-    pass
-
-
+    def rdp_pkt(self, epsilon):
+        self.pointsRdp=[]
+        set = [[float(i.station), float(i.z)] for i in self.points]
+        set2 = rdp(set, epsilon=epsilon)
+        set3 = [i[0] for i in set2]
+        print('Redukcja RDP o {} punktów z {}, river: {} km: {}.'.format(len(set)-len(set2), len(set), self.riverCode, self.km))
+        manningOld = 0
+        for pkt in self.points:
+            if str(float(pkt.station)) in str(set3):
+                self.pointsRdp.append(pkt)
+            elif pkt.manning != manningOld or pkt.kod != '<#0>':
+                self.pointsRdp.append(pkt)
+                print('Zachowano punkt zmiany manninga z {} na {} w station: {}.'.format(manningOld, pkt.manning, pkt.station))
+            manningOld = pkt.manning
+        if len(self.pointsRdp)>3:
+            self.points = self.pointsRdp
+    def print_txt(self, file, zaok, rr):
+        #print(self.km)
+        file.write('{}\r\n'.format(self.reachCode))
+        file.write('{}\r\n'.format(self.riverCode))
+        file.write('               {}\r\n'.format(round(float(self.km), zaok)))
+        file.write('COORDINATES\r\n')
+        file.write('{}'.format(self.cords))
+        file.write('FLOW DIRECTION\r\n{}'.format(self.fd))
+        file.write('PROTECT DATA\r\n{}'.format(self.pd))
+        file.write('DATUM\r\n{}'.format(self.datum))
+        try:
+            if self.cs == 1:
+                file.write('CLOSED SECTION\r\n    {}\r\n'.format(self.cs))
+            else:
+                pass
+        except:
+            pass
+        file.write('RADIUS TYPE\r\n{}'.format(self.rt))
+        file.write('DIVIDE X-Section\r\n{}'.format(self.dx))
+        file.write('SECTION ID\r\n    {}'.format(self.id))
+        file.write('INTERPOLATED\r\n{}'.format(self.inter))
+        file.write('ANGLE\r\n{}'.format(self.angle))
+        try:
+            rr = self.rr
+        except:
+            pass
+        if rr == None:
+            file.write('RESISTANCE NUMBERS\r\n   2  1     1.000     1.000     1.000    1.000    1.000\r\n')
+        else:
+            file.write('RESISTANCE NUMBERS\r\n   2  0     1.000     1.000     1.000    1.000    1.000\r\n')
+        file.write('PROFILE        {}\r\n'.format(self.profile))
+        for pkt in self.points:
+            if rr == None:
+                file.write('  {}   {}   {}     {}     0     0.000     0\r\n'.format(pkt.station, pkt.z, pkt.manning, pkt.kod))
+            elif rr != None:
+                file.write(
+                    '  {}   {}   {}     {}     0     0.000     0\r\n'.format(pkt.station, pkt.z, float(pkt.manning)/rr, pkt.kod))
+        file.write('LEVEL PARAMS\r\n{}'.format(self.lp))
+        file.write('*******************************\r\n')
 class Link(object):
     def __init__(self, object1, object2):
         self.object1 = object1
@@ -187,13 +251,15 @@ class XSt(object):
 
             else:
 
-                self.point_data.append(Point(*line2.split('\t')))
+                self.point_data.append(Point(*line2.split('\t')[:6]))
 
                 try:
+                    #print(line2.split('\t')[0])
                     int(float(line2.split('\t')[0]))
-                    self.point_data.append(point(*line2.split('\t')[:]))
+                    self.point_data.append(Point(*line2.split('\t')[:]))
                 except:
-                    self.point_data.append(point(*line2.split('\t')[1:]))
+                    pass
+                    #self.point_data.append(Point(*line2.split('\t')[1:]))
 
         r = 0
         while sum(c.islower() for c in self.dane[r]) < 1:
@@ -210,8 +276,8 @@ class XSt(object):
             self.data = self.dane[r + 2].split(':')[1]
         else:
             print("Brak: data def", self.lp)
-        if "typ" in str.lower(self.dane[r + 3]) or "obiekt" in str.lower(self.dane[3]):
-            self.type = self.dane[r + 3].split(':')[1]
+        if "typ" in str.lower(self.dane[r + 4]) or "obiekt" in str.lower(self.dane[4]):
+            self.type = self.dane[r + 4].split(':')[1]
         else:
             print("Brak: type def", self.lp)
         if self.type == "none" or self.type == '':
@@ -303,6 +369,9 @@ class Points2Line(object):
         # def computePoints(self):
         licznik = ((self.x - self.x1) * (self.x2 - self.x1)) + ((self.y - self.y1) * (self.y2 - self.y1))
         mianownik = ((self.x1 - self.x2) ** 2) + ((self.y1 - self.y2) ** 2)
-        u = licznik / mianownik
+        try:
+            u = licznik / mianownik
+        except:
+            u = 0
         self.xp = ((self.x2 - self.x1) * u) + self.x1
         self.yp = ((self.y2 - self.y1) * u) + self.y1
