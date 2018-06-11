@@ -2,8 +2,6 @@ import glob
 from classes import XS_t, Points2Line
 import xlsxwriter
 
-
-
 path = r"C:\!!Modele ISOKII\!Etap1\BUDKOWICZANKA_V1\Geodezja\przelewy"
 
 XS_txt = glob.glob(path+"\*.txt")
