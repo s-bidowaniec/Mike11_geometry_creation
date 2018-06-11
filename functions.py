@@ -122,7 +122,15 @@ def read_XSraw(file):
             old = line
 
     return XS_dat, XsOrder
-
+def read_manning_dbf(dbf):
+    base = {}
+    for record in DBF(dbf):
+        kod = '{} {} {}'.format(record['RiverCode'], record['ReachCode'], round(float("{0:.1f}".format(record['ProfileM'])),0))
+        if kod in base.keys():
+            base[kod].dodaj(record)
+        else:
+            base[kod] = ManningXS(record)
+    return base
 # NWK functions -------------------------------------------------------------------------------------------------------
 def read_NWK(file):
 
@@ -234,7 +242,7 @@ def read_NWK(file):
 
     print("NWK zaczytane")
     return nwk
-# bridges functions --------------------------------------------------------------------------------------------------
+# BRIDGES functions --------------------------------------------------------------------------------------------------
 def read_bridge_xlsx(wb):
     bridgeXsBase = []
     for s in wb.worksheets:
