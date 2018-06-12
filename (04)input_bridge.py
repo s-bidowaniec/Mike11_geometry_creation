@@ -30,10 +30,11 @@ xsOutputDir = r"C:\!!Modele ISOKII\!Etap1\BUDKOWICZANKA_V1\Wstawianie mostów\Bu
 if xsInputDir == xsOutputDir:
     raise ValueError('XS input file equals XS output file', 'foo', 'bar', 'baz')
 fileWynikXS = open(xsOutputDir,'w')
-
-base = dbm.open('test_base', 'c')
-pickle.dump(nwk, base, protocol=None, *, fix_imports=True)
-
+"""
+base = open('Test\\test_XsRawData.pkl', 'wb')
+pickle.dump(bazaXsRawData, base, protocol=None, fix_imports=True)
+base.close()
+"""
 #-----------------------------------------------------------------------------------------------------------------
 #-----------------------------------------------------------------------------------------------------------------
 # zaczytanie obiektow z xlsx, nwk i txt raw data
