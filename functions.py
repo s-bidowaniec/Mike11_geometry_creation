@@ -131,6 +131,30 @@ def read_manning_dbf(dbf):
         else:
             base[kod] = ManningXS(record)
     return base
+def raport_XS(XS_list):
+    workbook = xlsxwriter.Workbook('raport_XS.xlsx')
+    worksheet = workbook.add_worksheet('raport_XS')
+    bold = workbook.add_format({'bold': 1})
+    headings = ['Nazwa rzeki', 'Topo ID', 'Kilometraż', 'ID Przekroju', 'Typ przekroju']  # 'Radius Type', 'Datum'
+    worksheet.write_row('A1', headings, bold)
+    i = 1
+    for XS in XS_list:
+        worksheet.write(i, 0, XS.river_code)  # row col
+        worksheet.write(i, 1, XS.reach_code)
+        worksheet.write(i, 2, XS.km)
+
+        if len(XS.id) > 2:
+            worksheet.write(i, 3, XS.id)
+        else:
+            worksheet.write(i, 3, 'Pomiar geodezyjny')
+        if XS.cs == 0:
+            worksheet.write(i, 4, 'otwarty')
+        else:
+            worksheet.write(i, 4, 'zamknięty')
+        # worksheet.write(i, 5, XS.rt)
+        # worksheet.write(i, 6, XS.datum)
+        i += 1
+    workbook.close()
 # NWK functions -------------------------------------------------------------------------------------------------------
 def read_NWK(file):
 
@@ -283,8 +307,6 @@ def line_intersection(x1, y1, x2, y2, x3, y3, x4, y4):
 
     return x, y, b, c
 
-# counts height (z) distance betwean p point and z interpolated on a-b line in p station
-
 
 # fits cross section of objkect (koryto) to regular cross section
 # xs - Xs objecty, koryto - list of list (station, elevation), przepust - list of list (station, elevation)
@@ -330,14 +352,7 @@ def fit_xs(xs1, xs2):
             delta = float(pkt[0])-float(xs2StatElev[i][0])
         dane.append(delta)
     m = np.mean(dane)
-    """
-    if flag == 0:
-        xs1StatElev = [[float(i.station)-m, i.z] for i in xs1.points]
-        xs2StatElev = [[i.station, i.z] for i in xs2.points]
-    elif flag == 2:
-        xs1StatElev = [[i.station, i.z] for i in xs1.points]
-        xs2StatElev = [[float(i.station)-m, i.z] for i in xs2.points]
-    """
+
     xs2ToFit = [[float(i.station), i.z] for i in xs2.points if float(stat)-(3*statMax-stat) < float(i.station) < float(statMax)+(3*statMax-stat)]
     #print(xs2ToFit)
     #print(stat,'--- ---')

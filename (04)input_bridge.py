@@ -1,4 +1,7 @@
 import openpyxl, time
+import dbm
+import pickle
+
 
 from functions import *
 # --------------------------------- PARAMETRY -----------------------------------------------------------------
@@ -27,6 +30,10 @@ xsOutputDir = r"C:\!!Modele ISOKII\!Etap1\BUDKOWICZANKA_V1\Wstawianie mostów\Bu
 if xsInputDir == xsOutputDir:
     raise ValueError('XS input file equals XS output file', 'foo', 'bar', 'baz')
 fileWynikXS = open(xsOutputDir,'w')
+
+base = dbm.open('test_base', 'c')
+pickle.dump(nwk, base, protocol=None, *, fix_imports=True)
+
 #-----------------------------------------------------------------------------------------------------------------
 #-----------------------------------------------------------------------------------------------------------------
 # zaczytanie obiektow z xlsx, nwk i txt raw data

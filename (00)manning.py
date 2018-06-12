@@ -1,4 +1,5 @@
-from Functions import *
+from functions import *
+
 import bisect
 # lokacja dbf z maningiem, jesli base manning none - pomija przypisanie manninga, ustawic wtedy tez rr na none
 dbf = r'D:\KORNELA\Modelowanie\1146_PIOTROWKA\02_GIS\8_INNE\szorstkość\szorsktokosc_v2\szorstkosc_v2_1.dbf'
@@ -7,7 +8,7 @@ baseManning = read_manning_dbf(dbf)   #<--- zaczytanie tabeli dbf do manninga
 # lokacja rawdata
 input = r'D:\KORNELA\Modelowanie\1146_PIOTROWKA\02_GIS\7_projekty_ArcGis\GIS2RAS_v2\Piotrowka_raw_v2_1_raw.txt'
 file = open(input, 'r')
-crossSections = read_xs_raw(file)
+crossSections = read_XSraw(file)
 # output file
 output = r'D:\KORNELA\Modelowanie\1146_PIOTROWKA\02_GIS\7_projekty_ArcGis\GIS2RAS_v2\Piotrowka_man.txt'
 f = open(output, 'w')
