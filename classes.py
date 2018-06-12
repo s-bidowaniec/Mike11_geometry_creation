@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import math, collections
 from operator import itemgetter
-from functions import *
+#from functions import *
 from rdp import rdp
 
 # UNIVERSAL -----------------------------------------------------------------------------------------------------------
@@ -544,7 +544,7 @@ class NwkFile(object):
     def values_2_string(self):
         pass
 
-    def nwk_rdp(self):
+    def nwk_rdp(self, epsilon=0.08):
         '''
         self.pointsToRdp = []
         for i in self.pointList:
@@ -557,7 +557,7 @@ class NwkFile(object):
             print(u"nie można zaimportować modułu do RDP")
             pass
 
-        self.rdpOutList = rdp(self.pointsToRdp, epsilon=0.08)
+        self.rdpOutList = rdp(self.pointsToRdp, epsilon=epsilon)
         self.pointsToRemove = []
         i = 0
 
