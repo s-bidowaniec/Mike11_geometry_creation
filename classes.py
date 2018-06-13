@@ -1,9 +1,8 @@
 # -*- coding: utf-8 -*-
 import math, collections
 from operator import itemgetter
-#from functions import *
 from rdp import rdp
-
+import time
 # UNIVERSAL -----------------------------------------------------------------------------------------------------------
 class Points2Line(object):
     """klasa zawierająca w sobie współrzędne dwóch punktów określających prostą, oraz
@@ -29,7 +28,6 @@ class Points2Line(object):
 
 # XS rawdata classes --------------------------------------------------------------------------------------------------
 
-
 class Pkt(object):
     def __init__(self, line="0, 0, 0, <#0>"):
         if line is str and len(line.split()) != 7:
@@ -38,7 +36,6 @@ class Pkt(object):
         #self.station, self.z, self.manning.py, self.kod = zip(*line.split()[:-3])
         self.station, self.z, self.manning, self.kod = line.split()[0], line.split()[1],line.split()[2],line.split()[3]
         #return '{} {}'.format(self.station, self.z)
-
 
 class Xs(object):
     def __init__(self):

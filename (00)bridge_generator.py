@@ -1,5 +1,6 @@
 import glob
-from classes import XS_t, Points2Line
+from classes import *
+#from functions import *
 import xlsxwriter
 
 path = r"K:\Wymiana danych\Staszek\KORN\budowle"
@@ -16,7 +17,7 @@ for XS_raw in XS_txt:
 workbook = xlsxwriter.Workbook(r'K:\Wymiana danych\Staszek\KORN\budowle\Swidnik_budowle.xlsx')
 for num in range(len(XS_base)):
 
-    if "przepust" in XS_base[num].type or "most" in XS_base[num].type or "cc" in XS_base[num].type:
+    if "przekrój" in XS_base[num].type or "most" in XS_base[num].type or "cc" in XS_base[num].type:
         # sprowadzenie pkt na prosta
         x1, x2, y1, y2 = (XS_base[num].get_far())
         for pkt in XS_base[num].point_data:

@@ -1,6 +1,7 @@
 import numpy as np
-from classes import *
+import collections
 import xlsxwriter
+from classes import *
 # UNIVERSAl -----------------------------------------------------------------------------------------------------------
 
 def get_xy_delta(self):
@@ -139,8 +140,8 @@ def raport_XS(XS_list, output):
     worksheet.write_row('A1', headings, bold)
     i = 1
     for XS in XS_list:
-        worksheet.write(i, 0, XS.river_code)  # row col
-        worksheet.write(i, 1, XS.reach_code)
+        worksheet.write(i, 0, XS.riverCode)  # row col
+        worksheet.write(i, 1, XS.reachCode)
         worksheet.write(i, 2, XS.km)
 
         if len(XS.id) > 2:
@@ -285,7 +286,6 @@ def distanceZ(a, b, p):
 def is_between(x1, y1, x, y, x2, y2):
     return round(distance(x1, x, y1, y)) + round(distance(x, x2, y, y2)) == round(distance(x1, x2, y1, y2))
 
-
 def line_intersection(x1, y1, x2, y2, x3, y3, x4, y4):
     line1 = [[x1, y1], [x2, y2]]
     line2 = [[x3, y3], [x4, y4]]
@@ -306,7 +306,6 @@ def line_intersection(x1, y1, x2, y2, x3, y3, x4, y4):
         c = (is_between(x1, y1, x, y, x2, y2))
 
     return x, y, b, c
-
 
 # fits cross section of objkect (koryto) to regular cross section
 # xs - Xs objecty, koryto - list of list (station, elevation), przepust - list of list (station, elevation)
