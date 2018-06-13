@@ -2,7 +2,7 @@ import glob
 from classes import XS_t, Points2Line
 import xlsxwriter
 
-path = r"C:\!!Modele ISOKII\!Etap1\BUDKOWICZANKA_V1\Geodezja\przelewy"
+path = r"K:\Wymiana danych\Staszek\KORN\budowle"
 
 XS_txt = glob.glob(path+"\*.txt")
 XS_base = []
@@ -13,7 +13,7 @@ for XS_raw in XS_txt:
     f.close()
 
 # stworzenie pliku do zapisu danych o obiektach
-workbook = xlsxwriter.Workbook('Budkowiczanka_przelewy.xlsx')
+workbook = xlsxwriter.Workbook(r'K:\Wymiana danych\Staszek\KORN\budowle\Swidnik_budowle.xlsx')
 for num in range(len(XS_base)):
 
     if "przepust" in XS_base[num].type or "most" in XS_base[num].type or "cc" in XS_base[num].type:

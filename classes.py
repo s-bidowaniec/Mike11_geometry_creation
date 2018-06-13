@@ -56,7 +56,7 @@ class Xs(object):
                 h = point.z
                 elev_points.append(h)
             except:
-                print(element)
+                print(point)
         self.max_left = max(elev_points[0:1])
         self.min_left = min(elev_points[0:3])
         self.mean_left = float(self.max_left) / 1
@@ -725,7 +725,9 @@ class XS_t(object):
                     int(float(line3[0]))
                     self.point_data.append(point(*line3[:]))
                 except:
+                    print('----')
                     print(line3)
+                    print('----')
                     self.point_data.append(point(*line3[1:]))
 
         r = 0
