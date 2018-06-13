@@ -1,6 +1,6 @@
 import numpy as np
 from classes import *
-
+import xlsxwriter
 # UNIVERSAl -----------------------------------------------------------------------------------------------------------
 
 def get_xy_delta(self):
@@ -131,8 +131,8 @@ def read_manning_dbf(dbf):
         else:
             base[kod] = ManningXS(record)
     return base
-def raport_XS(XS_list):
-    workbook = xlsxwriter.Workbook('raport_XS.xlsx')
+def raport_XS(XS_list, output):
+    workbook = xlsxwriter.Workbook(output)
     worksheet = workbook.add_worksheet('raport_XS')
     bold = workbook.add_format({'bold': 1})
     headings = ['Nazwa rzeki', 'Topo ID', 'Kilometraż', 'ID Przekroju', 'Typ przekroju']  # 'Radius Type', 'Datum'

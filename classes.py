@@ -9,7 +9,7 @@ class Points2Line(object):
     """klasa zawierająca w sobie współrzędne dwóch punktów określających prostą, oraz
     jednego punktu który będzie na nią rzutowany"""
 
-    def __init__(self, x1, y1, x2, y2, x=None, y=None):
+    def __init__(self, x1, y1, x2, y2, x = None, y = None):
         self.x1 = float(x1)
         self.y1 = float(y1)
         self.x2 = float(x2)
@@ -1075,6 +1075,7 @@ def get_xy_delta(self):
     deltaX = (x1-x2)/4
     deltaY = (y1-y2)/4
     return x1+deltaY, y1-deltaX, x2+deltaY, y2-deltaX
+
 class Link(object):
     def __init__(self, object1, object2):
         self.object1 = object1
