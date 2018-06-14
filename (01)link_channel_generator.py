@@ -3,6 +3,7 @@
 ############################################## SB ##########################################################
 from functions import *
 from classes import *
+import multiprocessing
 # plik wsadowy rawdata, pobierane sa punkty wspolne na przekrojach oraz inne dane do generacji linku
 fileWejscieXS = open(r"C:\!!Modele ISOKII\!Etap1\BUDKOWICZANKA_V1\Wstawianie mostów\Budkowiczanka_Qn.txt",'r')
 
@@ -61,7 +62,7 @@ for object1 in XS_dat:
                 linki.append(Link(object1, object2))
 licz_lin = len(linki)
 defined = 0
-# Nadanie parametrow przekroja
+# Nadanie parametrow przekroja ----------------------------------------------------------------------------------------
 # do refaktoryzacji - 4 krotne wywolanie tego samego
 for element in linki:
     if "TZ_" not in element.river1 and "TZ_" in element.river2:
@@ -96,7 +97,7 @@ for element in linki:
             element.main_km = element.object2.km
             element.topo = element.object2.reachCode
             defined += 1
-
+# # # RZĄD i NAZWA ---------------------------------------------------------------------------------------------------
 rzad = 1
 safety = 0
 while len(linki) > defined and safety < 10:
@@ -149,16 +150,20 @@ while len(linki) > defined and safety < 10:
                             element2.main_km = element.main_km
                             element2.topo = element.topo
                             element2.kolej = 2
-
     rzad += 1
     safety += 1
-
+# # # -----------------------------------------------------------------------------------------------------------------
+# przejscie na multiprocessing
+"""
 for element in linki:
     # self.definitions = ["KP_"+str(self.main_chan)+"_"+str(self.main_km)+"_"+self.main_site, self.topo,0,5,0,10000,1]
     # musi dziedziczyc razem z rzedem, narazie tylko stale domyslne
     # main_chan, main_km, main_site ---- do nazewnictwa z cieku glownego
     # topo bezposrednio z cieku glownego
     element.data_definition(minDeltaH)
+"""
+multiprocessing.Pool().map(lambda x: x.data_definition(minDeltaH), linki)
+
 linki2 = []
 for element in linki:
     if element.rzad != 0:
