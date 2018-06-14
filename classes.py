@@ -817,7 +817,7 @@ class XS_t(object):
     def get_culver_len(self):
 
         for pkt in self.point_data:
-            if "66" in pkt.kod or "7d" in pkt.kod:
+            if "66" in pkt.kod or "7d" in pkt.kod or "7" in pkt.kod:
                 print(pkt.y, pkt.xp, pkt.x, pkt.yp)
                 self.culvert_len = math.sqrt((float(pkt.y) - float(pkt.xp)) ** 2 + (float(pkt.x) - float(pkt.yp)) ** 2)
                 self.culvert_downS = pkt.z
@@ -900,7 +900,7 @@ class XS_t(object):
         self.culvert_upS = 1000
         for pkt in self.point_data:
             lista_geo = []
-            if "40" not in str(pkt.kod) and "41" not in str(pkt.kod) and "42" not in str(pkt.kod) and "66" not in str(pkt.kod) and "7d" not in str(pkt.kod) and "50" not in str(pkt.kod) and "51" not in str(pkt.kod)and "52" not in str(pkt.kod):
+            if "40" not in str(pkt.kod) and "41" not in str(pkt.kod) and "42" not in str(pkt.kod) and "66" not in str(pkt.kod) and "7d" not in str(pkt.kod) and "50" not in str(pkt.kod) and "51" not in str(pkt.kod)and "52" not in str(pkt.kod)and "7" not in str(pkt.kod):
             #if "K" in str(pkt.kod) or "T" in str(pkt.kod) or pkt.kod == None:
                 self.kor.append([float(pkt.dist), float(pkt.z)])
                 if pkt.z < self.culvert_upS:

@@ -101,6 +101,7 @@ for element in linki:
 rzad = 1
 safety = 0
 while len(linki) > defined and safety < 10:
+    # Przeniesc do funkcji i multiprocessingu
     for element in linki:
         if element.rzad == rzad:
             if element.kolej == 1:
