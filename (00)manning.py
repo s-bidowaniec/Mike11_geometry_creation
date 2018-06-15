@@ -2,15 +2,15 @@ from functions import *
 
 import bisect
 # lokacja dbf z maningiem, jesli base manning none - pomija przypisanie manninga, ustawic wtedy tez rr na none
-dbf = r'D:\KORNELA\Modelowanie\1146_PIOTROWKA\02_GIS\8_INNE\szorstkość\szorsktokosc_v2\szorstkosc_v2_1.dbf'
+dbf = r'K:\Wymiana danych\Staszek\KORN\Robocze_v1_linki_2\20180615_Manning.dbf'
 #baseManning = None   #<--- wylacza przypisanie maninga z dbf
 baseManning = read_manning_dbf(dbf)   #<--- zaczytanie tabeli dbf do manninga
 # lokacja rawdata
-input = r'D:\KORNELA\Modelowanie\1146_PIOTROWKA\02_GIS\7_projekty_ArcGis\GIS2RAS_v2\Piotrowka_raw_v2_1_raw.txt'
+input = r'K:\Wymiana danych\Staszek\KORN\Robocze_v1_linki_2\Swidnik_4_raw.txt'
 file = open(input, 'r')
-crossSections = read_XSraw(file)
+crossSections, order = read_XSraw(file)
 # output file
-output = r'D:\KORNELA\Modelowanie\1146_PIOTROWKA\02_GIS\7_projekty_ArcGis\GIS2RAS_v2\Piotrowka_man.txt'
+output = r'K:\Wymiana danych\Staszek\KORN\Robocze_v1_linki_2\Swidnik_4_man.txt'
 f = open(output, 'w')
 # epsilon to parametr algorytmu rdp od usuwania punktow(im wyższy tym więcej usuwa), ustawiony na None pomija funkcję
 epsilon = 0.04

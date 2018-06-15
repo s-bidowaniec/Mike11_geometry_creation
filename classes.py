@@ -117,6 +117,21 @@ class Xs(object):
         file.write('LEVEL PARAMS\r\n{}'.format(self.lp))
         file.write('*******************************\r\n')
 
+class PktN(object):
+    def __init__(self, record):
+        self.station = record['Fraction']*record['Shape_Leng']
+        self.manning = round(record['N_Value'], 4)
+
+class ManningXS(object):
+    def __init__(self, record):
+        self.punkty = collections.OrderedDict()
+        self.riverCode, self.reachCode, self.km = record['RiverCode'], record['ReachCode'], record['ProfileM']
+        station = record['Fraction'] * record['Shape_Leng']
+        self.punkty[station] = PktN(record)
+        self.typXS = str(record['TypXS'])+"\n"
+    def dodaj(self, record):
+        station = record['Fraction'] * record['Shape_Leng']
+        self.punkty[station]=PktN(record)
 # NWK ------------------------------------------------------------------------------------------------------------------
 class NwkPoint(object):
     def __init__(self, no, x, y, val1, val2, val3, z=None):
