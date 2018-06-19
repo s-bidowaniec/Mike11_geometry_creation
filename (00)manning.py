@@ -2,24 +2,24 @@ from functions import *
 import pdb
 import bisect
 # lokacja dbf z maningiem, jesli base manning none - pomija przypisanie manninga, ustawic wtedy tez rr na none
-dbf = r'K:\Wymiana danych\Staszek\Ymitr\Stradunia\maningi.dbf'
+dbf = r'C:\!!Modele ISOKII\!Etap1\161152_ZLOTNA\manning_koryto\manning_koryto2.dbf'
 #baseManning = None   #<--- wylacza przypisanie maninga z dbf
 baseManning = read_manning_dbf(dbf)   #<--- zaczytanie tabeli dbf do manninga
 # lokacja rawdata
-input = r'K:\Wymiana danych\Staszek\Ymitr\Stradunia\raw_data.txt'
+input = r'C:\!!Modele ISOKII\!Etap1\161152_ZLOTNA\manning_koryto\zlotna do manninga.txt'
 file = open(input, 'r')
 crossSections, order = read_XSraw(file)
 # output file
-output = r'K:\Wymiana danych\Staszek\Ymitr\Stradunia\manning_data.txt'
+output = r'C:\!!Modele ISOKII\!Etap1\161152_ZLOTNA\manning_koryto\zlotna z manningiem.txt'
 f = open(output, 'w')
 # epsilon to parametr algorytmu rdp od usuwania punktow(im wyższy tym więcej usuwa), ustawiony na None pomija funkcję
-epsilon = 0.04
+epsilon = None
 # zaokraglenie km przekroi(podać ilość miejsc po przecinku, lub None - pominięcie
 zaok = 0
 # bazowa wartosc manninga do relative resistance(distibutet, relative resistance) None - wartosci normalne (distributet, manning's n)
 rr = None
 # przypisanie typu przekroju w polu id, dziala jesli typXS równy True
-typXS = True
+typXS = False
 if input == output:
     raise 'Error'
 # --------------------------------------------------------------------------------------------------------------------- #
@@ -39,7 +39,7 @@ for element in crossSections:
         key3 = '{} {} {}'.format(str(element.riverCode).title(), element.reachCode, round(float("{0:.1"
                                                                                    "f}".format(element.km)),0)-1)
         
-        
+
         if key1 in baseManning.keys():
             manningDats = baseManning[key1]
 

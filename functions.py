@@ -127,7 +127,7 @@ def read_XSraw(file):
 def read_manning_dbf(dbf):
     base = {}
     for record in DBF(dbf):
-        kod = '{} {} {}'.format(record['RiverCode'], record['ReachCode'], round(float("{0:.1f}".format(record['ProfileM'])),0))
+        kod = '{} {} {}'.format(str(record['RiverCode']).title(), record['ReachCode'], round(float("{0:.1f}".format(record['ProfileM'])),0))
         if kod in base.keys():
             base[kod].dodaj(record)
         else:
