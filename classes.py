@@ -3,6 +3,25 @@ import math, collections
 from operator import itemgetter
 from rdp import rdp
 import time
+# clas func
+def distance(x1, x2, y1, y2):
+    try:
+        return math.sqrt((x1 - x2) ** 2 + (y1 - y2) ** 2)
+    except:
+        return 0
+# counts height (z) distance betwean p point and z interpolated on a-b line in p station
+def distanceZ(a, b, p):
+    return p[1] - np.interp([p[0]], [a[0], b[0]], [a[1], b[1]])
+
+def is_between(x1, y1, x, y, x2, y2):
+    return round(distance(x1, x, y1, y)) + round(distance(x, x2, y, y2)) == round(distance(x1, x2, y1, y2))
+
+def line_intersection(x1, y1, x2, y2, x3, y3, x4, y4):
+    line1 = [[x1, y1], [x2, y2]]
+    line2 = [[x3, y3], [x4, y4]]
+    xdiff = (line1[0][0] - line1[1][0], line2[0][0] - line2[1][0])
+    ydiff = (line1[0][1] - line1[1][1], line2[0][1] - line2[1][1])
+
 # UNIVERSAL -----------------------------------------------------------------------------------------------------------
 class Points2Line(object):
     """klasa zawierająca w sobie współrzędne dwóch punktów określających prostą, oraz

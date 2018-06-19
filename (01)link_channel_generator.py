@@ -70,6 +70,8 @@ for element in linki:
         element.rzad = 1
         element.kolej = 1
         element.main_chan = str.upper(element.object1.riverCode[:3])
+        # switch
+        element.object1.len, element.object2.len = element.object2.len, element.object1.len
         element.main_km = element.object1.km
         element.topo = element.object1.reachCode
         defined += 1
@@ -87,6 +89,8 @@ for element in linki:
             element.rzad = 1
             element.kolej = 1
             element.main_chan = str.upper(element.object1.riverCode[:3])
+            #switch
+            element.object1.len, element.object2.len = element.object2.len, element.object1.len
             element.main_km = element.object1.km
             element.topo = element.object1.reachCode
             defined += 1
