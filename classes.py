@@ -128,11 +128,13 @@ class Xs(object):
             file.write('RESISTANCE NUMBERS\r\n   2  0     1.000     1.000     1.000    1.000    1.000\r\n')
         file.write('PROFILE        {}\r\n'.format(self.profile))
         for pkt in self.points:
-            if rr == None:
-                file.write('  {}   {}   {}     {}     0     0.000     0\r\n'.format(pkt.station, pkt.z, pkt.manning, pkt.kod))
+            #if rr == None:
+            file.write('  {}   {}   {}     {}     0     0.000     0\r\n'.format(pkt.station, pkt.z, pkt.manning, pkt.kod))
+            """
             elif rr != None:
                 file.write(
                     '  {}   {}   {}     {}     0     0.000     0\r\n'.format(pkt.station, pkt.z, float(pkt.manning)/rr, pkt.kod))
+            """
         file.write('LEVEL PARAMS\r\n{}'.format(self.lp))
         file.write('*******************************\r\n')
 

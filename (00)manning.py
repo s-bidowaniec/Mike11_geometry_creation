@@ -17,7 +17,7 @@ epsilon = None
 # zaokraglenie km przekroi(podać ilość miejsc po przecinku, lub None - pominięcie
 zaok = 0
 # bazowa wartosc manninga do relative resistance(distibutet, relative resistance) None - wartosci normalne (distributet, manning's n)
-rr = None
+rr = 0.04
 # przypisanie typu przekroju w polu id, dziala jesli typXS równy True
 typXS = False
 if input == output:
@@ -66,12 +66,20 @@ for element in crossSections:
                 if stat2 > stat:
                     if stat == 0:
                         key = list(manningDats.punkty.keys())[0]
-                        point.manning = manningDats.punkty[key].manning
+                        if rr != None:
+                            point.manning = (manningDats.punkty[key].manning)/rr
+                            #pdb.set_trace()
+                        elif rr == None:
+                            point.manning = manningDats.punkty[key].manning
                     else:
                         print('Warning; przypisano manning od prawej zamiast od lewej. Klucz: {}; station: {}'.format(key1, key))
                         print(stat2, stat)
                 else:
-                    point.manning = manningDats.punkty[key].manning
+                    if rr != None:
+                        point.manning = (manningDats.punkty[key].manning) / rr
+                        # pdb.set_trace()
+                    elif rr == None:
+                        point.manning = manningDats.punkty[key].manning
         else:
             print('Warning; nie odnaleziono zgodnosci kluczy pomiedzy raw data(txt) a manning(dbf). Klucz: {}'.format(key2))
     else:
