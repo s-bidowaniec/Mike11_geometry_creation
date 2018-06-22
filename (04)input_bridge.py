@@ -19,6 +19,7 @@ nwk = read_NWK(fileWejscieNWK)
 # plik z mostami
 wb = openpyxl.load_workbook(r'C:\!!Modele ISOKII\!Etap1\BUDKOWICZANKA_V1\Wstawianie mostów\Kopia pliku Budkowiczanka_mosty2.xlsx')
 bridges = read_bridge_xlsx(wb)
+base_manning = 0.04
 # --------------------------------- PLIKI WYNIKOWE -----------------------------------------------------------
 # nowy plik NWK z naniesionymi mostasmi
 nwkOutDir = r"C:\!!Modele ISOKII\!Etap1\BUDKOWICZANKA_V1\Wstawianie mostów\BUDKOWICZANKA_S01_Qn_bridgeTest2.nwk11"
@@ -171,7 +172,7 @@ for bridge in bridges:
     print(xsUp2.points[0].z, "z2")
 
 
-    xsDown, xsUp, bridgeShift = fit_bridge(xsDown2, xsUp2, bridge.koryto, bridge.przepust, bridge.downS, bridge.upS)
+    xsDown, xsUp, bridgeShift = fit_bridge(xsDown2, xsUp2, bridge, base_manning=base_manning)
     print(xsUp.points[0].station, "stat3")
     print(xsUp.points[0].z, "z3")
     # wbicie koryta na xs
@@ -201,7 +202,7 @@ for bridge in bridges:
     XsOrder['{} {}'.format(str.lower(bridge.rzeka).replace(' ', ''), bridge.km)].rr = None
     XsOrder['{} {}'.format(str.lower(bridge.rzeka).replace(' ', ''), bridge.km)].profile = str(len(bridge.przepust))  # profile
     for pkt in bridge.przepust:
-        XsOrder['{} {}'.format(str.lower(bridge.rzeka).replace(' ', ''), bridge.km)].points.append(Pkt('    {}   {}     0.030     <#0>     0     0.000     0'.format(pkt[0]+bridgeShift,pkt[1])))
+        XsOrder['{} {}'.format(str.lower(bridge.rzeka).replace(' ', ''), bridge.km)].points.append(Pkt('    {}   {}     {}     <#0>     0     0.000     0'.format(pkt[0]+bridgeShift,pkt[1], bridge.mann)))
     XsOrder['{} {}'.format(str.lower(bridge.rzeka).replace(' ', ''), bridge.km)].lp = '   1  0    0.000  0    0.000  250\n'  # level params
 
     # ---- END XS -----

@@ -372,7 +372,8 @@ def fit_xs(xs1, xs2):
     elif flag == 2:
         return xs2, xs1
 
-def fit_bridge(xs, xsUp2, koryto, przepust, downS, upS):
+def fit_bridge(xs, xsUp2, bridge, base_manning=0.04):
+    koryto, przepust, downS, upS = bridge.koryto, bridge.przepust, bridge.downS, bridge.upS
     print(koryto, "koryto")
     minKor = min([i[1] for i in koryto])
     maxKor = max([i[1] for i in koryto])
@@ -463,9 +464,13 @@ def fit_bridge(xs, xsUp2, koryto, przepust, downS, upS):
         # tutaj zmienic zakres jesli wewnatrz
 
         # dla punktow koryta w obrebie przepustu
+
         if przepMin < float(element[0]) < przepMax:
             #tworzy linnie do dodania punktu
-            line = '{} {} {} {}'.format(element[0], element[1]-0.1-float(downS), 0.03, 'P1')
+            if int(xs.rn.split()[1]) == 1:
+                line = '{} {} {} {}'.format(element[0], element[1]-0.1-float(downS), bridge.mann, 'P1')
+            else:
+                line = '{} {} {} {}'.format(element[0], element[1] - 0.1 - float(downS), bridge.mann/base_manning, 'P1')
             #dodawanie w miejscu stalego indexu, ma zachowac kolejnosc punktow a nie po station
             print(float(element[0])," float element od 0")
             print(xs.km)
@@ -494,7 +499,10 @@ def fit_bridge(xs, xsUp2, koryto, przepust, downS, upS):
                 xs.points.insert(indesXsPk1, Pkt(line))
                 pass
             # insert in proper place second XS
-            line = '{} {} {} {}'.format(element[0], element[1] - 0.1 - float(upS), 0.03, 'P1')
+            if int(xsUp2.rn.split()[1]) == 1:
+                line = '{} {} {} {}'.format(element[0], element[1] - 0.1 - float(upS), bridge.mann, 'P1')
+            else:
+                line = '{} {} {} {}'.format(element[0], element[1] - 0.1 - float(upS), bridge.mann/base_manning, 'P1')
             if flagP == 0:
                 indesXsPk = min([float(poi.station) for poi in xsUp2.points if float(poi.station) >= float(element[0])])
                 for items in xsUp2.points:
