@@ -159,15 +159,15 @@ while len(linki) > defined and safety < 10:
     safety += 1
 # # # -----------------------------------------------------------------------------------------------------------------
 # przejscie na multiprocessing
-"""
+
 for element in linki:
     # self.definitions = ["KP_"+str(self.main_chan)+"_"+str(self.main_km)+"_"+self.main_site, self.topo,0,5,0,10000,1]
     # musi dziedziczyc razem z rzedem, narazie tylko stale domyslne
     # main_chan, main_km, main_site ---- do nazewnictwa z cieku glownego
     # topo bezposrednio z cieku glownego
     element.data_definition(minDeltaH)
-"""
-multiprocessing.Pool().map(lambda x: x.data_definition(minDeltaH), linki)
+
+#multiprocessing.Pool().map(lambda x: x.data_definition(minDeltaH), linki)
 
 linki2 = []
 for element in linki:

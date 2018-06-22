@@ -113,9 +113,13 @@ for bridge in bridges:
     cl = cl.reservoir
     cl.elevation = Elevation(cl)
     # PRZYPISANIE DANYCH PODSTAWOWYCH
+    weirID = str.upper(bridge.rzeka[0:3]) + "_M-" + str(bridge.lp).replace(' ', '') + "_W1"
+    location = [str(bridge.rzeka).replace(' ', ''), str(bridge.km).replace(' ', ''), weirID,
+                str(bridge.topoID).replace(' ', '')]
+
     nwk.weirList[-1].riverName = bridge.rzeka
     nwk.weirList[-1].km = bridge.km
-    nwk.weirList[-1].ID = bridge.lp
+    nwk.weirList[-1].ID = weirID
     nwk.weirList[-1].topoID = bridge.topoID
     print(bridge.km)
     print(bridge.rzeka)
@@ -124,9 +128,7 @@ for bridge in bridges:
     nwk.weirList[-1].weirParams['HorizOffset'] = '0'
     nwk.weirList[-1].weirParams['Attributes'] = attributes
 
-    weirID = str.upper(bridge.rzeka[0:3]) + "_M-" + str(bridge.lp).replace(' ', '') + "_W1"
-    location = [str(bridge.rzeka).replace(' ', ''), str(bridge.km).replace(' ', ''), weirID,
-                                       str(bridge.topoID).replace(' ', '')]
+
     #nwk.weirList[-1].weirParams['Location'] = location
     nwk.weirList[-1].weirParams['HeadLossFactors'] = [0.0, 0, 1, 0.0, 0, 1] # ?
     nwk.weirList[-1].weirParams['WeirFormulaParam'] = [1, 1, 1.838, 1.5, 1]  # ?
