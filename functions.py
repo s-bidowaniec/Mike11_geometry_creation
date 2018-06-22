@@ -314,10 +314,11 @@ def dopasowanie(xs, koryto, przepust = None):
     #--- metoda marker
     if przepust != None:
         xsMarkStatElev = [float(i.station) for i in xs.points if i.kod == '<#8>' or i.kod == '<#16>' or i.kod == '<#20>' or i.kod == '<#9>']
-        xsMark = sum(xsMarkStatElev)/len(xsMarkStatElev)
+
+        xsMark = sum(xsMarkStatElev) / len(xsMarkStatElev)
         maxPrzepStat = max(float(i[0]) for i in przepust)
         minPrzepStat = min(float(i[0]) for i in przepust)
-        przepMark = (maxPrzepStat-minPrzepStat)/2
+        przepMark = (maxPrzepStat-minPrzepStat) / 2
         deltaPrzep = xsMark-przepMark
     return 0, deltaPrzep
 
@@ -340,20 +341,20 @@ def fit_xs(xs1, xs2):
         xs1, xs2 = xs2, xs1
         flag = 2 # xs2 jest wieksze i zamiana miejsc
 
-    stat = min([xs2StatElev[-1][0], xs2StatElev[0][0]])
-    statMax = max([xs2StatElev[-1][0], xs2StatElev[0][0]])
+    #stat = min([xs2StatElev[-1][0], xs2StatElev[0][0]])
+    #statMax = max([xs2StatElev[-1][0], xs2StatElev[0][0]])
 
     # obliczenie sredniego przesuniecia markerow
     #if xs2StatElevAll[-1][0]-xs2StatElevAll[0][0] <= xs1StatElevAll[-1][0]-xs1StatElevAll[0][0]:
     i = 0
-    dane=[]
+    dane = []
     for pkt in xs1StatElev:
         if pkt[2] == xs2StatElev[i][2]:
             delta = float(pkt[0])-float(xs2StatElev[i][0])
         dane.append(delta)
     m = np.mean(dane)
 
-    xs2ToFit = [[float(i.station), i.z] for i in xs2.points if float(stat)-(3*statMax-stat) < float(i.station) < float(statMax)+(3*statMax-stat)]
+    #xs2ToFit = [[float(i.station), i.z] for i in xs2.points if float(stat)-(3*statMax-stat) < float(i.station) < float(statMax)+(3*statMax-stat)]
     #print(xs2ToFit)
     #print(stat,'--- ---')
     #dop, przes = dopasowanie(xs1,xs2ToFit)
@@ -441,26 +442,26 @@ def fit_bridge(xs, xsUp2, koryto, przepust, downS, upS):
     for pkt in xsUp2.points:
         if przepMin-0.2 <= float(pkt.station) <= przepMax+0.2:
             # get previous and next koryto points
-            #list.append(pkt)
+            # list.append(pkt)
             pass
 
         elif pkt.station in statList:
             index = statList.index(pkt.station)
-            z=statElevList[index][1]
-            if abs(float(z)-float(pkt.z)) > 0.05:
+            z = statElevList[index][1]
+            if abs(float(z) - float(pkt.z)) > 0.05:
                 list.append(pkt)
-
-
         else:
             list.append(pkt)
 
         statList.append(pkt.station)
         statElevList.append([pkt.station, pkt.z])
-    xsUp2.points=list
+    xsUp2.points = list
 
     # dodanie punktow z koryta w obrebie culvert na przekroje (oba)
     flagP = 0
     for element in koryto:
+        # tutaj zmienic zakres jesli wewnatrz
+
         # dla punktow koryta w obrebie przepustu
         if przepMin < float(element[0]) < przepMax:
             #tworzy linnie do dodania punktu

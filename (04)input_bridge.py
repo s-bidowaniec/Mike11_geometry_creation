@@ -9,7 +9,7 @@ from functions import *
 spadMin = 0
 # -------------------------------- PLIKI WSADOWE --------------------------------------------------------------
 # plik wsadowy rawdata, pobierane sa punkty wspolne na przekrojach oraz inne dane do generacji linku
-xsInputDir = r"C:\!!Modele ISOKII\!Etap1\BUDKOWICZANKA_V1\Wstawianie mostów\Budkowiczanka_Qn.txt"
+xsInputDir = r"C:\!!Modele ISOKII\!Etap1\BUDKOWICZANKA_V1\Wstawianie mostów\Budkowiczanka_Qn22.06.txt"
 fileWejscieXS = open(xsInputDir,'r')
 bazaXsRawData, XsOrder = read_XSraw(fileWejscieXS)
 # plik wsadowy nwk, pobierana jest lista punktow oraz branchy do ktorych dopisywane sa dane z nowych linkow
@@ -153,7 +153,8 @@ for bridge in bridges:
         print("Zastapiono przekroj; {} {}".format(str.lower(bridge.rzeka), round(float(bridge.km))))
         del bazaXsRawData[set.index(dodawany)]
     # --- End XS conflict detection ---
-    # --- Dopasowanie przekroi ---
+
+    # --- DOPASOWANIE PRZEKROI -----------------------------------------------------------------------------------
     # -- Wybranie xs sasiednich --
     setKm = [float(i[1]) for i in set if i[0] == str.lower(bridge.rzeka).replace(' ', '')]
     setKm.sort()
@@ -177,7 +178,7 @@ for bridge in bridges:
     XsOrder['{} {}'.format(str.lower(bridge.rzeka).replace(' ', ''), kmUp)] = xsUp
     XsOrder['{} {}'.format(str.lower(bridge.rzeka).replace(' ', ''), kmDown)] = xsDown
     # shift bridge
-    nwk.culvertList[-1].culvertParams['HorizOffset'] = [bridgeShift]
+    nwk.culvertList[-1].culvertParams['HorizOffset'] = [0]
     # --- Przekroje dopasowane ---
     XsOrder['{} {}'.format(str.lower(bridge.rzeka).replace(' ', ''), kmUp)] = xsUp
     #bazaXsRawData.append(Xs())
@@ -200,7 +201,7 @@ for bridge in bridges:
     XsOrder['{} {}'.format(str.lower(bridge.rzeka).replace(' ', ''), bridge.km)].rr = None
     XsOrder['{} {}'.format(str.lower(bridge.rzeka).replace(' ', ''), bridge.km)].profile = str(len(bridge.przepust))  # profile
     for pkt in bridge.przepust:
-        XsOrder['{} {}'.format(str.lower(bridge.rzeka).replace(' ', ''), bridge.km)].points.append(Pkt('    {}   {}     0.030     <#0>     0     0.000     0'.format(pkt[0],pkt[1])))
+        XsOrder['{} {}'.format(str.lower(bridge.rzeka).replace(' ', ''), bridge.km)].points.append(Pkt('    {}   {}     0.030     <#0>     0     0.000     0'.format(pkt[0]+bridgeShift,pkt[1])))
     XsOrder['{} {}'.format(str.lower(bridge.rzeka).replace(' ', ''), bridge.km)].lp = '   1  0    0.000  0    0.000  250\n'  # level params
 
     # ---- END XS -----
