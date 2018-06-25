@@ -403,10 +403,41 @@ def fit_bridge(xs, xsUp2, bridge, base_manning=0.04):
     # przesuniecie calego koryta o delta stat
     for element in koryto:
         element[0] = element[0]+deltaStatBridge
-    przepMin = min([i[0] for i in przepust])+deltaStatBridge
-    przepMax = max([i[0] for i in przepust])+deltaStatBridge
+    przepMin = min([i[0] for i in przepust]) + deltaStatBridge
+    przepMax = max([i[0] for i in przepust]) + deltaStatBridge
     korytoPrzep=[]
-    # append culvert points to xs
+    # append river points to xs if xs is to short
+    import copy
+    xs_appending = copy.deepcopy(xs)
+    xsUp2_appending = copy.deepcopy(xsUp2)
+    insert_index1 = 0
+    insert_index2 = 0
+    for element in koryto:
+        # tutaj zmienic zakres jesli wewnatrz
+        index_1 = [float(poi.station) for poi in xs_appending.points if float(poi.station) > float(element[0])]
+        index_1b = [float(poi.station) for poi in xs_appending.points if float(poi.station) < float(element[0])]
+        if len(index_1) == 0 or len(index_1b) == 0:
+            if int(xs.rn.split()[1]) == 1:
+                line = '{} {} {} {}'.format(element[0], element[1]-0.1-float(downS), bridge.mann, 'P1')
+            else:
+                line = '{} {} {} {}'.format(element[0], element[1] - 0.1 - float(downS), bridge.mann/base_manning, 'P1')
+            if len(index_1) == 0:
+                xs.points.append(Pkt(line))
+            elif len(index_1b) == 0:
+                xs.points.insert(insert_index1, Pkt(line))
+                insert_index1 += 1
+
+        index_2 = [float(poi.station) for poi in xsUp2_appending.points if float(poi.station) > float(element[0])]
+        index_2b = [float(poi.station) for poi in xsUp2_appending.points if float(poi.station) < float(element[0])]
+        if len(index_2) == 0 or len(index_2b) == 0:
+            if int(xsUp2.rn.split()[1]) == 1:
+                line = '{} {} {} {}'.format(element[0], element[1] - 0.1 - float(upS), bridge.mann, 'P1')
+            else:
+                line = '{} {} {} {}'.format(element[0], element[1] - 0.1 - float(upS), bridge.mann/base_manning, 'P1')
+            if len(index_2) == 0:
+                xsUp2.points.append(Pkt(line))
+            elif len(index_2b) == 0:
+                xsUp2.points.insert(insert_index2, Pkt(line))
 
 
     # usuniecie z przekroju punktow w obrebie przepustu, oraz powielajacych sie
@@ -416,7 +447,7 @@ def fit_bridge(xs, xsUp2, bridge, base_manning=0.04):
     print("----------")
     for pkt in xs.points:
         # jesli w tym zakresie to pomijamy, else dodaje do nowej listy
-        if przepMin-0.2 <= float(pkt.station) <= przepMax+0.2:
+        if przepMin+0.1 < float(pkt.station) < przepMax-0.1:
             # get previous and next koryto points
             #list.append(pkt)
             pass
@@ -429,7 +460,6 @@ def fit_bridge(xs, xsUp2, bridge, base_manning=0.04):
 
         # else dodaje punkt
         else:
-
             list.append(pkt)
         # uzupelnienie list ze stattion do sprawdzenia
         statList.append(pkt.station)
@@ -441,15 +471,14 @@ def fit_bridge(xs, xsUp2, bridge, base_manning=0.04):
     statList=[]
     statElevList=[]
     for pkt in xsUp2.points:
-        if przepMin-0.2 <= float(pkt.station) <= przepMax+0.2:
-            # get previous and next koryto points
-            # list.append(pkt)
+        if przepMin-0.1 < float(pkt.station) < przepMax+0.1:
+
             pass
 
         elif pkt.station in statList:
             index = statList.index(pkt.station)
             z = statElevList[index][1]
-            if abs(float(z) - float(pkt.z)) > 0.05:
+            if abs(float(z) - float(pkt.z)) > 0.01:
                 list.append(pkt)
         else:
             list.append(pkt)
@@ -459,9 +488,11 @@ def fit_bridge(xs, xsUp2, bridge, base_manning=0.04):
     xsUp2.points = list
 
     # dodanie punktow z koryta w obrebie culvert na przekroje (oba)
+
+
     flagP = 0
     for element in koryto:
-        # tutaj zmienic zakres jesli wewnatrz
+
 
         # dla punktow koryta w obrebie przepustu
 
@@ -472,7 +503,7 @@ def fit_bridge(xs, xsUp2, bridge, base_manning=0.04):
             else:
                 line = '{} {} {} {}'.format(element[0], element[1] - 0.1 - float(downS), bridge.mann/base_manning, 'P1')
             #dodawanie w miejscu stalego indexu, ma zachowac kolejnosc punktow a nie po station
-            print(float(element[0])," float element od 0")
+            print(float(element[0]), " float element od 0")
             print(xs.km)
             print([float(poi.station) for poi in xs.points])
             if flagP == 0:
@@ -492,7 +523,7 @@ def fit_bridge(xs, xsUp2, bridge, base_manning=0.04):
             indesXsPkz = xs.points.index(punkt)
             z1 = xs.points[indesXsPkz-1]
             z2 = xs.points[indesXsPkz]
-            d = distanceZ([float(z1.station), float(z1.z)],[float(z2.station), float(z2.z)],[float(element[0]),float(element[1])])
+            d = distanceZ([float(z1.station), float(z1.z)], [float(z2.station), float(z2.z)], [float(element[0]), float(element[1])])
             #d = float(element[1]) - min([float(z1.z), float(z2.z)])
             print(indesXsPk1, "index")
             if d != 0.0:
@@ -519,12 +550,19 @@ def fit_bridge(xs, xsUp2, bridge, base_manning=0.04):
             indesXsPkz = xsUp2.points.index(punkt)
             z1 = xsUp2.points[indesXsPkz-1]
             z2 = xsUp2.points[indesXsPkz]
-            d = distanceZ([float(z1.station), float(z1.z)], [float(z2.station), float(z2.z)],[float(element[0]), float(element[1])])
+            d = distanceZ([float(z1.station), float(z1.z)], [float(z2.station), float(z2.z)], [float(element[0]), float(element[1])])
             #d = float(element[1]) - min([float(z1.z), float(z2.z)])
             if d != 0.0:
                 xsUp2.points.insert(indesXsPk, Pkt(line))
                 pass
             print(przepMin, przepMax)
             flagP = 1
+    min_xs_stat = min([float(poi.station) for poi in xs.points])
+    max_xs_stat = max([float(poi.station) for poi in xs.points])
+    min_xsUp_stat = min([float(poi.station) for poi in xsUp2.points])
+    max_xsUp_stat = max([float(poi.station) for poi in xsUp2.points])
+    delta_xs = abs(min_xs_stat - max_xs_stat)
+    delta_xsUp = abs(min_xsUp_stat-max_xsUp_stat)
+    bridge.weir_width = min(delta_xs, delta_xsUp)
     print(przes+startStat," bridge shift")
     return xs, xsUp2, deltaStatBridge

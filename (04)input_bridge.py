@@ -13,7 +13,7 @@ xsInputDir = r"C:\!!Modele ISOKII\!Etap1\BUDKOWICZANKA_V1\Wstawianie mostów\Bud
 fileWejscieXS = open(xsInputDir,'r')
 bazaXsRawData, XsOrder = read_XSraw(fileWejscieXS)
 # plik wsadowy nwk, pobierana jest lista punktow oraz branchy do ktorych dopisywane sa dane z nowych linkow
-nwkInputDir = r"C:\!!Modele ISOKII\!Etap1\BUDKOWICZANKA_V1\Wstawianie mostów\BUDKOWICZANKA_S01_Qn.nwk11"
+nwkInputDir = r"C:\!!Modele ISOKII\!Etap1\BUDKOWICZANKA_V1\v3_25.06\BUDKOWICZANKA_S01_Qn_bridge_clipped.nwk11"
 fileWejscieNWK = open(nwkInputDir, 'r')
 nwk = read_NWK(fileWejscieNWK)
 # plik z mostami
@@ -22,12 +22,12 @@ bridges = read_bridge_xlsx(wb)
 base_manning = 0.04
 # --------------------------------- PLIKI WYNIKOWE -----------------------------------------------------------
 # nowy plik NWK z naniesionymi mostasmi
-nwkOutDir = r"C:\!!Modele ISOKII\!Etap1\BUDKOWICZANKA_V1\Wstawianie mostów\BUDKOWICZANKA_S01_Qn_bridgeTest2.nwk11"
+nwkOutDir = r"C:\!!Modele ISOKII\!Etap1\BUDKOWICZANKA_V1\v3_25.06\BUDKOWICZANKA_S01_Qn_bridgeV3.nwk11"
 if nwkOutDir == nwkInputDir:
     raise ValueError('NWK input file equals NWK output file', 'foo', 'bar', 'baz')
 fileWynikNWK = open(nwkOutDir, "w")
 # nowy plik XSrawData z naniesionymi mostasmi
-xsOutputDir = r"C:\!!Modele ISOKII\!Etap1\BUDKOWICZANKA_V1\Wstawianie mostów\Budkowiczanka_Qn_bridgeTest2.txt"
+xsOutputDir = r"C:\!!Modele ISOKII\!Etap1\BUDKOWICZANKA_V1\v3_25.06\Budkowiczanka_Qn_bridgeV3.txt"
 if xsInputDir == xsOutputDir:
     raise ValueError('XS input file equals XS output file', 'foo', 'bar', 'baz')
 fileWynikXS = open(xsOutputDir,'w')
@@ -94,60 +94,7 @@ for bridge in bridges:
     nwk.culvertList[-1].reservoir.data['CoordXY'] = [0]
     nwk.culvertList[-1].reservoir.data['InitialArea'] = [0]
     # ---- END CULVERT -----
-    # ---- WEIR -----
-    # --- conflict detection ---
-    set = [[str.lower(i.riverName).replace(' ', ''), round(float(i.km))] for i in nwk.weirList]
-    dodawany = [str.lower(bridge.rzeka).replace(' ', ''), round(float(bridge.km))]
-    if dodawany in set:
-        print("Zastapiono weir; {} {}".format(str.lower(bridge.rzeka), round(float(bridge.km))))
-        del nwk.weirList[set.index(dodawany)]
-    # --- end of conflict detection ---
-    # GENERACJA PUSTEGO WEIR
-    nwk.weirList.append(Weir())
-    cl = nwk.weirList[-1]
-    cl.geometry = Geometry(cl)
-    cl = cl.geometry
-    cl.levelWidth = LevelWidth(cl)
-    cl = nwk.weirList[-1]
-    cl.reservoir = ReservoirData(cl)
-    cl = cl.reservoir
-    cl.elevation = Elevation(cl)
-    # PRZYPISANIE DANYCH PODSTAWOWYCH
-    weirID = str.upper(bridge.rzeka[0:3]) + "_M-" + str(bridge.lp).replace(' ', '') + "_W1"
-    location = [str(bridge.rzeka).replace(' ', ''), str(bridge.km).replace(' ', ''), weirID,
-                str(bridge.topoID).replace(' ', '')]
 
-    nwk.weirList[-1].riverName = bridge.rzeka
-    nwk.weirList[-1].km = bridge.km
-    nwk.weirList[-1].ID = weirID
-    nwk.weirList[-1].topoID = bridge.topoID
-    print(bridge.km)
-    print(bridge.rzeka)
-    # PARAMS
-    attributes = [0, 0]
-    nwk.weirList[-1].weirParams['HorizOffset'] = '0'
-    nwk.weirList[-1].weirParams['Attributes'] = attributes
-
-
-    #nwk.weirList[-1].weirParams['Location'] = location
-    nwk.weirList[-1].weirParams['HeadLossFactors'] = [0.0, 0, 1, 0.0, 0, 1] # ?
-    nwk.weirList[-1].weirParams['WeirFormulaParam'] = [1, 1, 1.838, 1.5, 1]  # ?
-    nwk.weirList[-1].weirParams['WeirFormula2Param'] = [0, 0, 0]  # ?
-    nwk.weirList[-1].weirParams['WeirFormula3Param'] = [0, 0, 0, 0.6, 1.02, 1.37, 1, 0.03, 1.018, 1, 0, 2.6, 1, 0.7]  # ?
-    # RESERVOIR DATA
-    nwk.weirList[-1].reservoir.data['StructureType'] = [0]
-    nwk.weirList[-1].reservoir.data['StorageType'] = [0]
-    nwk.weirList[-1].reservoir.data['ApplyXY'] = [0]
-    nwk.weirList[-1].reservoir.data['CoordXY'] = [0]
-    nwk.weirList[-1].reservoir.data['InitialArea'] = [0]
-    # GEOMETRY
-    nwk.weirList[-1].geometry.data['Attributes'] = [0,0]
-    # WYMIAR PRZELEWU
-    szerWys = max(i[0] for i in bridge.koryto) # maxymalny station w korytku
-    szerNis = max(i[0] for i in bridge.przepust)-min(i[0] for i in bridge.przepust) # roznica stationow w przepuscie
-    startElev = min(i[1] for i in bridge.przelew) # najnizsza rzedna gory konstrukcji
-    nwk.weirList[-1].geometry.levelWidth.data = [[startElev,szerNis],[startElev+0.1,szerWys],[startElev+2,szerWys]]
-    # ---- END WEIR -----
     # ---- XS -----
     # --- Detect XS conflict ---
     set = [[str.lower(i.riverCode), round(float(i.km))] for i in bazaXsRawData]
@@ -209,6 +156,61 @@ for bridge in bridges:
 
     # ---- END XS -----
 
+    # ---- WEIR -----
+    # --- conflict detection ---
+    set = [[str.lower(i.riverName).replace(' ', ''), round(float(i.km))] for i in nwk.weirList]
+    dodawany = [str.lower(bridge.rzeka).replace(' ', ''), round(float(bridge.km))]
+    if dodawany in set:
+        print("Zastapiono weir; {} {}".format(str.lower(bridge.rzeka), round(float(bridge.km))))
+        del nwk.weirList[set.index(dodawany)]
+    # --- end of conflict detection ---
+    # GENERACJA PUSTEGO WEIR
+    nwk.weirList.append(Weir())
+    cl = nwk.weirList[-1]
+    cl.geometry = Geometry(cl)
+    cl = cl.geometry
+    cl.levelWidth = LevelWidth(cl)
+    cl = nwk.weirList[-1]
+    cl.reservoir = ReservoirData(cl)
+    cl = cl.reservoir
+    cl.elevation = Elevation(cl)
+    # PRZYPISANIE DANYCH PODSTAWOWYCH
+    weirID = str.upper(bridge.rzeka[0:3]) + "_M-" + str(bridge.lp).replace(' ', '') + "_W1"
+    location = [str(bridge.rzeka).replace(' ', ''), str(bridge.km).replace(' ', ''), weirID,
+                str(bridge.topoID).replace(' ', '')]
+
+    nwk.weirList[-1].riverName = bridge.rzeka
+    nwk.weirList[-1].km = bridge.km
+    nwk.weirList[-1].ID = weirID
+    nwk.weirList[-1].topoID = bridge.topoID
+    print(bridge.km)
+    print(bridge.rzeka)
+    # PARAMS
+    attributes = [0, 0]
+    nwk.weirList[-1].weirParams['HorizOffset'] = '0'
+    nwk.weirList[-1].weirParams['Attributes'] = attributes
+
+    # nwk.weirList[-1].weirParams['Location'] = location
+    nwk.weirList[-1].weirParams['HeadLossFactors'] = [0.0, 0, 1, 0.0, 0, 1]  # ?
+    nwk.weirList[-1].weirParams['WeirFormulaParam'] = [1, 1, 1.838, 1.5, 1]  # ?
+    nwk.weirList[-1].weirParams['WeirFormula2Param'] = [0, 0, 0]  # ?
+    nwk.weirList[-1].weirParams['WeirFormula3Param'] = [0, 0, 0, 0.6, 1.02, 1.37, 1, 0.03, 1.018, 1, 0, 2.6, 1,
+                                                        0.7]  # ?
+    # RESERVOIR DATA
+    nwk.weirList[-1].reservoir.data['StructureType'] = [0]
+    nwk.weirList[-1].reservoir.data['StorageType'] = [0]
+    nwk.weirList[-1].reservoir.data['ApplyXY'] = [0]
+    nwk.weirList[-1].reservoir.data['CoordXY'] = [0]
+    nwk.weirList[-1].reservoir.data['InitialArea'] = [0]
+    # GEOMETRY
+    nwk.weirList[-1].geometry.data['Attributes'] = [0, 0]
+    # WYMIAR PRZELEWU
+    szerWys = max(i[0] for i in bridge.koryto)  # maxymalny station w korytku
+    szerNis = max(i[0] for i in bridge.przepust) - min(i[0] for i in bridge.przepust)  # roznica stationow w przepuscie
+    startElev = min(i[1] for i in bridge.przelew)  # najnizsza rzedna gory konstrukcji
+    nwk.weirList[-1].geometry.levelWidth.data = [[startElev, szerNis], [startElev + 0.1, szerWys],
+                                                 [startElev + 2, bridge.weir_width]]
+    # ---- END WEIR -----
     print(len(XsOrder), "len od XsOrder")
 nwk.print_to_nwk(fileWynikNWK)
 fileWynikNWK.close()

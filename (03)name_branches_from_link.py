@@ -1,21 +1,21 @@
 # -*- coding: utf-8 -*-
 
 ############################################## SB ##########################################################
-from functions import read_XSraw, printowanie
+from functions import read_XSraw, printowanie, read_NWK
 from classes import *
 import time
 
 # plik wsadowy rawdata,
-inputXS = r"C:\!!Modele ISOKII\!Etap1\BUDKOWICZANKA_V1\Wstawianie mostów\Budkowiczanka_Qn.txt"
+inputXS = r"K:\Wymiana danych\Staszek\Ymitr\branches\raw_data.txt"
 # plik wsadowy nwk, pobierane sa poloaczenia link do generacji nazw dla branch
-inputNWK = r"C:\!!Modele ISOKII\!Etap1\BUDKOWICZANKA_V1\Wstawianie mostów\BUDKOWICZANKA_S01_Qn.nwk11"
+inputNWK = r"K:\Wymiana danych\Staszek\Ymitr\branches\bez_Kp\S01_Stradunia_linked.nwk11"
 
 # -----------------------------------------------------------------------------------------------------------
 
 # plik wynikowy przekroje z nazwami
-outputXS = r"C:\!!Modele ISOKII\!Etap1\BUDKOWICZANKA_V1\Wstawianie mostów\Budkowiczanka_Qn3.txt"
+outputXS = r"K:\Wymiana danych\Staszek\Ymitr\branches\raw_named.txt"
 # plik wynikowy NWK z nazwami
-outputNWK = r"C:\!!Modele ISOKII\!Etap1\BUDKOWICZANKA_V1\Wstawianie mostów\BUDKOWICZANKA_S01_Qn3.nwk11"
+outputNWK = r"K:\Wymiana danych\Staszek\Ymitr\branches\bez_Kp\S01_Stradunia_named.nwk11"
 
 if outputXS == inputXS or outputNWK == inputNWK or inputNWK == outputXS or inputXS == outputNWK:
     raise 'Error: ten sam plik na wejsciu i wyjsciu'
@@ -41,7 +41,9 @@ nazwaOld = '-'
 for branch in nwk.branchList:
     if "PTZ_" in branch.riverName or "LTZ_" in branch.riverName:
         for linkB in nwk.branchList:
-            #print(linkB.riverName, linkB.connectRiver, branch.riverName, linkB.connectTopoID)
+            print('a', linkB.riverName) #, linkB.connectRiver, branch.riverName, linkB.connectTopoID)
+            #print('b', branch.riverName, linkB.connectRiver)
+
 
             if "kp_" in str(linkB.riverName).lower() and str(branch.riverName).lower() == str(linkB.connectTopoID).lower():
                 linklist.append(linkB)
@@ -54,8 +56,11 @@ for branch in nwk.branchList:
         riverNames1 = []
         print(branch.riverName)
         print(riverNames)
-
-        minimalKm = min([float(i[2]) for i in riverNames])
+        try:
+            minimalKm = min([float(i[2]) for i in riverNames])
+        except:
+            import pdb
+            pdb.set_trace()
         maximalKm = max([float(i[2]) for i in riverNames])
         for element in riverNames:
             if element[2] == minimalKm or element[2] == maximalKm:
