@@ -182,7 +182,7 @@ for bridge in bridges:
     nwk.weirList[-1].riverName = bridge.rzeka
     nwk.weirList[-1].km = bridge.km
     nwk.weirList[-1].ID = weirID
-    nwk.weirList[-1].topoID = bridge.topoID
+    nwk.weirList[-1].topoID = weirID
     print(bridge.km)
     print(bridge.rzeka)
     # PARAMS
