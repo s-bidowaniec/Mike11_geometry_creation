@@ -10,5 +10,12 @@ class TestStringMethods(unittest.TestCase):
     def test_distance(self):
         self.assertEqual(distance(0, 0, 0, 5), 5)
         self.assertEqual(distance(0, 5, 0, 5), 7.0710678118654755)
+
+
+class SimpleTest(unittest.TestCase):
+
+    def test_value(self):
+        self.assertEqual(2+2, 4)
+        
 if __name__ == '__main__':
     unittest.main()
