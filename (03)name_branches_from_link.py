@@ -6,16 +6,16 @@ from classes import *
 import time
 
 # plik wsadowy rawdata,
-inputXS = r"K:\Wymiana danych\Staszek\Ymitr\branches\raw_data.txt"
+inputXS = r"K:\Wymiana danych\Staszek\Ymitr\DLUGI_POTOK\DLUGI_POTOK_MAN1.txt"
 # plik wsadowy nwk, pobierane sa poloaczenia link do generacji nazw dla branch
-inputNWK = r"K:\Wymiana danych\Staszek\Ymitr\branches\bez_Kp\S01_Stradunia_linked.nwk11"
+inputNWK = r"K:\Wymiana danych\Staszek\Ymitr\DLUGI_POTOK\S01_DLUGI_POTOK_ROUNDED.nwk11"
 
 # -----------------------------------------------------------------------------------------------------------
 
 # plik wynikowy przekroje z nazwami
-outputXS = r"K:\Wymiana danych\Staszek\Ymitr\branches\raw_named.txt"
+outputXS = r"K:\Wymiana danych\Staszek\Ymitr\DLUGI_POTOK\DLUGI_POTOK_MAN1_renamed.txt"
 # plik wynikowy NWK z nazwami
-outputNWK = r"K:\Wymiana danych\Staszek\Ymitr\branches\bez_Kp\S01_Stradunia_named.nwk11"
+outputNWK = r"K:\Wymiana danych\Staszek\Ymitr\DLUGI_POTOK\S01_DLUGI_POTOK_renamed.nwk11"
 
 if outputXS == inputXS or outputNWK == inputNWK or inputNWK == outputXS or inputXS == outputNWK:
     raise 'Error: ten sam plik na wejsciu i wyjsciu'
@@ -67,6 +67,7 @@ for branch in nwk.branchList:
                 riverNamesDrop.append(element)
 
         for element in riverNamesDrop:
+            rzad_brnacha = int(element[-1][0])
             wyrazy = str(element[-1][1]).split()
             if len(wyrazy)==1:
                 nazwaIn=str(wyrazy[0][0:4]).upper()
@@ -89,7 +90,7 @@ for branch in nwk.branchList:
                     startKm = element[-1][-1]
                 if element[2] == maximalKm:
                     endKm = element[-1][-1]
-            nazwa = "{}_{}_{}-{}".format(branch.riverName.split("_")[0], connectedBranchName,startKm,endKm)
+            nazwa = "{}-{}_{}_{}-{}".format(branch.riverName.split("_")[0], rzad_brnacha, connectedBranchName, startKm, endKm)
             #print("{}_{}_{}-{}".format(branch.riverName.split("_")[0], connectedBranchName,startKm,endKm))
 
         elif countIndividualNamesKm == 1 and countIndividualNames == 1:
@@ -101,7 +102,7 @@ for branch in nwk.branchList:
                 if element[2] == maximalKm:
                     endKm = element[-1][-1]
 
-            nazwa = "{}_{}_{}".format(branch.riverName.split("_")[0], connectedBranchName,startKm)
+            nazwa = "{}-{}_{}_{}".format(branch.riverName.split("_")[0], rzad_brnacha, connectedBranchName,startKm)
             #except:
                 #nazwa = "{}_{}-{}".format(branch.riverName.split("_")[0], connectedBranchName, endKm)
             #print("{}_{}_{}-{}".format(branch.riverName.split("_")[0], connectedBranchName,startKm,endKm))
@@ -115,7 +116,7 @@ for branch in nwk.branchList:
                     startKm = element[-1][-2:]
                 if element[2] == maximalKm:
                     endKm = element[-1][-2:]
-            nazwa = "{}_{}_{}-{}_{}".format(branch.riverName.split("_")[0],startKm[0],startKm[1],endKm[0],endKm[1])
+            nazwa = "{}-{}_{}_{}-{}_{}".format(branch.riverName.split("_")[0], rzad_brnacha, startKm[0], startKm[1], endKm[0], endKm[1])
 
             #print("{}_{}_{}-{}_{}".format(branch.riverName.split("_")[0],startKm[0],startKm[1],endKm[0],endKm[1]))
 
@@ -136,7 +137,7 @@ for branch in nwk.branchList:
                         endKm2 = element[1]
                         endKm.pop(index)
                     index+=1
-                nazwa = "{}_{}_{}_{}-{}_{}".format(branch.riverName.split("_")[0], startKm[0][0], startKm[0][1],
+                nazwa = "{}-{}_{}_{}_{}-{}_{}".format(branch.riverName.split("_")[0],rzad_brnacha, startKm[0][0], startKm[0][1],
                                                    endKm2[0], endKm2[1], endKm[0][1])
                 #print(nazwa)
 
@@ -148,7 +149,7 @@ for branch in nwk.branchList:
                         startKm.pop(index)
                     index+=1
 
-                nazwa = "{}_{}_{}_{}_{}-{}".format(branch.riverName.split("_")[0], startKm[0][0], startKm[0][1], startKm2[0],startKm2[1],endKm[0][1])
+                nazwa = "{}-{}_{}_{}_{}_{}-{}".format(branch.riverName.split("_")[0],rzad_brnacha, startKm[0][0], startKm[0][1], startKm2[0], startKm2[1], endKm[0][1])
                 #print(nazwa)
 
         elif countIndividualNamesKm == 3 and countIndividualNames == 3:
@@ -161,10 +162,10 @@ for branch in nwk.branchList:
                 if element[2] == maximalKm:
                     endKm.append(element[-1][-2:])
             if len(startKm) == 1 and len(endKm) == 2:
-                nazwa = "{}_{}_{}-{}_{}_{}_{}".format(branch.riverName.split("_")[0], startKm[0][0], startKm[0][1],
+                nazwa = "{}-{}_{}_{}-{}_{}_{}_{}".format(branch.riverName.split("_")[0], rzad_brnacha, startKm[0][0], startKm[0][1],
                                                    endKm[0][0], endKm[0][1],endKm[1][0],endKm[1][1])
             elif len(startKm) == 2 and len(endKm) == 1:
-                nazwa = "{}_{}_{}_{}_{}-{}_{}".format(branch.riverName.split("_")[0], startKm[0][0], startKm[0][1],
+                nazwa = "{}-{}_{}_{}_{}_{}-{}_{}".format(branch.riverName.split("_")[0], rzad_brnacha, startKm[0][0], startKm[0][1],
                                                       startKm[1][0], startKm[1][1],endKm[0][0],endKm[0][1])
 
 
@@ -197,7 +198,7 @@ for branch in nwk.branchList:
                     startKm.pop(index)
                     river2 = [element[0], element[1], endKm[0][1]]
                     index+=1
-            nazwa = "{}_{}_{}-{}_{}_{}-{}".format(branch.riverName.split("_")[0], river1[0], river1[1],
+            nazwa = "{}-{}_{}_{}-{}_{}_{}-{}".format(branch.riverName.split("_")[0], rzad_brnacha, river1[0], river1[1],
                                                   river1[2], river2[0], river2[1], river2[2])
             print(nazwa)
 
@@ -239,12 +240,13 @@ for branch in nwk.branchList:
             raise 'nie nadpisano nazwa'
         if nazwaOld == nazwa:
             print(countIndividualNamesKm, countIndividualNames)
-            raise 'nie nadpisano nazwa'
+            # raise 'nie nadpisano nazwa'
         linklist = []
         riverNamesDrop = []
         nazwaOld=nazwa
         print(" ------------------------ ")
-
+        print (branch.riverName)
+        print(" ------------------------ ")
         branchDictNames[str(branch.riverName).upper()] = nazwa
 
 print(branchDictNames)
@@ -264,6 +266,7 @@ for branch in nwk.branchList:
         print('ptz 6')
         print(name, branchDictNames[name])
     if str(name).upper() in branchDictNames.keys():
+        print(str(name).upper())
         print('Zmiana nazwy z {} na {}'.format(name, branchDictNames[name]))
         branch.riverName = branchDictNames[name]
     name = str(branch.connectRiver).upper()
