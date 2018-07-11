@@ -155,33 +155,41 @@ class ManningXS(object):
         self.punkty[station]=PktN(record)
 # NWK ------------------------------------------------------------------------------------------------------------------
 class NwkPoint(object):
+    '''object hold on data for one point from *.nwk file:
+    point = 2489, 317086.86, 368728.92, 0, 24686.81917468862, 0'''
+
     def __init__(self, no, x, y, val1, val2, val3, z=None):
-        self.no = no
-        self.x = x
-        self.y = y
-        self.val1 = val1
-        self.val2 = val2
-        self.val3 = val3
-        self.z = z
-        self.end = None
+        self.no = no        # number of point
+        self.x = x          # x coordinate
+        self.y = y          # y coordinate
+        self.val1 = val1    # value1
+        self.val2 = val2    # value2
+        self.val3 = val3    # value3
+        self.z = z          # z level
+        self.end = None     # final part from *.nwk file, not used in processing
 
     def values_2_string(self):
-        dataDict = self.__dict__
+        '''change values from integer or float to string, useful to write to *.nwk file'''
+        dataDict = self.__dict__        # return dictionary {'variable1' : 'value1', 'variable2' : 'value2'...} from object variables
         for i in dataDict:
             if type(dataDict[i]) == int or type(dataDict[i]) == float:
                 dataDict[i] = str(dataDict[i])
 
 
 class Elevation(object):
+    '''object hold on data for elevation in ReservoirData object'''
+
     def __init__(self, parent=None):
         self.data = []
         self.end = "EndSect  // Elevation"
         self.parent = parent
 
     def add_paramaters(self, string_list, name, line):
+    '''load parameters to object as list'''
         self.data.append(string_list[1:])
 
     def values_2_string(self):
+        '''change values from integer or float to string, useful to write to *.nwk file'''
         for i in range(len(self.data)):
             for j in range(len(self.data[i])):
                 if type(self.data[i][j]) == int or type(self.data[i][j]) == float:
@@ -197,6 +205,9 @@ class Elevation(object):
 
 
 class ReservoirData(object):
+    '''object hold on data for ReservoirData in Weir and Culvert object
+    data stored as dictionary {"CoordyXY" : [0, 0]...}'''
+
     def __init__(self, parent=None):
         self.data = {}
         self.elevation = None
@@ -204,9 +215,11 @@ class ReservoirData(object):
         self.parent = parent
 
     def add_parameters(self, string_list, name, line):
+        '''load parameters to object as dictionary, from "CoordXY = 0, 0" to {"CoordyXY" : [0, 0]}'''
         self.data[name] = string_list[1:]
 
     def values_2_string(self):
+        '''change values from integer or float to string, useful to write to *.nwk file'''
         for i in self.data:
             for j in range(len(self.data[i])):
                 if type(self.data[i][j]) == int or type(self.data[i][j]) == float:
@@ -223,15 +236,22 @@ class ReservoirData(object):
 
 
 class LevelWidth(object):
+    '''object hold on data for Level_Width in Geometry object
+        data stored as lists in list [[128.09, 20], [129, 40], [130, 40]...]'''
+
     def __init__(self, parent=None):
         self.data = []
         self.end = "EndSect  // Level_Width"
         self.parent = parent
 
     def add_parameters(self, string_list, name, line):
+        '''load parameters to object as list, from "Data = 128.09, 20" to [[128.09, 20]...]'''
+
         self.data.append(string_list[1:])
 
     def values_2_string(self):
+        '''change values from integer or float to string, useful to write to *.nwk file'''
+
         for i in range(len(self.data)):
             for j in range(len(self.data[i])):
                 if type(self.data[i][j]) == int or type(self.data[i][j]) == float:
@@ -247,15 +267,20 @@ class LevelWidth(object):
 
 
 class Irregular(object):
+    '''object hold on data for Irregular in Geometry object
+    data stored as lists in list [[128.09, 20], [129, 40], [130, 40]...]'''
+
     def __init__(self, parent=None):
         self.data = []
         self.end = "EndSect  // Irregular"
         self.parent = parent
 
     def add_parameters(self, string_list, name, line):
+        '''load parameters to object as list'''
         self.data.append(string_list[1:])
 
     def values_2_string(self):
+        '''change values from integer or float to string, useful to write to *.nwk file'''
         for i in range(len(self.data)):
             for j in range(len(self.data[i])):
                 if type(self.data[i][j]) == int or type(self.data[i][j]) == float:
@@ -271,6 +296,9 @@ class Irregular(object):
 
 
 class Geometry(object):
+    '''object hold on data for Geometry in Weir and Culvert objects
+    have reference to Irregular and LevelWidth objects
+    data stored as dictionary {"Rectangular" : [0, 0]...}'''
     def __init__(self, parent=None):
         self.irregular = None
         self.levelWidth = None
@@ -279,9 +307,11 @@ class Geometry(object):
         self.parent = parent
 
     def add_parameters(self, string_list, name, line):
+        '''load parameters to object as dictionary, from "Rectangular = 0, 0" to {"Rectangular" : [0, 0]}'''
         self.data[name] = string_list[1:]
 
     def values_2_string(self):
+        '''change values from integer or float to string, useful to write to *.nwk file'''
         for i in self.data:
             for j in range(len(self.data[i])):
                 if type(self.data[i][j]) == int or type(self.data[i][j]) == float:
@@ -301,6 +331,10 @@ class Geometry(object):
 
 
 class Weir(object):
+    '''object hold on data for Weir in Nwk object,
+    have reference to ReservoirData and Geometry object,
+    weirParams stored as dictionary {"HeadLossFactors" : [0.5, 1, 1, 0.5, 1, 1]...}'''
+
     def __init__(self, parent=None):
         self.reservoir = None
         self.geometry = None
@@ -309,22 +343,25 @@ class Weir(object):
         self.parent = parent
 
     def add_parameters(self, string_list, name, line):
+        '''load parameters like riverName, km, topoID, ID to object,
+        remaining parameters load to weirParams as dictionary,
+        from "HeadLossFactors = 0.5, 1, 1, 0.5, 1, 1" to {"HeadLossFactors" : [0.5, 1, 1, 0.5, 1, 1]}'''
 
+        # add basic parameters for Wier
         if "Location" in line:
             self.riverName = string_list[1]
             self.km = float(string_list[2])
             self.topoID = string_list[3]
             self.ID = string_list[4]  # sprawdzic wartosci
 
+        # add remaining parameters to weirParams
         elif name in ["HorizOffset", "Attributes", "HeadLossFactors",
                       "WeirFormulaParam", "WeirFormula2Param", "WeirFormula3Param"]:
             self.weirParams[name] = string_list[1:]
 
-        # else:
-        # print(u"Blad funkcji addParameters klasy weir:")
-        # print(line)
 
     def values_2_string(self):
+        '''change values from integer or float to string, useful to write to *.nwk file'''
         for i in self.weirParams:
             for j in range(len(self.weirParams[i])):
                 if type(self.weirParams[i][j]) == int or type(self.weirParams[i][j]) == float:
@@ -345,6 +382,10 @@ class Weir(object):
 
 
 class Culvert(object):
+    '''object hold on data for Culvert in Nwk object,
+    have reference to ReservoirData and Geometry object,
+    culvertParams stored as dictionary {"Attributes" : [108.28, 108.32, 9, 0.031, 1, 0, 0]...}'''
+
     def __init__(self, parent=None):
         self.reservoir = None
         self.geometry = None
@@ -353,21 +394,25 @@ class Culvert(object):
         self.parent = parent
 
     def add_parameters(self, string_list, name, line):
+        '''load parameters like riverName, km, topoID, ID to object,
+        remaining parameters load to culvertParams as dictionary,
+        from "Attributes = 108.28, 108.32, 9, 0.031, 1, 0, 0" to {"Attributes" : [108.28, 108.32, 9, 0.031, 1, 0, 0]}
+        missing Flow_Conditions parameters'''
 
+        # add basic parameters for Culvert
         if "Location" in line:
             self.riverName = string_list[1]
             self.km = float(string_list[2])
             self.ID = string_list[3]
             self.topoID = string_list[4]
 
+        # add remaining parameters to culvertParams
         elif name in ["HorizOffset", "Attributes", "HeadLossFactors"]:
             self.culvertParams[name] = string_list[1:]
 
-        # else:
-        # print(u"Blad funkcji addParameters klasy weir:")
-        # print(line)
 
     def values_2_string(self):
+        '''change values from integer or float to string, useful to write to *.nwk file'''
         for i in self.culvertParams:
             for j in range(len(self.culvertParams[i])):
                 if type(self.culvertParams[i][j]) == int or type(self.culvertParams[i][j]) == float:
@@ -397,7 +442,7 @@ class Culvert(object):
            EndSect  // Flow_Conditions\n\n \
         EndSect  // culvert_data\n\n")
 
-
+############################      TU SKONCZYLEM      ####################################################
 class CrossSection(object):
     def __init__(self, parent=None):
         self.data = []
@@ -408,7 +453,7 @@ class CrossSection(object):
         self.data.append([string_list[1], string_list[2]])
 
     def values_2_string(self):
-        '''change data types from int or float to string'''
+        '''change values from integer or float to string, useful to write to *.nwk file'''
         for i in range(len(self.data)):
             for j in range(len(self.data[i])):
                 if type(self.data[i][j]) == int or type(self.data[i][j]) == float:
@@ -443,9 +488,10 @@ class LinkChannel(object):
 
         # else:
         # print(u"Blad funkcji addParameters klasy linkChannel:")
-        # print(line)
+        # print(linek)
 
     def values_2_string(self):
+        '''change values from integer or float to string, useful to write to *.nwk file'''
         for i in range(len(self.geometry)):
             if type(self.geometry[i]) == int or type(self.geometry[i]) == float:
                 self.geometry[i] = str(self.geometry[i])
@@ -510,6 +556,7 @@ class Branch(object):
         # print(line)
 
     def values_2_string(self):
+        '''change values from integer or float to string, useful to write to *.nwk file'''
         dataDict = self.__dict__
         for i in dataDict:
             if type(dataDict[i]) == int or type(dataDict[i]) == float:
@@ -575,6 +622,7 @@ class NwkFile(object):
                 print("Powtarzające się punkty: ", i, u"w liczbie ", self.recuredPointList.count(i))
 
     def values_2_string(self):
+        '''change values from integer or float to string, useful to write to *.nwk file'''
         pass
 
     def nwk_rdp(self, epsilon=0.08):
