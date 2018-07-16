@@ -1,10 +1,19 @@
 # -*- coding: utf-8 -*-
+import shelve
 import math, collections
 from operator import itemgetter
 from rdp import rdp
 import time
 # clas func
 def distance(x1, x2, y1, y2):
+    """
+    Function calculates distance betwean two points
+    :param x1: float
+    :param x2: float
+    :param y1: float
+    :param y2: float
+    :return: float
+    """
     try:
         return math.sqrt((x1 - x2) ** 2 + (y1 - y2) ** 2)
     except:
@@ -709,15 +718,15 @@ class bridge_xs(object):
 class point(object):
     def __init__(self, lp, x, y, z, kod="nul", cos="nul", ogon='nul'):
         self.lp = int(float(lp.replace("o","0").replace("O","0").replace("a","").replace("A","")))
-        self.x = float(x.replace("o","0").replace("O","0"))
-        self.y = float(y.replace("o","0").replace("O","0"))
-        self.z = float(z.replace("o","0").replace("O","0"))
+        self.x = float(x.replace("o", "0").replace("O", "0"))
+        self.y = float(y.replace("o", "0").replace("O", "0"))
+        self.z = float(z.replace("o", "0").replace("O", "0"))
         self.kod = str(kod)
         self.cos = [cos]
 
 class XS_t(object):
     def __init__(self, file):
-        name = str(file).replace("\\"," ").split()[-3]
+        name = str(file).replace("\\", " ").split()[-3]
         name = name.replace(".", " ").replace("_", " ").split()
         for element in name:
             if element[0].isdigit():
@@ -731,7 +740,7 @@ class XS_t(object):
         self.point_data = []
         self.geom2 = []
         for line in file.read().split("\n"):
-            napis = list(line.replace("\t","  "))
+            napis = list(line.replace("\t", "  "))
             licznik = 0
             while licznik < len(napis):
                 if napis[licznik] == ' ':
@@ -749,25 +758,25 @@ class XS_t(object):
 
             else:
                 line3 = line2.split(' ')
-                if len(line3)>6:
+                if len(line3) > 6:
                     cos = line3[6:]
-                    line3=line3[:6]
+                    line3 = line3[:6]
                     line3.append(cos)
-                print(line3)
+                #print(line3)
                 try:
                     int(float(line3[0]))
                     self.point_data.append(point(*line3[:]))
                 except:
-                    print('----')
-                    print(line3)
-                    print('----')
+                    #print('----')
+                    #print(line3)
+                    #print('----')
                     self.point_data.append(point(*line3[1:]))
 
         r = 0
         while sum(c.islower() for c in self.dane[r]) < 1:
             r+=1
         if "rzek" in str.lower(self.dane[r]) or "zeka" in str.lower(self.dane[0]):
-            self.rzeka = self.dane[r].split(':')[1]
+            self.rzeka = self.dane[r].split(':')[1].replace(' ', '')
         else:
             print("Brak: river def", self.lp)
         if "przek" in str.lower(self.dane[r+1]) or "rzekr" in str.lower(self.dane[1]):
@@ -775,13 +784,13 @@ class XS_t(object):
         else:
             print("Brak: lp def", self.lp)
         if "dat" in str.lower(self.dane[r+2]) or "ata" in str.lower(self.dane[2]):
-            self.data = self.dane[r+2].split(':')[1]
+            self.data = self.dane[r+2].split(':')[1].replace(' ', '')
         else:
             print("Brak: data def", self.lp)
         if "typ" in str.lower(self.dane[r+3]) or "most" in str.lower(self.dane[3]):
-            self.type = self.dane[r+3].split(':')[1]
+            self.type = self.dane[r+3].split(':')[1].replace(' ', '')
         elif "typ" in str.lower(self.dane[r+4]) or "most" in str.lower(self.dane[4]):
-            self.type = self.dane[r + 4].split(':')[1]
+            self.type = self.dane[r + 4].split(':')[1].replace(' ', '')
             #self.kat = self.dane[r + 3].split(':')[1]
 
         try:
@@ -807,7 +816,7 @@ class XS_t(object):
 
 
         if self.type == "none" or self.type == '':
-            print("Brak: type def", self.lp)
+            #print("Brak: type def", self.lp)
             try:
                 if "obie" in str(self.dane[-4:-1]).lower():
                     self.type = "obiekt"
@@ -845,8 +854,21 @@ class XS_t(object):
             dist = math.sqrt((dx**2) + (dy**2))
             i.dist = dist
     def dist_sort(self):
-        self.point_data = sorted(self.point_data, key=operator.attrgetter('dist'))
+        self.point_data = sorted(self.point_data, key = operator.attrgetter('dist'))
 
+    def get_avarage_manning(self):
+        n = l = 0
+        dataBase = shelve.open(r'dane.dbm')
+        dict = dataBase['dictKodManning']
+        for pktNumber in range(len(self.point_data)-2):
+            odl = float(distance(self.point_data[pktNumber].x, self.point_data[pktNumber+1].x, self.point_data[pktNumber].y,
+                     self.point_data[pktNumber + 1].y))
+            manning = float(dict.get(self.point_data[pktNumber].kod, 0))
+            if manning:
+                n += odl*manning
+                l += odl
+
+        self.avManning = n/l
 
     ################################################################################################################
     """obliczanie dlugosci przekroju i dolnej pikiety"""

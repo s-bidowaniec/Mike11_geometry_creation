@@ -5,6 +5,31 @@ from classes import *
 from dbfread import DBF
 # UNIVERSAl -----------------------------------------------------------------------------------------------------------
 
+def pointToLine(x1, y1, x2, y2, x=None, y=None):
+    """
+    Function calculates new (x,y) coordinates droped on line defined by points A, B.
+    :param x1: float
+    :param y1: float
+    :param x2: float
+    :param y2: float
+    :param x: float
+    :param y: float
+    :return: touple of floats, new x and new y
+    """
+
+    # def computePoints(self):
+    licznik = ((x - x1) * (x2 - x1)) + ((y - y1) * (y2 - y1))
+    mianownik = ((x1 - x2) ** 2) + ((y1 - y2) ** 2)
+    try:
+        u = licznik / mianownik
+    except ZeroDivisionError:
+        u = 0
+
+    xp = ((x2 - x1) * u) + x1
+    yp = ((y2 - y1) * u) + y1
+    return xp, yp
+
+
 def get_xy_delta(self):
     if self.right[0] > self.left[0]:
         x1, x2 = 2, -2
