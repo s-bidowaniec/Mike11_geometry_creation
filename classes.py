@@ -23,13 +23,29 @@ def distanceZ(a, b, p):
     return p[1] - np.interp([p[0]], [a[0], b[0]], [a[1], b[1]])
 
 def is_between(x1, y1, x, y, x2, y2):
-    return round(distance(x1, x, y1, y)) + round(distance(x, x2, y, y2)) == round(distance(x1, x2, y1, y2))
+    return round((distance(x1, x, y1, y)) + (distance(x, x2, y, y2))) == round(distance(x1, x2, y1, y2))
 
 def line_intersection(x1, y1, x2, y2, x3, y3, x4, y4):
     line1 = [[x1, y1], [x2, y2]]
     line2 = [[x3, y3], [x4, y4]]
     xdiff = (line1[0][0] - line1[1][0], line2[0][0] - line2[1][0])
     ydiff = (line1[0][1] - line1[1][1], line2[0][1] - line2[1][1])
+
+    def det(a, b):
+        return a[0] * b[1] - a[1] * b[0]
+
+    div = det(xdiff, ydiff)
+    #print(div)
+    if div == 0:
+        x, y, b, c = None, None, None, None
+    else:
+        d = (det(*line1), det(*line2))
+        x = det(d, xdiff) / div
+        y = det(d, ydiff) / div
+        b = (is_between(x3, y3, x, y, x4, y4))
+        c = (is_between(x1, y1, x, y, x2, y2))
+
+    return x, y, b, c
 
 # UNIVERSAL -----------------------------------------------------------------------------------------------------------
 class Points2Line(object):
@@ -854,23 +870,40 @@ class XS_t(object):
             dist = math.sqrt((dx**2) + (dy**2))
             i.dist = dist
     def dist_sort(self):
-        self.point_data = sorted(self.point_data, key = operator.attrgetter('dist'))
+        self.point_data = sorted(self.point_data, key=operator.attrgetter('dist'))
 
     def get_avarage_manning(self):
+        flag = 0
         n = l = 0
         dataBase = shelve.open(r'dane.dbm')
         dict = dataBase['dictKodManning']
         for pktNumber in range(len(self.point_data)-2):
+            if 'zww' in str(self.point_data[pktNumber].cos).lower():
+                flag += 1
+            if flag != 1:
+                continue
             odl = float(distance(self.point_data[pktNumber].x, self.point_data[pktNumber+1].x, self.point_data[pktNumber].y,
                      self.point_data[pktNumber + 1].y))
             manning = float(dict.get(self.point_data[pktNumber].kod, 0))
             if manning:
-                n += odl*manning
+                n += odl * manning
                 l += odl
-
         self.avManning = n/l
 
-    ################################################################################################################
+    def get_km(self, pkt):
+        for pktNumber in range(len(self.point_data) - 2):
+            for pktNwkNumber in range(len(pkt) - 2):
+                x, y, line1, line2 = line_intersection(self.point_data[pktNumber].x, self.point_data[pktNumber + 1].x,
+                                                       self.point_data[pktNumber].y, self.point_data[pktNumber + 1].y,
+                                                       pkt[pktNwkNumber].x, pkt[pktNwkNumber].y, pkt[pktNwkNumber + 1].x,
+                                                       pkt[pktNwkNumber+1].y)
+                if line1 and line2:
+                    km = pkt[pktNwkNumber].val2 + distance(pkt[pktNwkNumber].x, pkt[pktNwkNumber].y, x, y)
+                    self.km = km
+                    return km
+        self.km = None
+        return None
+                ################################################################################################################
     """obliczanie dlugosci przekroju i dolnej pikiety"""
     def get_culver_len(self):
 

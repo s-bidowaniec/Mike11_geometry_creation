@@ -38,8 +38,10 @@ class TestXs_tMethods(unittest.TestCase):
             xs = XS_t(f)
         f.close()
         self.assertEqual(xs.get_avarage_manning(), None)
-        self.assertAlmostEqual(xs.avManning, 0.0270015375072781)
+        self.assertAlmostEqual(xs.avManning, 0.028845008380823725)
 
-
+class Test_line_intersection(unittest.TestCase):
+    def test_line_intersectio(self):
+        self.assertEqual(line_intersection(x1=0, y1=0, x2=50, y2=50, x3=0, y3=50, x4=50, y4=0), (25, 25, True, True))
 if __name__ == '__main__':
     unittest.main()

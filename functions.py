@@ -322,6 +322,7 @@ def line_intersection(x1, y1, x2, y2, x3, y3, x4, y4):
         return a[0] * b[1] - a[1] * b[0]
 
     div = det(xdiff, ydiff)
+    print(div)
     if div == 0:
         x, y, b, c = None, None, None, None
     else:
