@@ -1156,7 +1156,7 @@ class XS_t(object):
             self.deck.append(max(lista, key = lambda x: x[1]))
 
     def get_km_bridge(self,nwk):
-        """znajduje km mostu z punktow nwk nadpisuje manninga usredniona wartoscia"""
+        """znajduje km mostu z punktow nwk """
         self.topoID = 0
         zww = []
 
