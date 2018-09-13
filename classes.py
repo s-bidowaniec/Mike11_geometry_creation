@@ -1015,7 +1015,7 @@ class XS_t(object):
         flag = 0
         for pkt in self.point_data:
             print(pkt.kod, pkt.znacznik)
-            if "10" in str(pkt.znacznik) and not '1' == str(pkt.kod) and not '12' == str(pkt.kod):
+            if "10" in str(pkt.znacznik) and not '1' == str(pkt.kod) and not '12' == str(pkt.kod) and not '41' == str(pkt.kod):
                 flag += 1
                 # dodanie do zestawu pkt wspolnych koyto przepust
                 self.culvert_common.append([float(pkt.dist), float(pkt.z)])
@@ -1086,7 +1086,7 @@ class XS_t(object):
                             self.geom.append(self.culvert_top.pop(0))
                         print('---')
                         print(abs(pkt_dol_first[0] - pkt_first[0]))
-                        if abs(pkt_dol_first[0] - pkt_first[0]) < 1.5:
+                        if abs(pkt_dol_first[0] - pkt_first[0]) < 0.5:
                             self.geom.append(pkt_dol_first)
                             print(self.culvert_common.pop(index))
                         flag = 2
@@ -1095,7 +1095,7 @@ class XS_t(object):
                         pkt_first = self.culvert_top.pop(0)
                         index = self.culvert_common.index(min(self.culvert_common, key=lambda x: abs(x[0] - pkt_first[0])))
                         pkt_dol_first = self.culvert_common[index]
-                        if abs(pkt_dol_first[0] - pkt_first[0]) < 1.5:
+                        if abs(pkt_dol_first[0] - pkt_first[0]) < 0.5:
                             self.geom.append(pkt_dol_first)
                             print(self.culvert_common.pop(index))
                         self.geom.append(pkt_first)
@@ -1116,8 +1116,14 @@ class XS_t(object):
             print(len(self.culvert_top))
             while len(self.culvert_common) > 0 and len(self.culvert_top) > 0:
                 if flag == 0:
-                    self.geom.append(self.culvert_common.pop(0))
-                    self.geom.append(self.culvert_top.pop(0))
+                    pkt1 = self.culvert_common[0]
+                    pkt2 = self.culvert_top[0]
+                    if abs(pkt1[0] - pkt2[0]) < 1.5:
+                        self.geom.append(self.culvert_common.pop(0))
+                        self.geom.append(self.culvert_top.pop(0))
+                    else:
+                        self.geom.append(self.culvert_top.pop(0))
+
                     flag = 1
                     continue
                 if flag == 1:
@@ -1128,7 +1134,7 @@ class XS_t(object):
                         self.geom.append(pkt_first)
                     print('---')
                     print(abs(pkt_dol_first[0]-pkt_first[0]))
-                    if abs(pkt_dol_first[0]-pkt_first[0]) < 1.5:
+                    if abs(pkt_dol_first[0]-pkt_first[0]) < 0.5:
                         self.geom.append(pkt_dol_first)
                         print(self.culvert_common.pop(index))
                     flag = 2
@@ -1137,7 +1143,7 @@ class XS_t(object):
                     pkt_first = self.culvert_top.pop(0)
                     index = self.culvert_common.index(min(self.culvert_common, key=lambda x: abs(x[0]-pkt_first[0])))
                     pkt_dol_first = self.culvert_common[index]
-                    if abs(pkt_dol_first[0]-pkt_first[0]) < 1.5:
+                    if abs(pkt_dol_first[0]-pkt_first[0]) < 0.5:
                         self.geom.append(pkt_dol_first)
                         print(self.culvert_common.pop(index))
                     self.geom.append(pkt_first)
@@ -1148,8 +1154,8 @@ class XS_t(object):
                     self.geom.append(pkt_first)
                     flag = 1
             self.culvertXS = list(self.geom) + list(reversed(self.culver_bottom[1:-1]))
-        if self.culvertXS[0] != self.culvertXS[-1]:
-            self.culvertXS.append(self.culvertXS[0])
+        #if self.culvertXS[0] != self.culvertXS[-1]:
+            #self.culvertXS.append(self.culvertXS[0])
 
         if len(self.deck) == 0:
             lista = self.culvert_common+self.culvert_top+self.culver_bottom
@@ -1258,12 +1264,18 @@ class XS_t(object):
         worksheet.write(2, 1, str(self.type))
         worksheet.write(3, 0, 'Lp:')
         worksheet.write(3, 1, str(self.lp))
+
         worksheet.write(7, 0, 'Topo ID:')
-        worksheet.write(7, 1, str(self.topoID))
         worksheet.write(8, 0, 'km:')
-        worksheet.write(8, 1, str(self.km))
         worksheet.write(8, 2, 'Manning:')
-        worksheet.write(8, 3, str(self.manning))
+        try:
+            worksheet.write(7, 1, str(self.topoID))
+            worksheet.write(8, 1, str(self.km))
+            worksheet.write(8, 3, str(self.manning))
+        except:
+            worksheet.write(7, 1, "None")
+            worksheet.write(8, 1, "None")
+            worksheet.write(8, 3, "None")
         try:
             worksheet.write(4, 0, 'Długość:')
             worksheet.write(4, 1, str(self.culvert_len))

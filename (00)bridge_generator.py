@@ -3,9 +3,9 @@ from classes import *
 from functions import read_NWK
 import xlsxwriter
 
-path = r"C:\!!Mode ISOKII\!ISOK II\Kornelia\Kamienica"
-inputNwkDir = r"K:\Wymiana danych\Staszek\KORN\GIS2RAS_v1.02 -Kamienica\GIS2RAS_v1.02.nwk11"
-workbook = xlsxwriter.Workbook(r'C:\!!Mode ISOKII\!ISOK II\Kornelia\Kamienica\Kamienica_budowle.xlsx')
+path = r"C:\!!Mode ISOKII\!ISOK II\Kornelia\BAJERKA_211172"
+inputNwkDir = r"C:\!!Mode ISOKII\!ISOK II\Dobka\Dobka_general\S01_DOBKA_2018v2.01\01_MIKE11\02_NWK\S01_Dobka.nwk11"
+workbook = xlsxwriter.Workbook(r'C:\!!Mode ISOKII\!ISOK II\Kornelia\BAJERKA_211172\Bajerka_budowle.xlsx')
 
 fileWejscieNWK = open(inputNwkDir, 'r')
 nwk = read_NWK(fileWejscieNWK)
