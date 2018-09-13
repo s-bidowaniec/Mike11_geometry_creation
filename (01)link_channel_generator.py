@@ -5,13 +5,13 @@ from functions import *
 from classes import *
 import multiprocessing
 # plik wsadowy rawdata, pobierane sa punkty wspolne na przekrojach oraz inne dane do generacji linku
-fileWejscieXS = open(r"K:\Wymiana danych\Staszek\Ymitr\branches\raw_data.txt",'r')
+fileWejscieXS = open(r"K:\Wymiana danych\Staszek\KORN\S01_KRYNKA -ze zbiornikiem\03_S01_KRYNKA__XNS\raw_do_linkow.txt",'r')
 
 # plik wsadowy nwk, pobierana jest lista punktow oraz branchy do ktorych dopisywane sa dane z nowych linkow
-inputNwkDir = r"K:\Wymiana danych\Staszek\Ymitr\branches\bez_Kp\S01_Stradunia_raw.nwk11"
+inputNwkDir = r"K:\Wymiana danych\Staszek\KORN\S01_KRYNKA -ze zbiornikiem\02_S01_KRYNKA__NWK\S01_KRYNKA_bez_linkow.nwk11"
 
 # nowy plik NWK z naniesionymi linkami
-outputNwkDir = r"K:\Wymiana danych\Staszek\Ymitr\branches\bez_Kp\S01_Stradunia_linked.nwk11"
+outputNwkDir = r"K:\Wymiana danych\Staszek\KORN\S01_KRYNKA -ze zbiornikiem\02_S01_KRYNKA__NWK\S01_KRYNKA_linked.nwk11"
 if inputNwkDir == outputNwkDir:
     raise 'Error: input == output'
 # Otwarcie plikow

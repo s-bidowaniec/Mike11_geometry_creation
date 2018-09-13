@@ -592,3 +592,17 @@ def fit_bridge(xs, xsUp2, bridge, base_manning=0.04):
     bridge.weir_width = min(delta_xs, delta_xsUp)
     print(przes+startStat," bridge shift")
     return xs, xsUp2, deltaStatBridge
+
+def linear_equation(array):
+    a = np.array([
+         [(array[0][0]) ** 2, array[0][0], 1],
+         [(array[1][0]) ** 2, array[1][0], 1],
+         [(array[2][0]) ** 2, array[2][0], 1]
+         ])
+    b = np.array([
+        array[0][1],
+        array[1][1],
+        array[2][1]
+        ])
+    x = np.linalg.solve(a,b)
+    return lambda y: x[0]*y**2 + x[1]*y + x[2]
