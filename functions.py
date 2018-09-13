@@ -444,9 +444,9 @@ def fit_bridge(xs, xsUp2, bridge, base_manning=0.04):
         index_1b = [float(poi.station) for poi in xs_appending.points if float(poi.station) < float(element[0])]
         if len(index_1) == 0 or len(index_1b) == 0:
             if int(xs.rn.split()[1]) == 1:
-                line = '{} {} {} {}'.format(element[0], element[1]-0.1-float(downS), bridge.mann, 'P1')
+                line = '{} {} {} {}'.format(element[0], element[1]-0.01-float(downS), bridge.mann, 'P1')
             else:
-                line = '{} {} {} {}'.format(element[0], element[1] - 0.1 - float(downS), bridge.mann/base_manning, 'P1')
+                line = '{} {} {} {}'.format(element[0], element[1] - 0.01 - float(downS), bridge.mann/base_manning, 'P1')
             if len(index_1) == 0:
                 xs.points.append(Pkt(line))
             elif len(index_1b) == 0:
@@ -457,9 +457,9 @@ def fit_bridge(xs, xsUp2, bridge, base_manning=0.04):
         index_2b = [float(poi.station) for poi in xsUp2_appending.points if float(poi.station) < float(element[0])]
         if len(index_2) == 0 or len(index_2b) == 0:
             if int(xsUp2.rn.split()[1]) == 1:
-                line = '{} {} {} {}'.format(element[0], element[1] - 0.1 - float(upS), bridge.mann, 'P1')
+                line = '{} {} {} {}'.format(element[0], element[1] - 0.01 - float(upS), bridge.mann, 'P1')
             else:
-                line = '{} {} {} {}'.format(element[0], element[1] - 0.1 - float(upS), bridge.mann/base_manning, 'P1')
+                line = '{} {} {} {}'.format(element[0], element[1] - 0.01 - float(upS), bridge.mann/base_manning, 'P1')
             if len(index_2) == 0:
                 xsUp2.points.append(Pkt(line))
             elif len(index_2b) == 0:
@@ -525,9 +525,9 @@ def fit_bridge(xs, xsUp2, bridge, base_manning=0.04):
         if przepMin < float(element[0]) < przepMax:
             #tworzy linnie do dodania punktu
             if int(xs.rn.split()[1]) == 1:
-                line = '{} {} {} {}'.format(element[0], element[1]-0.1-float(downS), bridge.mann, 'P1')
+                line = '{} {} {} {}'.format(element[0], element[1]-0.01-float(downS), bridge.mann, 'P1')
             else:
-                line = '{} {} {} {}'.format(element[0], element[1] - 0.1 - float(downS), bridge.mann/base_manning, 'P1')
+                line = '{} {} {} {}'.format(element[0], element[1] - 0.01 - float(downS), bridge.mann/base_manning, 'P1')
             #dodawanie w miejscu stalego indexu, ma zachowac kolejnosc punktow a nie po station
             print(float(element[0]), " float element od 0")
             print(xs.km)
