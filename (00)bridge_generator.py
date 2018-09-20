@@ -3,9 +3,9 @@ from classes import *
 from functions import read_NWK
 import xlsxwriter
 
-path = r"C:\!!Mode ISOKII\!ISOK II\Kornelia\BAJERKA_211172"
-inputNwkDir = r"C:\!!Mode ISOKII\!ISOK II\Dobka\Dobka_general\S01_DOBKA_2018v2.01\01_MIKE11\02_NWK\S01_Dobka.nwk11"
-workbook = xlsxwriter.Workbook(r'C:\!!Mode ISOKII\!ISOK II\Kornelia\BAJERKA_211172\Bajerka_budowle.xlsx')
+path = r"K:\Wymiana danych\Staszek\Ymitr\DLUGI_POTOK"
+inputNwkDir = r"K:\Wymiana danych\Staszek\Ymitr\DLUGI_POTOK\S01_DLUGI_POTOK.nwk11"
+workbook = xlsxwriter.Workbook(r'K:\Wymiana danych\Staszek\Ymitr\DLUGI_POTOK\Dlugi_potok_budowle.xlsx')
 
 fileWejscieNWK = open(inputNwkDir, 'r')
 nwk = read_NWK(fileWejscieNWK)
@@ -22,7 +22,7 @@ XS_base.sort(key=lambda x: float(x.lp))
 
 for num in range(len(XS_base)):
 
-    if "przekrój" in XS_base[num].type or "most" in XS_base[num].type or "cc" in XS_base[num].type:
+    if "przepust" in XS_base[num].type or "most" in XS_base[num].type or "kładka" in XS_base[num].type:
         # sprowadzenie pkt na prosta
         x1, x2, y1, y2 = (XS_base[num].get_far())
         for pkt in XS_base[num].point_data:

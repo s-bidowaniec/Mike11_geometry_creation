@@ -18,7 +18,7 @@ ws = wb['result']
 db2 = []
 for row in db:
     for row1 in ws.rows:
-        if (int(row['PROFILEM']) == int(row1[1].value) or int(row['PROFILEM']) == int(row1[1].value)+1 or int(row['PROFILEM']) == int(row1[1].value)-1) and str(row['RIVERCODE']).lower() == str(row1[0].value).lower():
+        if abs(int(row['PROFILEM']) - int(row1[1].value)) < 2 and str(row['RIVERCODE']).lower() == str(row1[0].value).lower():
             row['010'] = row1[2].value
             row['100'] = row1[3].value
             row['500'] = row1[4].value

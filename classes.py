@@ -1172,14 +1172,18 @@ class XS_t(object):
         for pkt1 in self.point_data:
             if 1 == int(float(pkt1.znacznik)) or 12 == int(float(pkt1.znacznik)):
                 zww.append([float(pkt1.x), float(pkt1.y)])
+        if len(zww) < 2:
+            zww.append([self.point_data[0].x, self.point_data[0].y])
+            zww.append([self.point_data[-1].x, self.point_data[-1].y])
+        else:
+            pass
         # tu oblicza przeciecie z zww
         for pkt in nwk.pointList:
             xB, yB, kmB = pkt.y, pkt.x, pkt.val2
             if old_x != None:
                 x,y,b,c = line_intersection(zww[0][0],zww[0][1],zww[-1][0],zww[-1][1],old_x,old_y,xB,yB)
-
                 if b == True and c == True:
-                    odl1 = distance(x,xB,y,yB)
+                    odl1 = distance(x, xB, y, yB)
                     if kmB < old_km:
                         kilometr = kmB + odl1
                     else:
@@ -1249,7 +1253,10 @@ class XS_t(object):
         manningVal = []
         for element in self.manning:
             manningVal.append(replacements1[element])
-        self.manning = sum(manningVal)/len(manningVal)
+        try:
+            self.manning = sum(manningVal)/len(manningVal)
+        except:
+            self.manning = 0.035
 
     def excel_print(self, workbook, path='C:\\'):
         worksheet = workbook.add_worksheet(str(self.lp))
