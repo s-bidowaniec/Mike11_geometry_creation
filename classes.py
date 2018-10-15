@@ -79,7 +79,7 @@ class Pkt(object):
             print(len(line.split()))
             print(line,'\n','-----------')
         #self.station, self.z, self.manning.py, self.kod = zip(*line.split()[:-3])
-        self.station, self.z, self.manning, self.kod = line.split()[0], line.split()[1],line.split()[2],line.split()[3]
+        self.station, self.z, self.manning, self.kod = float(line.split()[0]), float(line.split()[1]),line.split()[2],line.split()[3]
         #return '{} {}'.format(self.station, self.z)
 
 class Xs(object):
@@ -149,7 +149,7 @@ class Xs(object):
         except:
             pass
         if rr == None:
-            file.write('RESISTANCE NUMBERS\r\n   2  1     1.000     1.000     1.000    1.000    1.000\r\n')
+            file.write(str('RESISTANCE NUMBERS\r\n   2  1     {}     1.000     1.000    1.000    1.000\r\n').format(self.mann))
         else:
             file.write('RESISTANCE NUMBERS\r\n   2  0     1.000     1.000     1.000    1.000    1.000\r\n')
         file.write('PROFILE        {}\r\n'.format(self.profile))
@@ -703,7 +703,7 @@ class bridge_xs(object):
         self.upS = sheet.cell(row=6, column=2).value
         self.downS = sheet.cell(row=7, column=2).value
         self.topoID = sheet.cell(row=8, column=2).value
-        self.km = sheet.cell(row=9, column=2).value
+        self.km = float(sheet.cell(row=9, column=2).value)
         self.mann = sheet.cell(row=9, column=4).value
         self.koryto = []
         self.przepust = []
@@ -786,7 +786,7 @@ class XS_t(object):
             napis = "".join(napis).replace('*', '').replace('\r\n','')  # koniec usuwania powielonych znakow podzialu, zamiana listy na string
             line2 = napis.replace("\t"," ").replace("  "," ")
             numbers = sum(c.isdigit() for c in line2)
-            if numbers < 14:
+            if numbers < 14 or '.jpg' in napis.lower():
                 self.dane.append(line2)
 
             else:
@@ -872,6 +872,9 @@ class XS_t(object):
             if "zww" in str(poi.kod).lower():
                 line.append(poi.x)
                 line.append(poi.y)
+
+        if len(line) < 2:
+            line = [self.point_data[0].x, self.point_data[0].y, self.point_data[-1].x, self.point_data[-1].y]
         return(line[0],line[1],line[2],line[3])
 
     def distance(self):
@@ -1009,6 +1012,7 @@ class XS_t(object):
         self.culvert_common = []
         self.culvert_special = []
         self.zww = []
+        self.zwwDoKM = []
         '''podzial na pkt koryta i obiektu, pobranie najnizszego punktu z koryta'''
         self.culvert_upS = 1000
         # pobranie koryta w zakresie budowli
@@ -1038,6 +1042,7 @@ class XS_t(object):
                 self.deck.append([float(pkt.dist), float(pkt.z)])
             if "zww" in str(pkt.kod).lower():
                 self.zww.append([float(pkt.dist), float(pkt.z)])
+                self.zwwDoKM.append(pkt)
         self.kor = self.culver_bottom
 
         if len(self.culvert_top) == 1 and len(self.culvert_special) == 0:
@@ -1164,24 +1169,29 @@ class XS_t(object):
     def get_km_bridge(self,nwk):
         """znajduje km mostu z punktow nwk """
         self.topoID = 0
-        zww = []
+        if len(self.zwwDoKM) >= 2:
+            zww = [[point.x, point.y] for point in self.zwwDoKM]
+        print(zww)
 
         kilometry = []
         old_x, old_y, old_km = None, None, None
 
-        for pkt1 in self.point_data:
-            if 1 == int(float(pkt1.znacznik)) or 12 == int(float(pkt1.znacznik)):
-                zww.append([float(pkt1.x), float(pkt1.y)])
+        """
+        if len(zww) < 2:
+            for pkt1 in self.point_data:
+                if 1 == int(float(pkt1.znacznik)) or 12 == int(float(pkt1.znacznik)):
+                    zww.append([float(pkt1.x), float(pkt1.y)])
+        """
         if len(zww) < 2:
             zww.append([self.point_data[0].x, self.point_data[0].y])
-            zww.append([self.point_data[-1].x, self.point_data[-1].y])
+            zww.append([self.point_data[-2].x, self.point_data[-2].y])
         else:
             pass
         # tu oblicza przeciecie z zww
         for pkt in nwk.pointList:
             xB, yB, kmB = pkt.y, pkt.x, pkt.val2
             if old_x != None:
-                x,y,b,c = line_intersection(zww[0][0],zww[0][1],zww[-1][0],zww[-1][1],old_x,old_y,xB,yB)
+                x,y,b,c = line_intersection(zww[0][0], zww[0][1], zww[-1][0], zww[-1][1], old_x, old_y, xB, yB)
                 if b == True and c == True:
                     odl1 = distance(x, xB, y, yB)
                     if kmB < old_km:
@@ -1197,17 +1207,19 @@ class XS_t(object):
         try:
             self.km = min(kilometry, key=lambda x: x[1])[0]
             self.topoID = topoID
-        # jak nic nie wyliczy z zww to probuje z granicznych
+            # jak nic nie wyliczy z zww to probuje z granicznych
         except:
             zww = self.point_data
-            zww.sort(key=lambda x: x.odlRed)
+            zww = list(filter(lambda x: x.odlRed != 'None', zww))
+            print(zww)
+            zww.sort(key = lambda x: float(x.odlRed))
             kilometry = []
             old_x, old_y, old_km = None, None, None
             for pkt in nwk.pointList:
                 xB, yB, kmB = pkt.y, pkt.x, pkt.val2
                 if old_x != None:
                     x, y, b, c = line_intersection(zww[0].x, zww[0].y, zww[-1].x, zww[-1].y, old_x, old_y, xB, yB)
-
+                    #if b == True or c == True: print(x,y,b,c)
                     if b == True and c == True:
                         odl1 = distance(x, xB, y, yB)
                         if kmB < old_km:
@@ -1218,6 +1230,7 @@ class XS_t(object):
                         for branch in nwk.branchList:
                             if pkt.no in branch.pointList:
                                 topoID = branch.topoID
+
                 old_x, old_y, old_km = xB, yB, kmB
             try:
                 self.km = min(kilometry, key=lambda x: x[1])[0]
@@ -1225,6 +1238,8 @@ class XS_t(object):
             except:
                 self.km = 0
                 self.topoID = 0
+
+            print("km v2: " + str(kilometry))
         replacements1 = {
             "K01": 0.035,
             "K02": 0.032,
@@ -1258,6 +1273,46 @@ class XS_t(object):
         except:
             self.manning = 0.035
 
+    def get_weir(self):
+        print(self.lp)
+        self.manning = []
+        self.geom = []
+        self.deck = []
+        self.kor = []
+        self.culver_bottom = []
+        self.culvert_top = []
+        self.culvert_common = []
+        self.culvert_special = []
+        self.culvertXS = []
+        self.zww = []
+        self.zwwDoKM = []
+        '''podzial na pkt koryta i obiektu, pobranie najnizszego punktu z koryta'''
+        self.culvert_upS = 1000
+        # pobranie koryta w zakresie budowli
+        flag = 0
+        laczenie = []
+        for pkt in self.point_data:
+            print(pkt.kod, pkt.znacznik)
+            if "t" in str(pkt.cos).lower() or "k" in str(pkt.cos).lower():
+                self.kor.append([float(pkt.dist), float(pkt.z)])
+                if "K" in pkt.cos:
+                    self.manning.append(pkt.cos)
+            if 2 == int(float(pkt.znacznik)):
+                self.deck.append([float(pkt.dist), float(pkt.z)])
+            if 20 == int(float(pkt.znacznik)):
+                laczenie.append([float(pkt.dist), float(pkt.z)])
+            if "zww" in str(pkt.kod).lower():
+                self.zww.append([float(pkt.dist), float(pkt.z)])
+                self.zwwDoKM.append(pkt)
+            if pkt.kod != 'None' and str(pkt.kod).lower() != 'zww' and 7.0 == float(pkt.kod):
+                self.culvert_upS = float(pkt.z)
+            if 9.0 == float(pkt.znacznik):
+                self.culvert_downS = float(pkt.z)
+        #self.culvertXS = self.kor
+        self.deck = self.deck[:-1]
+        self.deck.insert(0, laczenie[0])
+        self.deck.append(laczenie[-1])
+
     def excel_print(self, workbook, path='C:\\'):
         worksheet = workbook.add_worksheet(str(self.lp))
         bold = workbook.add_format({'bold': 1})
@@ -1277,19 +1332,31 @@ class XS_t(object):
         worksheet.write(8, 2, 'Manning:')
         try:
             worksheet.write(7, 1, str(self.topoID))
-            worksheet.write(8, 1, str(self.km))
-            worksheet.write(8, 3, str(self.manning))
+            worksheet.write(8, 1, str(round(self.km,0)))
+            worksheet.write(8, 3, str(round(self.manning, 2)))
         except:
             worksheet.write(7, 1, "None")
             worksheet.write(8, 1, "None")
             worksheet.write(8, 3, "None")
         try:
             worksheet.write(4, 0, 'Długość:')
-            worksheet.write(4, 1, str(self.culvert_len))
+            worksheet.write(4, 1, str(round(self.culvert_len, 2)))
+        except:
+            pass
+        try:
+            szer = float(max(self.culvertXS, key=lambda x: float(x[0]))[0]) - float(min(self.culvertXS, key=lambda x: float(x[0]))[0])
+            worksheet.write(5, 3, 'Szer_Stat:')
+            worksheet.write(5, 4, str(round(szer,2)))
+
+        except:
+            pass
+        try:
             worksheet.write(5, 0, 'Upstream:')
             worksheet.write(5, 1, str(self.culvert_upS))
             worksheet.write(6, 0, 'Downstream:')
             worksheet.write(6, 1, str(self.culvert_downS))
+            worksheet.write(5, 2, 'Delta_h:')
+            worksheet.write(6, 2, str(round((self.culvert_upS)-(self.culvert_downS), 2)))
         except:
             pass
         try:
@@ -1312,7 +1379,8 @@ class XS_t(object):
             worksheet.write(3, 4, str(self.szer))
         except:
             pass
-
+        worksheet.write(4, 3, 'Wprowadzić:')
+        worksheet.write(4, 4, 'tak')
         chart1 = workbook.add_chart({'type': 'scatter', 'subtype': 'straight'})
         for row, line in enumerate(self.kor):
             for col, cell in enumerate(line):
@@ -1344,6 +1412,18 @@ class XS_t(object):
         chart1.set_style(10)
         chart1.set_size({'width': 720, 'height': 576})
         worksheet.insert_chart('G1', chart1, {'x_offset': 25, 'y_offset': 15})
+        # skalowanie
+        from PIL import Image
+        def calculate_scale(file_path, bound_size):
+            # check the image size without loading it into memory
+            im = Image.open(file_path)
+            original_width, original_height = im.size
+
+            # calculate the resize factor, keeping original aspect and staying within boundary
+            bound_width, bound_height = bound_size
+            ratios = (float(bound_width) / original_width, float(bound_height) / original_height)
+            return min(ratios)
+
 
         #worksheet.write('A12', 'Insert an image with an offset:')
         import os
@@ -1352,8 +1432,11 @@ class XS_t(object):
             for root, dirs, files in os.walk(path):
                 for name in files:
                     if name == foto:
+                        image_path = os.path.abspath(os.path.join(root, name))
+                        bound_width_height = (900, 400)
+                        resize_scale = calculate_scale(image_path, bound_width_height)
                         #print(os.path.abspath(os.path.join(root, name)))
-                        worksheet.insert_image('S'+ str(n), os.path.abspath(os.path.join(root, name)), {'x_offset': 15, 'y_offset': 10})
+                        worksheet.insert_image('S'+ str(n), os.path.abspath(os.path.join(root, name)), {'x_scale': resize_scale, 'y_scale': resize_scale})
                         n += 25
         #workbook.close()
 

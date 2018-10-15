@@ -1,10 +1,10 @@
 from dbfread import DBF
 import openpyxl
 # wejscie, pliki z wynikami i przekroje dbf:
-db = DBF(r'C:\!!Mode ISOKII\!Etap1\ZLOTNA_161152 — kopia\wyniki\ZLOTNA_przekroje.dbf')
-wb = openpyxl.load_workbook(r'C:\!!Mode ISOKII\!Etap1\ZLOTNA_161152 — kopia\wyniki\wyniki.xlsx')
+db = DBF(r'C:\!!Mode ISOKII\!Etap1\Oddanie.V02\1_Warstwy\BUDKOWICZANKA_S01_XS.dbf')
+wb = openpyxl.load_workbook(r'C:\!!Mode ISOKII\!Etap1\Oddanie.V02\2_Wyniki\H500v3.xlsx')
 # wyjsciowy xlsx do podmiany w dbf
-filepath=r'C:\!!Mode ISOKII\!Etap1\ZLOTNA_161152 — kopia\wyniki\Wyniki_res.xlsx'
+filepath=r'C:\!!Mode ISOKII\!Etap1\Oddanie.V02\2_Wyniki\H500v3_res.xlsx'
 
 """
 Kolumny porównywane to PROFILEM i RIVERCODE (w dbf)
@@ -18,7 +18,12 @@ ws = wb['result']
 db2 = []
 for row in db:
     for row1 in ws.rows:
-        if abs(int(row['PROFILEM']) - int(row1[1].value)) < 2 and str(row['RIVERCODE']).lower() == str(row1[0].value).lower():
+        #print(row['ProfileM'],"---",row1[1].value)
+        try:
+            print(int(row1[1].value))
+        except:
+            continue
+        if abs(int(row['PROFILEM']) - int(row1[1].value)) < 2 and str(row['RIVERNAME']).lower() == str(row1[0].value).lower():
             row['010'] = row1[2].value
             row['100'] = row1[3].value
             row['500'] = row1[4].value

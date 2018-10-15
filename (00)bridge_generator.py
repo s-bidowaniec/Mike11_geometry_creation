@@ -3,9 +3,9 @@ from classes import *
 from functions import read_NWK
 import xlsxwriter
 
-path = r"K:\Wymiana danych\Staszek\Ymitr\DLUGI_POTOK"
-inputNwkDir = r"K:\Wymiana danych\Staszek\Ymitr\DLUGI_POTOK\S01_DLUGI_POTOK.nwk11"
-workbook = xlsxwriter.Workbook(r'K:\Wymiana danych\Staszek\Ymitr\DLUGI_POTOK\Dlugi_potok_budowle.xlsx')
+path = r"C:\!!Mode ISOKII\!ISOK II\Dobka\GIS"
+inputNwkDir = r"C:\!!Mode ISOKII\!ISOK II\Dobka\Dobka_general\mosty\S01_Dobka.nwk11"
+workbook = xlsxwriter.Workbook(r'C:\!!Mode ISOKII\!ISOK II\Dobka\hec_ras2\Dobka_progi3.xlsx')
 
 fileWejscieNWK = open(inputNwkDir, 'r')
 nwk = read_NWK(fileWejscieNWK)
@@ -36,4 +36,13 @@ for num in range(len(XS_base)):
         XS_base[num].get_km_bridge(nwk)
         XS_base[num].excel_print(workbook, path)
         # print(XS_base[num].point_data[-1].xp)
+    if "próg" in XS_base[num].type:
+        x1, x2, y1, y2 = (XS_base[num].get_far())
+        for pkt in XS_base[num].point_data:
+            pkt.xp = (Points2Line(x1, x2, y1, y2, pkt.x, pkt.y).yp)
+            pkt.yp = (Points2Line(x1, x2, y1, y2, pkt.x, pkt.y).xp)
+        XS_base[num].distance()
+        XS_base[num].get_weir()
+        XS_base[num].get_km_bridge(nwk)
+        XS_base[num].excel_print(workbook, path)
 workbook.close()
