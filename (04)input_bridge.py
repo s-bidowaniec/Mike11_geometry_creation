@@ -120,7 +120,10 @@ for bridge in bridges:
             if abs(bridge.km - km) > 2:
                 newSet.append(km)
             else:
+                km2 = km
                 pass
+        bridge.km = km2
+        nwk.culvertList[-1].km = bridge.km
         kmDown = max([i for i in newSet if i < bridge.km])
         kmUp = min([i for i in newSet if i > bridge.km])
 
@@ -310,7 +313,10 @@ for bridge in bridges:
             if abs(bridge.km - km) > 2:
                 newSet.append(km)
             else:
+                km2 = km
                 pass
+        bridge.km = km2
+        nwk.weirList[-1].km = bridge.km
         if flag != "bridge":
             kmDown = max([i for i in newSet if i < bridge.km])
             kmUp = min([i for i in newSet if i > bridge.km])
