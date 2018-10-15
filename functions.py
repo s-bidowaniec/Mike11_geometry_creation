@@ -640,9 +640,9 @@ def fit_bridge(xs, xsUp2, bridge, base_manning=0.04):
                 pass
             # insert in proper place second XS
             if int(xsUp2.rn.split()[1]) == 1:
-                line = '{} {} {} {}'.format(element[0], element[1] - 0.1 - float(upS), bridge.mann, 'P1')
+                line = '{} {} {} {}'.format(element[0], element[1] - 0.01 - float(upS), bridge.mann, 'P1')
             else:
-                line = '{} {} {} {}'.format(element[0], element[1] - 0.1 - float(upS), bridge.mann/base_manning, 'P1')
+                line = '{} {} {} {}'.format(element[0], element[1] - 0.01 - float(upS), bridge.mann/base_manning, 'P1')
             if flagP == 0:
                 indesXsPk = min([float(poi.station) for poi in xsUp2.points if float(poi.station) >= float(element[0])])
                 for items in xsUp2.points:
