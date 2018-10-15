@@ -17,7 +17,7 @@ nwkInputDir = r"C:\!!Mode ISOKII\!ISOK II\Dobka\hec_ras2\Dobka.nwk11"
 fileWejscieNWK = open(nwkInputDir, 'r')
 nwk = read_NWK(fileWejscieNWK)
 # plik z mostami
-wb = openpyxl.load_workbook(r'C:\!!Mode ISOKII\!ISOK II\Dobka\hec_ras2\Dobka_progi2.xlsx')
+wb = openpyxl.load_workbook(r'C:\!!Mode ISOKII\!ISOK II\Dobka\hec_ras2\Dobka_progi3.xlsx')
 bridges = read_bridge_xlsx(wb)
 base_manning = 0.04
 # --------------------------------- PLIKI WYNIKOWE -----------------------------------------------------------
@@ -66,9 +66,10 @@ for bridge in bridges:
         cl = cl.reservoir
         cl.elevation = Elevation(cl)
         # PRZYPISANIE DANYCH PODSTAWOWYCH
+        culvertID = str.upper(bridge.rzeka[0:3]) + "_M-" + str(bridge.lp).replace(' ', '') + "_C1"
         nwk.culvertList[-1].riverName = bridge.rzeka
         nwk.culvertList[-1].km = bridge.km
-        nwk.culvertList[-1].ID = bridge.lp
+        nwk.culvertList[-1].ID = culvertID
         nwk.culvertList[-1].topoID = bridge.topoID
         # uwzglednienie spadku
         downS, upS, length = float(bridge.downS), float(bridge.upS), float(bridge.dl)
@@ -117,12 +118,17 @@ for bridge in bridges:
         setKm.sort()
         newSet = []
         for km in setKm:
-            if abs(bridge.km - km) > 2:
+            if abs(float(bridge.km) - float(km)) > 3:
                 newSet.append(km)
             else:
+                if int(km) == 1047:
+                    import pdb
+                    pdb.set_trace()
                 km2 = km
                 pass
-        bridge.km = km2
+        if km2:
+            bridge.km = km2
+            km2 = 0
         nwk.culvertList[-1].km = bridge.km
         kmDown = max([i for i in newSet if i < bridge.km])
         kmUp = min([i for i in newSet if i > bridge.km])
@@ -176,7 +182,7 @@ for bridge in bridges:
         XsOrder['{}b {}'.format(str.lower(bridge.rzeka).replace(' ', ''), bridge.km)].lp = '   1  0    0.000  0    0.000  250\n'  # level params
 
         # ---- END XS -----
-
+        """
         # ---- WEIR -----
         # --- conflict detection ---
         set = [[str.lower(i.riverName).replace(' ', ''), round(float(i.km))] for i in nwk.weirList]
@@ -233,6 +239,7 @@ for bridge in bridges:
         startElev = min(i[1] for i in bridge.przelew)  # najnizsza rzedna gory konstrukcji
         nwk.weirList[-1].geometry.levelWidth.data = [[startElev, szerNis], [startElev + 0.1, szerWys],
                                                      [startElev + 2, bridge.weir_width]]
+        """
         # ---- END WEIR -----
         print(len(XsOrder), "len od XsOrder")
     if bridge.typ == "próg" or bridge.typ == "most" or bridge.typ == "przepust" or bridge.typ == "kładka":
@@ -240,7 +247,9 @@ for bridge in bridges:
             weirShift = bridgeShift
             for element in bridge.przelew:
                 element[0] += weirShift
+            litera ="M"
         else:
+            litera = "H"
             weirShift = 0
         import pdb
         #pdb.set_trace()
@@ -265,7 +274,7 @@ for bridge in bridges:
         cl = cl.reservoir
         cl.elevation = Elevation(cl)
         # PRZYPISANIE DANYCH PODSTAWOWYCH
-        weirID = str.upper(bridge.rzeka[0:3]) + "_H-" + str(bridge.lp).replace(' ', '') + "_W1"
+        weirID = str.upper(bridge.rzeka[0:3]) + "_"+litera+"-" + str(bridge.lp).replace(' ', '') + "_W1"
         location = [str(bridge.rzeka).replace(' ', ''), str(bridge.km).replace(' ', ''), weirID,
                     str(bridge.topoID).replace(' ', '')]
 
@@ -310,12 +319,17 @@ for bridge in bridges:
         setKm.sort()
         newSet = []
         for km in setKm:
-            if abs(bridge.km - km) > 2:
+            if abs(float(bridge.km) - float(km)) > 3:
                 newSet.append(km)
             else:
+                if int(km) == 1047:
+                    import pdb
+                    pdb.set_trace()
                 km2 = km
                 pass
-        bridge.km = km2
+        if km2:
+            bridge.km = km2
+            km2=0
         nwk.weirList[-1].km = bridge.km
         if flag != "bridge":
             kmDown = max([i for i in newSet if i < bridge.km])
