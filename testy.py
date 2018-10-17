@@ -12,6 +12,7 @@ class TestSomeFunctions(unittest.TestCase):
         self.assertEqual(distance(0, 0, 0, 5), 5)
         self.assertEqual(distance(0, 5, 0, 5), 7.0710678118654755)
 
+<<<<<<< HEAD
 """
 class TestXs_tMethods(unittest.TestCase):
     def test_init_Xs_t(self):
@@ -48,5 +49,13 @@ class TestLinearEquation(unittest.TestCase):
     def test_linear_equation(self):
         array = [[0.928347365933718, 391.32], [3.20855993299333, 392.83], [5.5629339357402, 391.33]]
         self.assertEqual(linear_equation(array)(2.5), 392.6729846861197)
+=======
+
+class SimpleTest(unittest.TestCase):
+
+    def test_value(self):
+        self.assertEqual(2+2, 4)
+        
+>>>>>>> 40337fb3adfe80936708ee4e4078db4e3f5687c5
 if __name__ == '__main__':
     unittest.main()
