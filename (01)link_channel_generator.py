@@ -5,13 +5,13 @@ from functions import *
 from classes import *
 import multiprocessing
 # plik wsadowy rawdata, pobierane sa punkty wspolne na przekrojach oraz inne dane do generacji linku
-fileWejscieXS = open(r"K:\Wymiana danych\Staszek\KORN\S01_KRYNKA -ze zbiornikiem\03_S01_KRYNKA__XNS\raw_do_linkow.txt",'r')
+fileWejscieXS = open(r"C:\!!Mode ISOKII\!ISOK II\Czarny Potok\Mike_v1\S01_Czarny_Potok_man.txt",'r')
 
 # plik wsadowy nwk, pobierana jest lista punktow oraz branchy do ktorych dopisywane sa dane z nowych linkow
-inputNwkDir = r"K:\Wymiana danych\Staszek\KORN\S01_KRYNKA -ze zbiornikiem\02_S01_KRYNKA__NWK\S01_KRYNKA_bez_linkow.nwk11"
+inputNwkDir = r"C:\!!Mode ISOKII\!ISOK II\Czarny Potok\Mike_v1\S01_Czarny_Potok.nwk11"
 
 # nowy plik NWK z naniesionymi linkami
-outputNwkDir = r"K:\Wymiana danych\Staszek\KORN\S01_KRYNKA -ze zbiornikiem\02_S01_KRYNKA__NWK\S01_KRYNKA_linked.nwk11"
+outputNwkDir = r"C:\!!Mode ISOKII\!ISOK II\Czarny Potok\Mike_v1\S01_Czarny_Potok_link.nwk11"
 if inputNwkDir == outputNwkDir:
     raise 'Error: input == output'
 # Otwarcie plikow
@@ -38,9 +38,9 @@ for i in range(len(XS_dat)):
     index = list_km.index(float(XS_dat[i].km))
     if index == 0:
         XS_dat[i].len = int(abs(list_km[index] - list_km[index + 1]) / 2)
-    elif index >= len(list_km) - 1:
+    elif index >= len(list_km)-1:
         XS_dat[i].len = int(abs((list_km[index - 1] - list_km[index])) / 2)
-    elif 0 < index < len(list_km) - 1:
+    else: #if 0 < index < len(list_km) - 1:
         XS_dat[i].len = int(abs((list_km[index - 1] - list_km[index + 1]) / 2))
     if XS_dat[i].len == 0:
         XS_dat[i].len = 1

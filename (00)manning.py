@@ -2,18 +2,19 @@ from functions import *
 import pdb
 import bisect
 # lokacja dbf z maningiem, jesli base manning none - pomija przypisanie manninga, ustawic wtedy tez rr na none
-dbf = r'C:\!!Mode ISOKII\!ISOK II\Dobka\manning_060818.dbf'
+dbf = r'C:\!!Mode ISOKII\!ISOK II\Czarny Potok\Projekt_hecras\wksport_08.11.18\Manning_Output.dbf'
 #baseManning = None   #<--- wylacza przypisanie maninga z dbf
 if dbf != None: baseManning = read_manning_dbf(dbf)   #<--- zaczytanie tabeli dbf do manninga
 else: baseManning = None
 # lokacja rawdata
-input = r'C:\!!Mode ISOKII\!ISOK II\Dobka\hec_res\Dobka_raw.txt'
+input = r'C:\!!Mode ISOKII\!ISOK II\Czarny Potok\Mike_v1\S01_Czarny_Potok_raw.txt'
 file = open(input, 'r')
 crossSections, order = read_XSraw(file)
 # output file
-output = r'C:\!!Mode ISOKII\!ISOK II\Dobka\hec_res\Dobka_man.txt'
+output = r'C:\!!Mode ISOKII\!ISOK II\Czarny Potok\Mike_v1\S01_Czarny_Potok_man.txt'
 f = open(output, 'w')
 # epsilon to parametr algorytmu rdp od usuwania punktow(im wyższy tym więcej usuwa), ustawiony na None pomija funkcję
+# dajemy tak od 0.04 do 0.08
 epsilon = 0.04
 # zaokraglenie km przekroi(podać ilość miejsc po przecinku, lub None - pominięcie
 zaok = 0

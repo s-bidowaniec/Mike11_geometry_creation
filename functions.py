@@ -3,6 +3,7 @@ import collections
 import xlsxwriter
 from classes import *
 from dbfread import DBF
+import copy
 # UNIVERSAl -----------------------------------------------------------------------------------------------------------
 
 def pointToLine(x1, y1, x2, y2, x=None, y=None):
@@ -297,7 +298,9 @@ def read_NWK(file):
 def read_bridge_xlsx(wb):
     bridgeXsBase = []
     for s in wb.worksheets:
-        bridgeXsBase.append(bridge_xs(s))
+        #print(str(s.cell(row=5, column=5).value).lower())
+        if "tak" in str(s.cell(row=5, column=5).value).lower():
+            bridgeXsBase.append(bridge_xs(s))
     return bridgeXsBase
 
 def distance(x1, x2, y1, y2):
@@ -348,55 +351,130 @@ def dopasowanie(xs, koryto, przepust = None):
         deltaPrzep = xsMark-przepMark
     return 0, deltaPrzep
 
-# dopasowanie przekroii Xs, dopasowywyany krotszy przekroj
+# dopasowanie przekroii Xs
 def fit_xs(xs1, xs2):
-    flag=0 # domysle, jesli xs2 jes mniejsze,
+    xs1 = copy.deepcopy(xs1)
+    xs2 = copy.deepcopy(xs2)
     # pobranie punktow z markerow
     xs1StatElev = [[float(i.station), i.z, i.kod] for i in xs1.points if i.kod == '<#8>' or i.kod == '<#16>'or i.kod == '<#20>' or i.kod == '<#9>']
     xs2StatElev = [[float(i.station), i.z, i.kod] for i in xs2.points if i.kod == '<#8>' or i.kod == '<#16>'or i.kod == '<#20>' or i.kod == '<#9>']
 
-    # sprawdzenie ktory przekroj jest dluzszy
-    # ZMIENIC NA DELTE PO STATION
-    xs1StatElevAll = [[float(i.station), i.z, i.kod] for i in xs1.points]
-    xs2StatElevAll = [[float(i.station), i.z, i.kod] for i in xs2.points]
-
-    # selekcja przekroju do dopasowania, powinien isc ten o korycie w mniejszym station, i byc przesuwany na prawo czyli coraz wiekszy station
-    #if xs2StatElevAll[-1][0]-xs2StatElevAll[0][0] > xs1StatElevAll[-1][0]-xs1StatElevAll[0][0]:
-    if xs2StatElevAll[-1][0] > xs1StatElevAll[-1][0]:
-        xs1StatElev, xs2StatElev = xs2StatElev, xs1StatElev
-        xs1, xs2 = xs2, xs1
-        flag = 2 # xs2 jest wieksze i zamiana miejsc
-
-    #stat = min([xs2StatElev[-1][0], xs2StatElev[0][0]])
-    #statMax = max([xs2StatElev[-1][0], xs2StatElev[0][0]])
-
     # obliczenie sredniego przesuniecia markerow
-    #if xs2StatElevAll[-1][0]-xs2StatElevAll[0][0] <= xs1StatElevAll[-1][0]-xs1StatElevAll[0][0]:
-    i = 0
     dane = []
     for pkt in xs1StatElev:
-        if pkt[2] == xs2StatElev[i][2]:
-            delta = float(pkt[0])-float(xs2StatElev[i][0])
-        dane.append(delta)
+        for pkt2 in xs2StatElev:
+            if pkt[2] == pkt2[2]:
+                delta = float(pkt[0])-float(pkt2[0])
+                dane.append(delta)
     m = np.mean(dane)
+    try:
+        int(float(m))
+    except:
+        print('------------------------- shift 0 -------------------------')
+        m = 0
 
-    #xs2ToFit = [[float(i.station), i.z] for i in xs2.points if float(stat)-(3*statMax-stat) < float(i.station) < float(statMax)+(3*statMax-stat)]
-    #print(xs2ToFit)
-    #print(stat,'--- ---')
-    #dop, przes = dopasowanie(xs1,xs2ToFit)
-    #print(m, flag)
-    print('flag', flag)
-    delta = m # przes
-
-
+    delta = float(m) #przes
 
     for i in xs2.points:
-        i.station = float(i.station)+delta
+        i.station = float(i.station) + delta
 
-    if flag == 0:
-        return xs1, xs2
-    elif flag == 2:
-        return xs2, xs1
+    return xs1, xs2
+
+def fit_weir(xsWeir, weir, base_manning=0.04, bridgeType = False):
+    weir = copy.deepcopy(weir)
+    #przepMin = min([i[0] for i in weir.koryto])
+    #przepMax = max([i[0] for i in weir.koryto])
+    minim, przes = dopasowanie(xsWeir, weir.koryto, weir.przelew)
+    startStat = min([i[0] for i in weir.koryto])
+    print(przes, startStat, 'przes start stat')
+    # przesuniecie obiektu (- start stat ?, nie wiem dla czego ale pomaga na dosuniecie)
+    # if przes >= 0:
+    if bridgeType:
+        deltaStatBridge = 0
+    else:
+        deltaStatBridge = przes - startStat
+    # else:
+    # deltaStatBridge = przes + startStat
+    # przesuniecie calego koryta o delta stat
+    for element in weir.koryto:
+        element[0] = element[0] + deltaStatBridge
+    przepMin = min([i[0] for i in weir.koryto]) # + deltaStatBridge
+    przepMax = max([i[0] for i in weir.koryto]) # + deltaStatBridge
+
+    # usuniecie z przekroju punktow w obrebie przepustu, oraz powielajacych sie
+    list=[]
+    statList=[]
+    statElevList=[]
+    excludedMarkerListXs1 = []
+    print("----------")
+
+    for pkt in xsWeir.points:
+        # jesli w tym zakresie to pomijamy, else dodaje do nowej listy
+        if przepMin + 0.1 < float(pkt.station) < przepMax - 0.1:
+            # zapis stationow markerow
+
+            if pkt.kod != '<#0>':
+                excludedMarkerListXs1.append(pkt)
+
+            #list pass - pomija punkty w przekroju
+            pass
+        #jesli station sie powtarza sprawdzamy delta z i jesli wieksze od 0.05 to dodajemy
+        elif pkt.station in statList:
+            index = statList.index(pkt.station)
+            z=statElevList[index][1]
+            if abs(float(z)-float(pkt.z)) > 0.05:
+                list.append(pkt)
+
+        # else dodaje punkt, - poza culvertem
+        else:
+            list.append(pkt)
+        # uzupelnienie list ze stattion do sprawdzenia
+        statList.append(pkt.station)
+        statElevList.append([pkt.station, pkt.z])
+    xsWeir.points = list
+
+    flagP = 0
+    for element in weir.koryto:
+        # dla punktow koryta w obrebie przepustu
+
+        if przepMin <= float(element[0]) <= przepMax:
+            # tworzy linnie do dodania punktu
+            #if int(weir.rn.split()[1]) == 1:
+            line = '{} {} {} {}'.format(element[0], element[1], weir.mann, 'P1')
+            #else:
+                #line = '{} {} {} {}'.format(element[0], element[1], weir.mann,
+                                            #'P1')
+            # dodawanie w miejscu stalego indexu, ma zachowac kolejnosc punktow a nie po station
+            print(float(element[0]), " float element od 0")
+            print(xsWeir.km)
+            print([float(poi.station) for poi in xsWeir.points])
+            if flagP == 0:
+                indesXsPk1 = min([float(poi.station) for poi in xsWeir.points if float(poi.station) >= float(element[0])])
+                for items in xsWeir.points:
+                    if float(indesXsPk1) == float(items.station):
+                        punkt = items
+                indesXsPk1 = xsWeir.points.index(punkt)
+                # del xs.points[indesXsPk1]
+            elif flagP == 1:
+                indesXsPk1 += 1
+                # zmienny index do obliczenia delta z
+            indesXsPkz = min([float(poi.station) for poi in xsWeir.points if float(poi.station) >= float(element[0])])
+            for items in xsWeir.points:
+                if float(indesXsPkz) == float(items.station):
+                    punkt = items
+            indesXsPkz = xsWeir.points.index(punkt)
+            z1 = xsWeir.points[indesXsPkz - 1]
+            z2 = xsWeir.points[indesXsPkz]
+            d = distanceZ([float(z1.station), float(z1.z)], [float(z2.station), float(z2.z)],
+                          [float(element[0]), float(element[1])])
+            # d = float(element[1]) - min([float(z1.z), float(z2.z)])
+            print(indesXsPk1, "index")
+            if d != 0.0:
+                xsWeir.points.insert(indesXsPk1, Pkt(line))
+                pass
+            flagP = 0
+
+    return xsWeir, excludedMarkerListXs1
 
 def fit_bridge(xs, xsUp2, bridge, base_manning=0.04):
     koryto, przepust, downS, upS = bridge.koryto, bridge.przepust, bridge.downS, bridge.upS
@@ -420,7 +498,7 @@ def fit_bridge(xs, xsUp2, bridge, base_manning=0.04):
     minim, przes = dopasowanie(xs, koryto, przepust)
     # poczatkowy station przepustu
     startStat = min([i[0] for i in przepust])
-    print(przes,startStat,'przes start stat')
+    print(przes, startStat, 'przes start stat')
     # przesuniecie obiektu (- start stat ?, nie wiem dla czego ale pomaga na dosuniecie)
     #if przes >= 0:
     deltaStatBridge = przes - startStat
@@ -431,7 +509,7 @@ def fit_bridge(xs, xsUp2, bridge, base_manning=0.04):
         element[0] = element[0]+deltaStatBridge
     przepMin = min([i[0] for i in przepust]) + deltaStatBridge
     przepMax = max([i[0] for i in przepust]) + deltaStatBridge
-    korytoPrzep=[]
+    korytoPrzep = []
     # append river points to xs if xs is to short
     import copy
     xs_appending = copy.deepcopy(xs)
@@ -470,12 +548,17 @@ def fit_bridge(xs, xsUp2, bridge, base_manning=0.04):
     list=[]
     statList=[]
     statElevList=[]
+    excludedMarkerListXs1 = []
+    excludedMarkerListXs2 = []
     print("----------")
     for pkt in xs.points:
         # jesli w tym zakresie to pomijamy, else dodaje do nowej listy
-        if przepMin+0.1 < float(pkt.station) < przepMax-0.1:
-            # get previous and next koryto points
-            #list.append(pkt)
+        if przepMin + 0.1 < float(pkt.station) < przepMax - 0.1:
+            # zapis stationow markerow
+            if pkt.kod != '<#0>':
+                excludedMarkerListXs1.append(pkt)
+
+            #list pass - pomija punkty w przekroju
             pass
         #jesli station sie powtarza sprawdzamy delta z i jesli wieksze od 0.05 to dodajemy
         elif pkt.station in statList:
@@ -484,7 +567,7 @@ def fit_bridge(xs, xsUp2, bridge, base_manning=0.04):
             if abs(float(z)-float(pkt.z)) > 0.05:
                 list.append(pkt)
 
-        # else dodaje punkt
+        # else dodaje punkt, - poza culvertem
         else:
             list.append(pkt)
         # uzupelnienie list ze stattion do sprawdzenia
@@ -497,8 +580,10 @@ def fit_bridge(xs, xsUp2, bridge, base_manning=0.04):
     statList=[]
     statElevList=[]
     for pkt in xsUp2.points:
-        if przepMin-0.1 < float(pkt.station) < przepMax+0.1:
-
+        if przepMin-0.1 <= float(pkt.station) <= przepMax+0.1:
+            # zapis stationow markerow
+            if pkt.kod != '<#0>':
+                excludedMarkerListXs2.append(pkt)
             pass
 
         elif pkt.station in statList:
@@ -518,11 +603,9 @@ def fit_bridge(xs, xsUp2, bridge, base_manning=0.04):
 
     flagP = 0
     for element in koryto:
-
-
         # dla punktow koryta w obrebie przepustu
 
-        if przepMin < float(element[0]) < przepMax:
+        if przepMin <= float(element[0]) <= przepMax:
             #tworzy linnie do dodania punktu
             if int(xs.rn.split()[1]) == 1:
                 line = '{} {} {} {}'.format(element[0], element[1]-0.01-float(downS), bridge.mann, 'P1')
@@ -557,9 +640,9 @@ def fit_bridge(xs, xsUp2, bridge, base_manning=0.04):
                 pass
             # insert in proper place second XS
             if int(xsUp2.rn.split()[1]) == 1:
-                line = '{} {} {} {}'.format(element[0], element[1] - 0.1 - float(upS), bridge.mann, 'P1')
+                line = '{} {} {} {}'.format(element[0], element[1] - 0.01 - float(upS), bridge.mann, 'P1')
             else:
-                line = '{} {} {} {}'.format(element[0], element[1] - 0.1 - float(upS), bridge.mann/base_manning, 'P1')
+                line = '{} {} {} {}'.format(element[0], element[1] - 0.01 - float(upS), bridge.mann/base_manning, 'P1')
             if flagP == 0:
                 indesXsPk = min([float(poi.station) for poi in xsUp2.points if float(poi.station) >= float(element[0])])
                 for items in xsUp2.points:
@@ -591,7 +674,38 @@ def fit_bridge(xs, xsUp2, bridge, base_manning=0.04):
     delta_xsUp = abs(min_xsUp_stat-max_xsUp_stat)
     bridge.weir_width = min(delta_xs, delta_xsUp)
     print(przes+startStat," bridge shift")
-    return xs, xsUp2, deltaStatBridge
+    return xs, xsUp2, deltaStatBridge, excludedMarkerListXs1, excludedMarkerListXs2
+
+
+def add_markers(xs, markers):
+    """
+    :param xs:
+    :param markers:
+    :return:
+    """
+
+    # dla kazdego markera
+    for point in markers:
+        insertPoint = point
+        # pobrac station
+        station = float(point.station)
+        # pobrac puntkty przed i za stationem
+        minimal = []
+        maximal = []
+        for i in xs.points:
+            if float(i.station) > station:
+                minimal.append(i)
+            elif float(i.station) < station:
+                maximal.append(i)
+        startPoint = min(minimal, key = lambda x: float(x.station))
+        startIndex = xs.points.index(startPoint)
+        endPoint = max(maximal, key = lambda x: x.station)
+        # wyinterpolowac z value w station
+        # ys = y1 +(xs-x1)*((y2-y1)/(x2-x1))
+        insertPoint.z = startPoint.z + (station - startPoint.station) * ((endPoint.z - startPoint.z) / (endPoint.station - startPoint.station))
+        # dodac punkt z oznaczeniem markera na przekroj
+        xs.points.insert(startIndex, insertPoint)
+        print(len(xs.points), " ilosc pkt na przekroju")
 
 def linear_equation(array):
     a = np.array([
