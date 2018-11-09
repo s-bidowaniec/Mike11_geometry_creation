@@ -87,6 +87,7 @@ class Xs(object):
         self.dane = []
         self.points = []
         self.cs = 0
+        self.mann = 0.04
     def kordy(self):
         self.left = self.cords.split()[1:3]
         self.right = self.cords.split()[3:5]
@@ -1026,6 +1027,24 @@ class XS_t(object):
 
             if 0 == int(float(pkt.znacznik)) or 10 == int(float(pkt.znacznik)):
                 self.culver_bottom.append([float(pkt.dist), float(pkt.z)])
+
+                # sprawdzenie przyrastającego x
+                if len(self.kor) > 1:
+                    if self.kor[-1][0] < float(pkt.dist):
+                        self.kor.append([float(pkt.dist), float(pkt.z)])
+                    elif self.kor[-1][0] == float(pkt.dist):
+                        self.kor.append([float(pkt.dist)+0.01, float(pkt.z)])
+                    else: #if self.kor[-1][0] > float(pkt.dist):
+                        delta = self.kor[-1][0] - float(pkt.dist)
+                        odl_ostatnich_pkt = self.kor[-1][0] - self.kor[-2][0]
+                        if delta/2 < odl_ostatnich_pkt:
+                            self.kor[-1][0] -= delta/2
+                            self.kor.append([float(pkt.dist)+delta/2, float(pkt.z)])
+                        else: #if delta/2 >= odl_ostatnich_pkt:
+                            self.kor[-1][0] -= odl_ostatnich_pkt / 2
+                            self.kor.append([float(pkt.dist) + delta - odl_ostatnich_pkt / 2, float(pkt.z)])
+                else:
+                    self.kor.append([float(pkt.dist), float(pkt.z)])
                 if "K" in pkt.cos:
                     self.manning.append(pkt.cos)
                 if pkt.z < self.culvert_upS:
@@ -1043,7 +1062,7 @@ class XS_t(object):
             if "zww" in str(pkt.kod).lower():
                 self.zww.append([float(pkt.dist), float(pkt.z)])
                 self.zwwDoKM.append(pkt)
-        self.kor = self.culver_bottom
+        #self.kor = self.culver_bottom
 
         if len(self.culvert_top) == 1 and len(self.culvert_special) == 0:
             if len(self.culvert_common) < 2:
@@ -1067,7 +1086,7 @@ class XS_t(object):
         # wersja dla pojedynczego filara
         elif len(self.culvert_top) <= 2 and len(self.culvert_special) == 0:
             if len(self.culvert_common) <= 2:
-                self.culvertXS = self.culvert_top+list(reversed(self.culver_bottom[1:-1]))
+                self.culvertXS = self.culvert_top+list(reversed(self.culver_bottom[:]))
 
             elif len(self.culvert_common) > 2:
                 flag = 0
@@ -1159,6 +1178,7 @@ class XS_t(object):
                     self.geom.append(pkt_first)
                     flag = 1
             self.culvertXS = list(self.geom) + list(reversed(self.culver_bottom[1:-1]))
+            #self.culvertXS = reversed(self.culvertXS)
         #if self.culvertXS[0] != self.culvertXS[-1]:
             #self.culvertXS.append(self.culvertXS[0])
 
@@ -1169,20 +1189,16 @@ class XS_t(object):
     def get_km_bridge(self,nwk):
         """znajduje km mostu z punktow nwk """
         self.topoID = 0
+        zww = []
         if len(self.zwwDoKM) >= 2:
             zww = [[point.x, point.y] for point in self.zwwDoKM]
-        print(zww)
+            print(zww)
 
         kilometry = []
         old_x, old_y, old_km = None, None, None
 
-        """
-        if len(zww) < 2:
-            for pkt1 in self.point_data:
-                if 1 == int(float(pkt1.znacznik)) or 12 == int(float(pkt1.znacznik)):
-                    zww.append([float(pkt1.x), float(pkt1.y)])
-        """
-        if len(zww) < 2:
+
+        if len(self.zwwDoKM) < 2:
             zww.append([self.point_data[0].x, self.point_data[0].y])
             zww.append([self.point_data[-2].x, self.point_data[-2].y])
         else:
@@ -1310,8 +1326,9 @@ class XS_t(object):
                 self.culvert_downS = float(pkt.z)
         #self.culvertXS = self.kor
         self.deck = self.deck[:-1]
-        self.deck.insert(0, laczenie[0])
-        self.deck.append(laczenie[-1])
+        if laczenie:
+            self.deck.insert(0, laczenie[0])
+            self.deck.append(laczenie[-1])
 
     def excel_print(self, workbook, path='C:\\'):
         worksheet = workbook.add_worksheet(str(self.lp))
@@ -1339,24 +1356,24 @@ class XS_t(object):
             worksheet.write(8, 1, "None")
             worksheet.write(8, 3, "None")
         try:
-            worksheet.write(4, 0, 'Długość:')
+            worksheet.write(4, 0, 'Odl. pikiety 7 od linii zww:')
             worksheet.write(4, 1, str(round(self.culvert_len, 2)))
         except:
             pass
         try:
             szer = float(max(self.culvertXS, key=lambda x: float(x[0]))[0]) - float(min(self.culvertXS, key=lambda x: float(x[0]))[0])
-            worksheet.write(5, 3, 'Szer_Stat:')
+            worksheet.write(5, 3, 'Max_światło:')
             worksheet.write(5, 4, str(round(szer,2)))
 
         except:
             pass
         try:
-            worksheet.write(5, 0, 'Upstream:')
+            worksheet.write(5, 0, 'Upst.(faktyczny, do mike samo się zamieni):')
             worksheet.write(5, 1, str(self.culvert_upS))
-            worksheet.write(6, 0, 'Downstream:')
+            worksheet.write(6, 0, 'Downst.(faktyczny, do mike samo się zamieni):')
             worksheet.write(6, 1, str(self.culvert_downS))
             worksheet.write(5, 2, 'Delta_h:')
-            worksheet.write(6, 2, str(round((self.culvert_upS)-(self.culvert_downS), 2)))
+            worksheet.write(6, 2, str("=B6-B7"))
         except:
             pass
         try:
@@ -1375,7 +1392,7 @@ class XS_t(object):
         except:
             pass
         try:
-            worksheet.write(3, 3, 'Szer:')
+            worksheet.write(3, 3, 'Szer jezdni pom geod. (nasza długość):')
             worksheet.write(3, 4, str(self.szer))
         except:
             pass
@@ -1401,6 +1418,10 @@ class XS_t(object):
             'categories': [str(self.lp), 10, 2, row + 10, 2],
             'values': [str(self.lp), 10, 3, row + 10, 3],
         })
+        if len(self.deck) == 2:
+            point = [(self.deck[0][0]+self.deck[-1][0])/2, (self.deck[0][1]+self.deck[-1][1])/2]
+            self.deck.insert(1, point)
+
         for row, line in enumerate(self.deck):
             for col, cell in enumerate(line):
                 worksheet.write(row+10, col+4, cell)
@@ -1431,7 +1452,7 @@ class XS_t(object):
         for foto in self.foto.replace(' ', '').split(','):
             for root, dirs, files in os.walk(path):
                 for name in files:
-                    if name == foto:
+                    if name.replace(' ', '') == foto:
                         image_path = os.path.abspath(os.path.join(root, name))
                         bound_width_height = (900, 400)
                         resize_scale = calculate_scale(image_path, bound_width_height)

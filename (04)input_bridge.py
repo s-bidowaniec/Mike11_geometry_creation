@@ -37,6 +37,8 @@ pickle.dump(bazaXsRawData, base, protocol=None, fix_imports=True)
 base.close()
 """
 #-----------------------------------------------------------------------------------------------------------------
+PIETRZENIA = ["próg", "stopień", "jaz", "butelka"]
+MOSTY = ["przepust", "most", "kładka"]
 #-----------------------------------------------------------------------------------------------------------------
 # zaczytanie obiektow z xlsx, nwk i txt raw data
 # mosty z xlsx
@@ -44,7 +46,7 @@ base.close()
 for bridge in bridges:
     print("----!!!----",bridge.typ,"----!!!----")
     flag = "non"
-    if bridge.typ == "most" or bridge.typ == "przepust" or bridge.typ == "kładka":
+    if bridge.typ in MOSTY:
         flag = "bridge"
         # ---- CULVERT -----
         # --- conflict detection ---
@@ -182,67 +184,11 @@ for bridge in bridges:
         XsOrder['{}b {}'.format(str.lower(bridge.rzeka).replace(' ', ''), bridge.km)].lp = '   1  0    0.000  0    0.000  250\n'  # level params
 
         # ---- END XS -----
-        """
-        # ---- WEIR -----
-        # --- conflict detection ---
-        set = [[str.lower(i.riverName).replace(' ', ''), round(float(i.km))] for i in nwk.weirList]
 
-        dodawany = [str.lower(bridge.rzeka).replace(' ', ''), round(float(bridge.km))]
-        if dodawany in set:
-            print("Zastapiono weir; {} {}".format(str.lower(bridge.rzeka), round(float(bridge.km))))
-            del nwk.weirList[set.index(dodawany)]
-
-        # --- end of conflict detection ---
-        # GENERACJA PUSTEGO WEIR
-        nwk.weirList.append(Weir())
-        cl = nwk.weirList[-1]
-        cl.geometry = Geometry(cl)
-        cl = cl.geometry
-        cl.levelWidth = LevelWidth(cl)
-        cl = nwk.weirList[-1]
-        cl.reservoir = ReservoirData(cl)
-        cl = cl.reservoir
-        cl.elevation = Elevation(cl)
-        # PRZYPISANIE DANYCH PODSTAWOWYCH
-        weirID = str.upper(bridge.rzeka[0:3]) + "_M-" + str(bridge.lp).replace(' ', '') + "_W1"
-        location = [str(bridge.rzeka).replace(' ', ''), str(bridge.km).replace(' ', ''), weirID,
-                    str(bridge.topoID).replace(' ', '')]
-
-        nwk.weirList[-1].riverName = bridge.rzeka
-        nwk.weirList[-1].km = bridge.km
-        nwk.weirList[-1].ID = weirID
-        nwk.weirList[-1].topoID = weirID
-        print(bridge.km)
-        print(bridge.rzeka)
-        # PARAMS
-        attributes = [0, 0]
-        nwk.weirList[-1].weirParams['HorizOffset'] = '0'
-        nwk.weirList[-1].weirParams['Attributes'] = attributes
-
-        # nwk.weirList[-1].weirParams['Location'] = location
-        nwk.weirList[-1].weirParams['HeadLossFactors'] = [0.0, 0, 1, 0.0, 0, 1]  # ?
-        nwk.weirList[-1].weirParams['WeirFormulaParam'] = [1, 1, 1.838, 1.5, 1]  # ?
-        nwk.weirList[-1].weirParams['WeirFormula2Param'] = [0, 0, 0]  # ?
-        nwk.weirList[-1].weirParams['WeirFormula3Param'] = [0, 0, 0, 0.6, 1.02, 1.37, 1, 0.03, 1.018, 1, 0, 2.6, 1,
-                                                            0.7]  # ?
-        # RESERVOIR DATA
-        nwk.weirList[-1].reservoir.data['StructureType'] = [0]
-        nwk.weirList[-1].reservoir.data['StorageType'] = [0]
-        nwk.weirList[-1].reservoir.data['ApplyXY'] = [0]
-        nwk.weirList[-1].reservoir.data['CoordXY'] = [0]
-        nwk.weirList[-1].reservoir.data['InitialArea'] = [0]
-        # GEOMETRY
-        nwk.weirList[-1].geometry.data['Attributes'] = [0, 0]
-        # WYMIAR PRZELEWU
-        szerWys = max(i[0] for i in bridge.koryto)  # maxymalny station w korytku
-        szerNis = max(i[0] for i in bridge.przepust) - min(i[0] for i in bridge.przepust)  # roznica stationow w przepuscie
-        startElev = min(i[1] for i in bridge.przelew)  # najnizsza rzedna gory konstrukcji
-        nwk.weirList[-1].geometry.levelWidth.data = [[startElev, szerNis], [startElev + 0.1, szerWys],
-                                                     [startElev + 2, bridge.weir_width]]
-        """
-        # ---- END WEIR -----
         print(len(XsOrder), "len od XsOrder")
-    if bridge.typ == "próg" or bridge.typ == "most" or bridge.typ == "przepust" or bridge.typ == "kładka":
+
+        # ---- WEIR -----
+    if bridge.typ in MOSTY or bridge.typ in PIETRZENIA:
         if flag == "bridge":
             weirShift = bridgeShift
             for element in bridge.przelew:
@@ -251,9 +197,8 @@ for bridge in bridges:
         else:
             litera = "H"
             weirShift = 0
-        import pdb
-        #pdb.set_trace()
-        # ---- WEIR -----
+
+
         # --- conflict detection ---
         set = [[str.lower(i.riverName).replace(' ', ''), round(float(i.km))] for i in nwk.weirList]
         """
