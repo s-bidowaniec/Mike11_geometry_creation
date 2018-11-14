@@ -162,7 +162,7 @@ def raport_XS(XS_list, output):
     workbook = xlsxwriter.Workbook(output)
     worksheet = workbook.add_worksheet('raport_XS')
     bold = workbook.add_format({'bold': 1})
-    headings = ['Nazwa rzeki', 'Topo ID', 'Kilometraż', 'ID Przekroju', 'Typ przekroju']  # 'Radius Type', 'Datum'
+    headings = ['Nazwa rzeki', 'Topo ID', 'KilometraĹĽ', 'ID Przekroju', 'Typ przekroju']  # 'Radius Type', 'Datum'
     worksheet.write_row('A1', headings, bold)
     i = 1
     for XS in XS_list:
@@ -177,7 +177,7 @@ def raport_XS(XS_list, output):
         if XS.cs == 0:
             worksheet.write(i, 4, 'otwarty')
         else:
-            worksheet.write(i, 4, 'zamknięty')
+            worksheet.write(i, 4, 'zamkniÄ™ty')
         # worksheet.write(i, 5, XS.rt)
         # worksheet.write(i, 6, XS.datum)
         i += 1
@@ -213,18 +213,26 @@ def read_NWK(file):
         i += 1
     i += 1
     
+<<<<<<< HEAD
     # zaczytywanie punktów do klasy nwkFile
+=======
+    # zaczytywanie punktĂłw do klasy nwkFile
+>>>>>>> 3dbade09bf7e62a923ea321ec425370a271fb2e6
     while i < len(readline) and "EndSect  // POINTS" not in readline[i]:
         line = readline[i]
         stringList, name = line_to_list(line)
         nwk.add_point(stringList, name)
         i += 1
 
-    # przejście do pierwszego "brancha"
+    # przejĹ›cie do pierwszego "brancha"
     while "[branch]" not in readline[i]:
         i += 1
 
+<<<<<<< HEAD
     # zaczytywanie poszczególnych klas
+=======
+    # zaczytywanie poszczegĂłlnych klas
+>>>>>>> 3dbade09bf7e62a923ea321ec425370a271fb2e6
     while i < len(readline) and "EndSect  // BRIDGE" not in readline[i]:            # zmieniono CULVERT na BRIDGE
         line = readline[i]
 
@@ -239,8 +247,13 @@ def read_NWK(file):
             cl = nwk.branchList[-1]
 
         elif "[linkchannel]" in line:
+<<<<<<< HEAD
             cl.linkChannel = LinkChannel(cl)    # utworzenie klasy, argumentem jest klasa powy�ej (parent)
             cl = cl.linkChannel                 # zmienna cl przechodzi do klasy "poni�ej"
+=======
+            cl.linkChannel = LinkChannel(cl)    # utworzenie klasy, argumentem jest klasa powyżej (parent)
+            cl = cl.linkChannel                 # zmienna cl przechodzi do klasy "poniżej"
+>>>>>>> 3dbade09bf7e62a923ea321ec425370a271fb2e6
 
         elif "[Cross_Section]" in line:
             cl.crossSection = CrossSection(cl)
@@ -280,7 +293,11 @@ def read_NWK(file):
             nwk.bridgeList.append(Bridge())
             cl = nwk.bridgeList[-1]
 
+<<<<<<< HEAD
         elif cl.end in line and cl.parent is None:      # je�eli klasa si� ko�czy, a nie ma klasy powy�ej (co to za przypadek?)
+=======
+        elif cl.end in line and cl.parent is None:      # jeżeli klasa się kończy, a nie ma klasy powyżej (co to za przypadek?)
+>>>>>>> 3dbade09bf7e62a923ea321ec425370a271fb2e6
             i += 1
             continue
 
