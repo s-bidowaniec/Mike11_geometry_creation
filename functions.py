@@ -5,6 +5,31 @@ from classes import *
 from dbfread import DBF
 # UNIVERSAl -----------------------------------------------------------------------------------------------------------
 
+def pointToLine(x1, y1, x2, y2, x=None, y=None):
+    """
+    Function calculates new (x,y) coordinates droped on line defined by points A, B.
+    :param x1: float
+    :param y1: float
+    :param x2: float
+    :param y2: float
+    :param x: float
+    :param y: float
+    :return: touple of floats, new x and new y
+    """
+
+    # def computePoints(self):
+    licznik = ((x - x1) * (x2 - x1)) + ((y - y1) * (y2 - y1))
+    mianownik = ((x1 - x2) ** 2) + ((y1 - y2) ** 2)
+    try:
+        u = licznik / mianownik
+    except ZeroDivisionError:
+        u = 0
+
+    xp = ((x2 - x1) * u) + x1
+    yp = ((y2 - y1) * u) + y1
+    return xp, yp
+
+
 def get_xy_delta(self):
     if self.right[0] > self.left[0]:
         x1, x2 = 2, -2
@@ -301,6 +326,7 @@ def line_intersection(x1, y1, x2, y2, x3, y3, x4, y4):
         return a[0] * b[1] - a[1] * b[0]
 
     div = det(xdiff, ydiff)
+    print(div)
     if div == 0:
         x, y, b, c = None, None, None, None
     else:
@@ -422,9 +448,9 @@ def fit_bridge(xs, xsUp2, bridge, base_manning=0.04):
         index_1b = [float(poi.station) for poi in xs_appending.points if float(poi.station) < float(element[0])]
         if len(index_1) == 0 or len(index_1b) == 0:
             if int(xs.rn.split()[1]) == 1:
-                line = '{} {} {} {}'.format(element[0], element[1]-0.1-float(downS), bridge.mann, 'P1')
+                line = '{} {} {} {}'.format(element[0], element[1]-0.01-float(downS), bridge.mann, 'P1')
             else:
-                line = '{} {} {} {}'.format(element[0], element[1] - 0.1 - float(downS), bridge.mann/base_manning, 'P1')
+                line = '{} {} {} {}'.format(element[0], element[1] - 0.01 - float(downS), bridge.mann/base_manning, 'P1')
             if len(index_1) == 0:
                 xs.points.append(Pkt(line))
             elif len(index_1b) == 0:
@@ -435,9 +461,9 @@ def fit_bridge(xs, xsUp2, bridge, base_manning=0.04):
         index_2b = [float(poi.station) for poi in xsUp2_appending.points if float(poi.station) < float(element[0])]
         if len(index_2) == 0 or len(index_2b) == 0:
             if int(xsUp2.rn.split()[1]) == 1:
-                line = '{} {} {} {}'.format(element[0], element[1] - 0.1 - float(upS), bridge.mann, 'P1')
+                line = '{} {} {} {}'.format(element[0], element[1] - 0.01 - float(upS), bridge.mann, 'P1')
             else:
-                line = '{} {} {} {}'.format(element[0], element[1] - 0.1 - float(upS), bridge.mann/base_manning, 'P1')
+                line = '{} {} {} {}'.format(element[0], element[1] - 0.01 - float(upS), bridge.mann/base_manning, 'P1')
             if len(index_2) == 0:
                 xsUp2.points.append(Pkt(line))
             elif len(index_2b) == 0:
@@ -503,9 +529,9 @@ def fit_bridge(xs, xsUp2, bridge, base_manning=0.04):
         if przepMin < float(element[0]) < przepMax:
             #tworzy linnie do dodania punktu
             if int(xs.rn.split()[1]) == 1:
-                line = '{} {} {} {}'.format(element[0], element[1]-0.1-float(downS), bridge.mann, 'P1')
+                line = '{} {} {} {}'.format(element[0], element[1]-0.01-float(downS), bridge.mann, 'P1')
             else:
-                line = '{} {} {} {}'.format(element[0], element[1] - 0.1 - float(downS), bridge.mann/base_manning, 'P1')
+                line = '{} {} {} {}'.format(element[0], element[1] - 0.01 - float(downS), bridge.mann/base_manning, 'P1')
             #dodawanie w miejscu stalego indexu, ma zachowac kolejnosc punktow a nie po station
             print(float(element[0]), " float element od 0")
             print(xs.km)
@@ -570,3 +596,20 @@ def fit_bridge(xs, xsUp2, bridge, base_manning=0.04):
     bridge.weir_width = min(delta_xs, delta_xsUp)
     print(przes+startStat," bridge shift")
     return xs, xsUp2, deltaStatBridge
+<<<<<<< HEAD
+=======
+
+def linear_equation(array):
+    a = np.array([
+         [(array[0][0]) ** 2, array[0][0], 1],
+         [(array[1][0]) ** 2, array[1][0], 1],
+         [(array[2][0]) ** 2, array[2][0], 1]
+         ])
+    b = np.array([
+        array[0][1],
+        array[1][1],
+        array[2][1]
+        ])
+    x = np.linalg.solve(a,b)
+    return lambda y: x[0]*y**2 + x[1]*y + x[2]
+>>>>>>> 7703325ec444be57a2c30a7819f595c52356c1d6

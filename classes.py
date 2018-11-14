@@ -1,10 +1,20 @@
 # -*- coding: utf-8 -*-
+import shelve
 import math, collections
 from operator import itemgetter
 from rdp import rdp
 import time
+import numpy as np
 # clas func
 def distance(x1, x2, y1, y2):
+    """
+    Function calculates distance betwean two points
+    :param x1: float
+    :param x2: float
+    :param y1: float
+    :param y2: float
+    :return: float
+    """
     try:
         return math.sqrt((x1 - x2) ** 2 + (y1 - y2) ** 2)
     except:
@@ -14,13 +24,29 @@ def distanceZ(a, b, p):
     return p[1] - np.interp([p[0]], [a[0], b[0]], [a[1], b[1]])
 
 def is_between(x1, y1, x, y, x2, y2):
-    return round(distance(x1, x, y1, y)) + round(distance(x, x2, y, y2)) == round(distance(x1, x2, y1, y2))
+    return round((distance(x1, x, y1, y)) + (distance(x, x2, y, y2))) == round(distance(x1, x2, y1, y2))
 
 def line_intersection(x1, y1, x2, y2, x3, y3, x4, y4):
     line1 = [[x1, y1], [x2, y2]]
     line2 = [[x3, y3], [x4, y4]]
     xdiff = (line1[0][0] - line1[1][0], line2[0][0] - line2[1][0])
     ydiff = (line1[0][1] - line1[1][1], line2[0][1] - line2[1][1])
+
+    def det(a, b):
+        return a[0] * b[1] - a[1] * b[0]
+
+    div = det(xdiff, ydiff)
+    #print(div)
+    if div == 0:
+        x, y, b, c = None, None, None, None
+    else:
+        d = (det(*line1), det(*line2))
+        x = det(d, xdiff) / div
+        y = det(d, ydiff) / div
+        b = (is_between(x3, y3, x, y, x4, y4))
+        c = (is_between(x1, y1, x, y, x2, y2))
+
+    return x, y, b, c
 
 # UNIVERSAL -----------------------------------------------------------------------------------------------------------
 class Points2Line(object):
@@ -867,17 +893,33 @@ class bridge_xs(object):
             stat = sheet.cell(row=i, column=5).value
 
 class point(object):
-    def __init__(self, lp, x, y, z, kod="nul", cos="nul", ogon='nul'):
+    def __init__(self, lp, x, y, z, odlRed=0, kod=0,  cos=0,znacznik=0,  ogon='nul'):
         self.lp = int(float(lp.replace("o","0").replace("O","0").replace("a","").replace("A","")))
-        self.x = float(x.replace("o","0").replace("O","0"))
-        self.y = float(y.replace("o","0").replace("O","0"))
-        self.z = float(z.replace("o","0").replace("O","0"))
+        self.x = float(x.replace("o", "0").replace("O", "0"))
+        self.y = float(y.replace("o", "0").replace("O", "0"))
+        self.z = float(z.replace("o", "0").replace("O", "0"))
+        self.odlRed = odlRed
         self.kod = str(kod)
-        self.cos = [cos]
+        self.cos = cos
+        self.znacznik = znacznik
+
+def linear_equation(array):
+    a = np.array([
+         [(array[0][0]) ** 2, array[0][0], 1],
+         [(array[1][0]) ** 2, array[1][0], 1],
+         [(array[2][0]) ** 2, array[2][0], 1]
+         ])
+    b = np.array([
+        array[0][1],
+        array[1][1],
+        array[2][1]
+        ])
+    x = np.linalg.solve(a,b)
+    return lambda y: x[0]*y**2 + x[1]*y + x[2]
 
 class XS_t(object):
     def __init__(self, file):
-        name = str(file).replace("\\"," ").split()[-3]
+        name = str(file).replace("\\", " ").split()[-3]
         name = name.replace(".", " ").replace("_", " ").split()
         for element in name:
             if element[0].isdigit():
@@ -891,7 +933,7 @@ class XS_t(object):
         self.point_data = []
         self.geom2 = []
         for line in file.read().split("\n"):
-            napis = list(line.replace("\t","  "))
+            napis = list(line.replace("\t", "  "))
             licznik = 0
             while licznik < len(napis):
                 if napis[licznik] == ' ':
@@ -909,25 +951,25 @@ class XS_t(object):
 
             else:
                 line3 = line2.split(' ')
-                if len(line3)>6:
-                    cos = line3[6:]
-                    line3=line3[:6]
+                if len(line3) > 8:
+                    cos = line3[8:]
+                    line3 = line3[:8]
                     line3.append(cos)
-                print(line3)
+                #print(line3)
                 try:
                     int(float(line3[0]))
                     self.point_data.append(point(*line3[:]))
                 except:
-                    print('----')
-                    print(line3)
-                    print('----')
+                    #print('----')
+                    #print(line3)
+                    #print('----')
                     self.point_data.append(point(*line3[1:]))
 
         r = 0
         while sum(c.islower() for c in self.dane[r]) < 1:
             r+=1
         if "rzek" in str.lower(self.dane[r]) or "zeka" in str.lower(self.dane[0]):
-            self.rzeka = self.dane[r].split(':')[1]
+            self.rzeka = self.dane[r].split(':')[1].replace(' ', '')
         else:
             print("Brak: river def", self.lp)
         if "przek" in str.lower(self.dane[r+1]) or "rzekr" in str.lower(self.dane[1]):
@@ -935,13 +977,13 @@ class XS_t(object):
         else:
             print("Brak: lp def", self.lp)
         if "dat" in str.lower(self.dane[r+2]) or "ata" in str.lower(self.dane[2]):
-            self.data = self.dane[r+2].split(':')[1]
+            self.data = self.dane[r+2].split(':')[1].replace(' ', '')
         else:
             print("Brak: data def", self.lp)
         if "typ" in str.lower(self.dane[r+3]) or "most" in str.lower(self.dane[3]):
-            self.type = self.dane[r+3].split(':')[1]
+            self.type = self.dane[r+3].split(':')[1].replace(' ', '')
         elif "typ" in str.lower(self.dane[r+4]) or "most" in str.lower(self.dane[4]):
-            self.type = self.dane[r + 4].split(':')[1]
+            self.type = self.dane[r + 4].split(':')[1].replace(' ', '')
             #self.kat = self.dane[r + 3].split(':')[1]
 
         try:
@@ -967,7 +1009,7 @@ class XS_t(object):
 
 
         if self.type == "none" or self.type == '':
-            print("Brak: type def", self.lp)
+            #print("Brak: type def", self.lp)
             try:
                 if "obie" in str(self.dane[-4:-1]).lower():
                     self.type = "obiekt"
@@ -986,8 +1028,8 @@ class XS_t(object):
         print(self.name)
         line = []
         for poi in self.point_data:
-            #print(poi.cos, poi.x, poi.y)
-            if "zww" in str(poi.cos).lower():
+            print(poi.cos, poi.x, poi.y)
+            if "zww" in str(poi.kod).lower():
                 line.append(poi.x)
                 line.append(poi.y)
         return(line[0],line[1],line[2],line[3])
@@ -1007,14 +1049,44 @@ class XS_t(object):
     def dist_sort(self):
         self.point_data = sorted(self.point_data, key=operator.attrgetter('dist'))
 
+    def get_avarage_manning(self):
+        flag = 0
+        n = l = 0
+        dataBase = shelve.open(r'dane.dbm')
+        dict = dataBase['dictKodManning']
+        for pktNumber in range(len(self.point_data)-2):
+            if 'zww' in str(self.point_data[pktNumber].cos).lower():
+                flag += 1
+            if flag != 1:
+                continue
+            odl = float(distance(self.point_data[pktNumber].x, self.point_data[pktNumber+1].x, self.point_data[pktNumber].y,
+                     self.point_data[pktNumber + 1].y))
+            manning = float(dict.get(self.point_data[pktNumber].kod, 0))
+            if manning:
+                n += odl * manning
+                l += odl
+        self.avManning = n/l
 
-    ################################################################################################################
+    def get_km(self, pkt):
+        for pktNumber in range(len(self.point_data) - 2):
+            for pktNwkNumber in range(len(pkt) - 2):
+                x, y, line1, line2 = line_intersection(self.point_data[pktNumber].x, self.point_data[pktNumber + 1].x,
+                                                       self.point_data[pktNumber].y, self.point_data[pktNumber + 1].y,
+                                                       pkt[pktNwkNumber].x, pkt[pktNwkNumber].y, pkt[pktNwkNumber + 1].x,
+                                                       pkt[pktNwkNumber+1].y)
+                if line1 and line2:
+                    km = pkt[pktNwkNumber].val2 + distance(pkt[pktNwkNumber].x, pkt[pktNwkNumber].y, x, y)
+                    self.km = km
+                    return km
+        self.km = None
+        return None
+                ################################################################################################################
     """obliczanie dlugosci przekroju i dolnej pikiety"""
     def get_culver_len(self):
 
         for pkt in self.point_data:
-            if "66" in pkt.kod or "7d" in pkt.kod or "7" in pkt.kod:
-                print(pkt.y, pkt.xp, pkt.x, pkt.yp)
+            if "66" in pkt.kod or "7d" in pkt.kod or "7" in pkt.kod or "9" in str(pkt.znacznik):
+                #print(pkt.y, pkt.xp, pkt.x, pkt.yp)
                 self.culvert_len = math.sqrt((float(pkt.y) - float(pkt.xp)) ** 2 + (float(pkt.x) - float(pkt.yp)) ** 2)
                 self.culvert_downS = pkt.z
 
@@ -1088,95 +1160,266 @@ class XS_t(object):
         ### funkcja tworzaca obiekt typu culvert z przekroju geodezyjnego
     def get_culvert(self):
         print(self.lp)
+        self.manning = []
         self.geom = []
         self.deck = []
         self.kor = []
-        self.kor_c = []
+        self.culver_bottom = []
+        self.culvert_top = []
+        self.culvert_common = []
+        self.culvert_special = []
+        self.zww = []
         '''podzial na pkt koryta i obiektu, pobranie najnizszego punktu z koryta'''
         self.culvert_upS = 1000
+        # pobranie koryta w zakresie budowli
+        flag = 0
         for pkt in self.point_data:
-            lista_geo = []
-            if "40" not in str(pkt.kod) and "41" not in str(pkt.kod) and "42" not in str(pkt.kod) and "66" not in str(pkt.kod) and "7d" not in str(pkt.kod) and "50" not in str(pkt.kod) and "51" not in str(pkt.kod)and "52" not in str(pkt.kod)and "7" not in str(pkt.kod):
-            #if "K" in str(pkt.kod) or "T" in str(pkt.kod) or pkt.kod == None:
-                self.kor.append([float(pkt.dist), float(pkt.z)])
+            print(pkt.kod, pkt.znacznik)
+            if "10" in str(pkt.znacznik) and not '1' == str(pkt.kod) and not '12' == str(pkt.kod) and not '41' == str(pkt.kod):
+                flag += 1
+                # dodanie do zestawu pkt wspolnych koyto przepust
+                self.culvert_common.append([float(pkt.dist), float(pkt.z)])
+
+            if 0 == int(float(pkt.znacznik)) or 10 == int(float(pkt.znacznik)):
+                self.culver_bottom.append([float(pkt.dist), float(pkt.z)])
+                if "K" in pkt.cos:
+                    self.manning.append(pkt.cos)
                 if pkt.z < self.culvert_upS:
                     self.culvert_upS = pkt.z
-            if "40" in str(pkt.kod):
-                self.geom2.append([float(pkt.dist), float(pkt.z)])
-            if "40" in str(pkt.kod): # and "None" in str(pkt.cos):
-                self.geom.append([float(pkt.dist), float(pkt.z)])
-            if "42" in str(pkt.kod):
+
+            # pobranie spodu konstrukcji
+            if "40" in str(pkt.kod) and 1 == int(float(pkt.znacznik)):
+                self.culvert_top.append([float(pkt.dist), float(pkt.z)])
+            # markery specjalne
+            if "43" in str(pkt.kod) and 1 == int(float(pkt.znacznik)):
+                self.culvert_special.append([float(pkt.dist), float(pkt.z)])
+            # pobranie gory konstrukcji
+            if "41" in str(pkt.kod):
                 self.deck.append([float(pkt.dist), float(pkt.z)])
-        '''algorytm do redukcji punktow, zmienia zageszczone zygzaki na prosta'''
-        self.geom = rdp(self.geom, epsilon=0.8)
-        self.deck = rdp(self.deck, epsilon=5)
-        try:
-            if self.geom[0][0] < self.geom[-1][0]:
-                self.geom.reverse()
-        except:
+            if "zww" in str(pkt.kod).lower():
+                self.zww.append([float(pkt.dist), float(pkt.z)])
+        self.kor = self.culver_bottom
+
+        if len(self.culvert_top) == 1 and len(self.culvert_special) == 0:
+            if len(self.culvert_common) < 2:
+                self.culvert_special = self.zww
+            else:
+                self.culvert_special = self.culvert_common
+
+        if len(self.culvert_top) <= 3 and len(self.culvert_special) > 0:
+            szczyt = max(self.culvert_top, key=lambda x: x[1])
+            left = self.culvert_special[0]
+            right = self.culvert_special[-1]
+            array = [left, szczyt, right]
+            funkcja_kwadratowa = linear_equation(array)
+            dist = (right[0]-left[0])/7
+            stat = left[0]+dist
+            print("---", stat, dist, "---")
+            for station in range(6):
+                self.culvert_top.append([stat, funkcja_kwadratowa(stat)])
+                stat += dist
+            self.culvertXS = list(sorted(self.culvert_top+self.culvert_special))+list(reversed(self.culver_bottom[1:-1]))
+        # wersja dla pojedynczego filara
+        elif len(self.culvert_top) <= 2 and len(self.culvert_special) == 0:
+            if len(self.culvert_common) <= 2:
+                self.culvertXS = self.culvert_top+list(reversed(self.culver_bottom[1:-1]))
+
+            elif len(self.culvert_common) > 2:
+                flag = 0
+                print(len(self.culvert_top))
+                while len(self.culvert_common) > 0 and len(self.culvert_top) > 0:
+                    if flag == 0:
+                        self.geom.append(self.culvert_common[0])
+                        #self.geom.append(self.culvert_top[0])
+                        flag = 1
+                        continue
+                    if flag == 1:
+                        pkt_first = self.culvert_top[0]
+                        print(pkt_first)
+                        index = self.culvert_common.index(min(self.culvert_common, key=lambda x: abs(x[0] - pkt_first[0])))
+                        print(str(self.culvert_common[index])+"---lower---")
+                        pkt_dol_first = self.culvert_common[index]
+                        try:
+                            if self.geom[-1] != pkt_first:
+                                self.geom.append(self.culvert_top.pop(0))
+                        except:
+                            self.geom.append(self.culvert_top.pop(0))
+                        print('---')
+                        print(abs(pkt_dol_first[0] - pkt_first[0]))
+                        if abs(pkt_dol_first[0] - pkt_first[0]) < 0.5:
+                            self.geom.append(pkt_dol_first)
+                            print(self.culvert_common.pop(index))
+                        flag = 2
+                        continue
+                    if flag == 2:
+                        pkt_first = self.culvert_top.pop(0)
+                        index = self.culvert_common.index(min(self.culvert_common, key=lambda x: abs(x[0] - pkt_first[0])))
+                        pkt_dol_first = self.culvert_common[index]
+                        if abs(pkt_dol_first[0] - pkt_first[0]) < 0.5:
+                            self.geom.append(pkt_dol_first)
+                            print(self.culvert_common.pop(index))
+                        self.geom.append(pkt_first)
+                        flag = 3
+                        continue
+                    if flag == 3:
+                        pkt_first = self.culvert_top[0]
+                        self.geom.append(pkt_first)
+                        flag = 1
+                self.culvertXS = list(self.geom) + list(reversed(self.culver_bottom[1:-1]))
+
+        elif len(self.culvert_top) == 0:
+            self.culvertXS = self.culvert_common
+
+        ### dla wiekszej liczby filarow
+        elif len(self.culvert_top) > 2:
+            flag = 0
+            print(len(self.culvert_top))
+            while len(self.culvert_common) > 0 and len(self.culvert_top) > 0:
+                if flag == 0:
+                    pkt1 = self.culvert_common[0]
+                    pkt2 = self.culvert_top[0]
+                    if abs(pkt1[0] - pkt2[0]) < 1.5:
+                        self.geom.append(self.culvert_common.pop(0))
+                        self.geom.append(self.culvert_top.pop(0))
+                    else:
+                        self.geom.append(self.culvert_top.pop(0))
+
+                    flag = 1
+                    continue
+                if flag == 1:
+                    pkt_first = self.culvert_top.pop(0)
+                    index = self.culvert_common.index(min(self.culvert_common, key=lambda x: abs(x[0]-pkt_first[0])))
+                    pkt_dol_first = self.culvert_common[index]
+                    if self.geom[-1] != pkt_first:
+                        self.geom.append(pkt_first)
+                    print('---')
+                    print(abs(pkt_dol_first[0]-pkt_first[0]))
+                    if abs(pkt_dol_first[0]-pkt_first[0]) < 0.5:
+                        self.geom.append(pkt_dol_first)
+                        print(self.culvert_common.pop(index))
+                    flag = 2
+                    continue
+                if flag == 2:
+                    pkt_first = self.culvert_top.pop(0)
+                    index = self.culvert_common.index(min(self.culvert_common, key=lambda x: abs(x[0]-pkt_first[0])))
+                    pkt_dol_first = self.culvert_common[index]
+                    if abs(pkt_dol_first[0]-pkt_first[0]) < 0.5:
+                        self.geom.append(pkt_dol_first)
+                        print(self.culvert_common.pop(index))
+                    self.geom.append(pkt_first)
+                    flag = 3
+                    continue
+                if flag == 3:
+                    pkt_first = self.culvert_top[0]
+                    self.geom.append(pkt_first)
+                    flag = 1
+            self.culvertXS = list(self.geom) + list(reversed(self.culver_bottom[1:-1]))
+        #if self.culvertXS[0] != self.culvertXS[-1]:
+            #self.culvertXS.append(self.culvertXS[0])
+
+        if len(self.deck) == 0:
+            lista = self.culvert_common+self.culvert_top+self.culver_bottom
+            self.deck.append(max(lista, key = lambda x: x[1]))
+
+    def get_km_bridge(self,nwk):
+        """znajduje km mostu z punktow nwk """
+        self.topoID = 0
+        zww = []
+
+        kilometry = []
+        old_x, old_y, old_km = None, None, None
+
+        for pkt1 in self.point_data:
+            if 1 == int(float(pkt1.znacznik)) or 12 == int(float(pkt1.znacznik)):
+                zww.append([float(pkt1.x), float(pkt1.y)])
+        if len(zww) < 2:
+            zww.append([self.point_data[0].x, self.point_data[0].y])
+            zww.append([self.point_data[-1].x, self.point_data[-1].y])
+        else:
             pass
-        pointR, pointL = self.gen_pkt()
+        # tu oblicza przeciecie z zww
+        for pkt in nwk.pointList:
+            xB, yB, kmB = pkt.y, pkt.x, pkt.val2
+            if old_x != None:
+                x,y,b,c = line_intersection(zww[0][0],zww[0][1],zww[-1][0],zww[-1][1],old_x,old_y,xB,yB)
+                if b == True and c == True:
+                    odl1 = distance(x, xB, y, yB)
+                    if kmB < old_km:
+                        kilometr = kmB + odl1
+                    else:
+                        kilometr = kmB - odl1
+                    kilometry.append([kilometr, odl1])
 
-        if pointR[-4] == True:
-            dyst = pointR[0] - self.geom[0][0]
-            new_elem=[]
-            for element in self.geom:
-                ele = element
-                ele[0]=ele[0]+dyst
-                new_elem.append(ele)
-            self.geom = new_elem
-            pointR, pointL = self.gen_pkt()
-            print(pointR)
-            print(dyst, 'R----')
-
-        if pointL[-4] == True:
-            dyst = pointL[0] - self.geom[-1][0]
-            new_elem = []
-            for element in self.geom:
-                ele = element
-                ele[0] = ele[0] + dyst
-                new_elem.append(ele)
-            self.geom = new_elem
-            pointR, pointL = self.gen_pkt()
-            print(pointL)
-            print(dyst, 'L----')
-        """jesli punkt lewy i prawy sa rowne error"""
-        if pointL == pointR:
-            print ('kryzys', pointL, pointR)
-            print(self.geom)
-            print(self.kor)
-            print(pointLis)
-        """dodanie punktow do geometri"""
-        self.geom.append([pointL[0], pointL[1]])
-        self.geom.insert(0, [pointR[0], pointR[1]])
-        """uciecie koryta"""
-        lewy = None
-        prawy = None
-        for i in range(len(self.kor)-1):
-            if is_between(self.kor[i][0], self.kor[i][1], pointL[0], pointL[1], self.kor[i+1][0], self.kor[i+1][1]):
-                lewy = i
-        for i in range(len(self.kor)-1):
-            if is_between(self.kor[i][0], self.kor[i][1], pointR[0], pointR[1], self.kor[i+1][0], self.kor[i+1][1]):
-                prawy = i
-        if lewy != None and prawy != None:
-            self.kor_c = self.kor[lewy:prawy+1]
-        elif lewy != None and prawy == None:
-            self.kor_c = self.kor[lewy:]
-        elif lewy == None and prawy != None:
-            self.kor_c = self.kor[:prawy+1]
-        """dodanie pkt tnacych do koryta"""
-        self.kor_c.insert(0, [pointL[0], pointL[1]])
-        self.kor_c.append([pointR[0], pointR[1]])
-        wydruk_test = sorted(self.geom, key=itemgetter(-2))
-        self.culvertXS = rdp(wydruk_test+self.kor_c, epsilon=0.0)#self.kor_c +
-        print(self.get_culver_len(),"Len----")
+                    for branch in nwk.branchList:
+                        if pkt.no in branch.pointList:
+                            topoID = branch.topoID
+            old_x, old_y, old_km = xB, yB, kmB
         try:
-            print("dlugosc obiektu: ",round(self.culvert_len, 2))
+            self.km = min(kilometry, key=lambda x: x[1])[0]
+            self.topoID = topoID
+        # jak nic nie wyliczy z zww to probuje z granicznych
         except:
-            pass
+            zww = self.point_data
+            zww.sort(key=lambda x: x.odlRed)
+            kilometry = []
+            old_x, old_y, old_km = None, None, None
+            for pkt in nwk.pointList:
+                xB, yB, kmB = pkt.y, pkt.x, pkt.val2
+                if old_x != None:
+                    x, y, b, c = line_intersection(zww[0].x, zww[0].y, zww[-1].x, zww[-1].y, old_x, old_y, xB, yB)
 
-    def excel_print(self, workbook):
-        worksheet = workbook.add_worksheet(str(self.name)+str(self.lp))
+                    if b == True and c == True:
+                        odl1 = distance(x, xB, y, yB)
+                        if kmB < old_km:
+                            kilometr = kmB + odl1
+                        else:
+                            kilometr = kmB - odl1
+                        kilometry.append([kilometr, odl1])
+                        for branch in nwk.branchList:
+                            if pkt.no in branch.pointList:
+                                topoID = branch.topoID
+                old_x, old_y, old_km = xB, yB, kmB
+            try:
+                self.km = min(kilometry, key=lambda x: x[1])[0]
+                self.topoID = topoID
+            except:
+                self.km = 0
+                self.topoID = 0
+        replacements1 = {
+            "K01": 0.035,
+            "K02": 0.032,
+            "K03": 0.035,
+            "K04": 0.038,
+            "K05": 0.04,
+            "K06": 0.02,
+            "K07": 0.05,
+            "K09": 0.07,
+            "K10": 0.1,
+            "T01": 0.025,
+            "T03": 0.12,
+            "T04": 0.08,
+            "T06": 0.12,
+            "T07": 0.045,
+            "T08": 0.09,
+            "T09": 0.2,
+            "T10": 0.035,
+            "T11": 0.2,
+            "T12": 0.05,
+            "T14": 0.02,
+            "T15": 0.09,
+            "T16": 0.1,
+            "T17": 0.3
+        }
+        manningVal = []
+        for element in self.manning:
+            manningVal.append(replacements1[element])
+        try:
+            self.manning = sum(manningVal)/len(manningVal)
+        except:
+            self.manning = 0.035
+
+    def excel_print(self, workbook, path='C:\\'):
+        worksheet = workbook.add_worksheet(str(self.lp))
         bold = workbook.add_format({'bold': 1})
         headings = ['Koryto Stat','Koryto Elev', 'Przepust Stat', 'Przepust Elev', 'Przelew Stat', 'Przelew Elev']
         worksheet.write_row('A10', headings, bold)
@@ -1188,6 +1431,18 @@ class XS_t(object):
         worksheet.write(2, 1, str(self.type))
         worksheet.write(3, 0, 'Lp:')
         worksheet.write(3, 1, str(self.lp))
+
+        worksheet.write(7, 0, 'Topo ID:')
+        worksheet.write(8, 0, 'km:')
+        worksheet.write(8, 2, 'Manning:')
+        try:
+            worksheet.write(7, 1, str(self.topoID))
+            worksheet.write(8, 1, str(self.km))
+            worksheet.write(8, 3, str(self.manning))
+        except:
+            worksheet.write(7, 1, "None")
+            worksheet.write(8, 1, "None")
+            worksheet.write(8, 3, "None")
         try:
             worksheet.write(4, 0, 'Długość:')
             worksheet.write(4, 1, str(self.culvert_len))
@@ -1225,8 +1480,8 @@ class XS_t(object):
 
         chart1.add_series({
             'name': 'Koryto',
-            'categories': [self.name+str(self.lp), 10, 0, row+10, 0],
-            'values': [self.name+str(self.lp), 10, 1, row+10, 1],
+            'categories': [str(self.lp), 10, 0, row+10, 0],
+            'values': [str(self.lp), 10, 1, row+10, 1],
         })
 
         for row, line in enumerate(self.culvertXS):
@@ -1235,20 +1490,31 @@ class XS_t(object):
 
         chart1.add_series({
             'name': 'Przepust',
-            'categories': [self.name+str(self.lp), 10, 2, row + 10, 2],
-            'values': [self.name+str(self.lp), 10, 3, row + 10, 3],
+            'categories': [str(self.lp), 10, 2, row + 10, 2],
+            'values': [str(self.lp), 10, 3, row + 10, 3],
         })
         for row, line in enumerate(self.deck):
             for col, cell in enumerate(line):
                 worksheet.write(row+10, col+4, cell)
         chart1.add_series({
             'name': 'Przelew',
-            'categories': [self.name+str(self.lp), 10, 4, row + 10, 4],
-            'values': [self.name+str(self.lp), 10, 5, row + 10, 5],
+            'categories': [str(self.lp), 10, 4, row + 10, 4],
+            'values': [str(self.lp), 10, 5, row + 10, 5],
         })
         chart1.set_style(10)
         chart1.set_size({'width': 720, 'height': 576})
         worksheet.insert_chart('G1', chart1, {'x_offset': 25, 'y_offset': 15})
+
+        #worksheet.write('A12', 'Insert an image with an offset:')
+        import os
+        n = 1
+        for foto in self.foto.replace(' ', '').split(','):
+            for root, dirs, files in os.walk(path):
+                for name in files:
+                    if name == foto:
+                        #print(os.path.abspath(os.path.join(root, name)))
+                        worksheet.insert_image('S'+ str(n), os.path.abspath(os.path.join(root, name)), {'x_offset': 15, 'y_offset': 10})
+                        n += 25
         #workbook.close()
 
 

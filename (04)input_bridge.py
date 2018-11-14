@@ -78,7 +78,7 @@ for bridge in bridges:
     attributes = [bridge.downS, bridge.upS, round(float(bridge.dl), 2), bridge.mann, 1, 0, 0]
     nwk.culvertList[-1].culvertParams['Attributes'] = attributes
     nwk.culvertList[-1].culvertParams['HorizOffset'] = [0]
-    nwk.culvertList[-1].culvertParams['HeadLossFactors'] = [0.0, 0, 1, 0, 0.0, 0, 1, 0]
+    nwk.culvertList[-1].culvertParams['HeadLossFactors'] = [0.1, 0.3, 1, 0, 0.1, 0.3, 1, 0]
     bridgeID = str.upper(bridge.rzeka[0:3])+"_M-"+str(bridge.lp).replace(' ','')+"_C1"
     location = [str(bridge.rzeka).replace(' ',''), str(bridge.km).replace(' ',''), bridgeID, str(bridge.topoID).replace(' ','')]
     nwk.culvertList[-1].culvertParams['Location'] = location
