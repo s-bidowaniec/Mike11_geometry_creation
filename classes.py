@@ -185,7 +185,7 @@ class Elevation(object):
         self.parent = parent
 
     def add_paramaters(self, string_list, name, line):
-    '''load parameters to object as list'''
+        '''load parameters to object as list'''
         self.data.append(string_list[1:])
 
     def values_2_string(self):
@@ -345,7 +345,8 @@ class Weir(object):
     def add_parameters(self, string_list, name, line):
         '''load parameters like riverName, km, topoID, ID to object,
         remaining parameters load to weirParams as dictionary,
-        from "HeadLossFactors = 0.5, 1, 1, 0.5, 1, 1" to {"HeadLossFactors" : [0.5, 1, 1, 0.5, 1, 1]}'''
+        from "HeadLossFactors = 0.5, 1, 1, 0.5, 1, 1" to {"HeadLossFactors" : [0.5, 1, 1, 0.5, 1, 1]}
+        missing [QH_Relations] parameters'''
 
         # add basic parameters for Wier
         if "Location" in line:
@@ -443,6 +444,77 @@ class Culvert(object):
         EndSect  // culvert_data\n\n")
 
 ############################      TU SKONCZYLEM      ####################################################
+
+class Bridge(object):
+    '''hold on data for bridge'''        #   do poprawki
+    def __init__(self, parent = None):
+        self.parent = parent
+        self.data = ''
+        self.spaceName = []
+        self.end = "EndSect  // bridge_data"
+
+    def add_parameters(self, string_list, name, line):
+        '''add parameter to class'''
+        wordsList = line.split()
+        if u"BranchName" in line:
+            self.branchName = string_list[-1]
+        elif "Chainage" in line:
+            self.chainage = string_list[-1]
+        elif " ID" in line:
+            self.ID = string_list[-1]
+        elif "TopoID" in line:
+            self.topoID = string_list[-1]
+        elif " Type" in line:
+            self.type = string_list[-1]
+        elif "ChannelWidth" in line:
+            self.channelWidth = string_list[-1]
+        elif "SectionArea" in line:
+            self.sectionArea = string_list[-1]
+        elif "DragCoef" in line:
+            self.dragCoef = string_list[-1]
+        elif "CConst" in line:
+            self.cConst = string_list[-1]
+        elif "UpstreamWidth" in line:
+            self.upstreamWidth = string_list[-1]
+        elif "TotalWidth" in line:
+            self.totalWidth = string_list[-1]
+        elif "BridgeID" in line:
+            self.bridgeID = string_list[-1]
+        elif "CulvertRow" in line:
+            self.culvertRow = string_list[-1]
+        elif "WeirRow" in line:
+            self.weirRow = string_list[-1]
+        elif "HorizOffset" in line:
+            self.horizonOffset = string_list[-1]
+        elif "[" in line:                               # jeżeli występuje nazwa w nawiasie kwadratowym jest to początek nowej "sekcji" w pliku *.nwk
+            self.data += line
+            self.spaceName.append(name[1:-1])           # dodanie nazwy do listy
+        elif wordsList[-1] in self.spaceName:         # jeżeli kończy się sekcja
+            self.data += line
+            self.data += '\n'                           # do napisu z danymi dokłada się jedną wolną linijkę
+            del self.spaceName[self.spaceName.index(wordsList[-1])]     # usunięcie nazwy z listy
+        else:
+            self.data += line
+
+    def values_2_string(self):
+        for i in self.__dict__:
+            if type(self.__dict__[i]) == int or type(self.__dict__[i]) == float:
+                self.__dict__[i] == str(self.__dict__[i])
+
+    def print_to_nwk(self, fil):
+        '''write parameters to *.nwk file'''
+        self.values_2_string()
+        fil.write("         [bridge_data]\n")
+        for i in self.__dict__:
+            if i not in 'data parent end, spaceName':                  # tych atrybutów nie drukujemy
+                upperName = i[0].upper() + i[1:]
+                if i in 'branchName, ID, topoID':           # te atrybuty posiadają cudzysłowy w wydruku
+                    fil.write("            {0} = '{1}'\n".format(upperName, self.__dict__[i]))
+                else:
+                    fil.write("            {0} = {1}\n".format(upperName, self.__dict__[i]))
+        fil.write(self.data)
+        fil.write('         ' + self.end + '\n\n')
+
 class CrossSection(object):
     def __init__(self, parent=None):
         self.data = []
@@ -592,6 +664,7 @@ class NwkFile(object):
         self.branchList = []
         self.weirList = []
         self.culvertList = []
+        self.bridgeList = []
         self.start = ''
         self.finish = ''
         self.maxPoint = 0
@@ -622,7 +695,6 @@ class NwkFile(object):
                 print("Powtarzające się punkty: ", i, u"w liczbie ", self.recuredPointList.count(i))
 
     def values_2_string(self):
-        '''change values from integer or float to string, useful to write to *.nwk file'''
         pass
 
     def nwk_rdp(self, epsilon=0.08):
@@ -697,6 +769,25 @@ class NwkFile(object):
             file.write("""      EndSect  // WEIR\n\n      [CULVERTS]\n""")
 
             for i in self.culvertList:
+                i.print_to_nwk(file)
+            # dodano napis poniżej oraz pętlę
+            file.write("""      EndSect  // CULVERTS	    
+
+      [PUMPS]
+      EndSect  // PUMPS
+
+      [REGULATING_STR]
+      EndSect  // REGULATING_STR
+
+      [CONTROL_STR]
+      EndSect  // CONTROL_STR
+
+      [DAMBREAK_STR]
+      EndSect  // DAMBREAK_STR
+
+      [BRIDGE]\n""")
+
+            for i in self.bridgeList:
                 i.print_to_nwk(file)
 
             file.write(self.finish)

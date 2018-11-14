@@ -182,12 +182,12 @@ def read_NWK(file):
     nwk = NwkFile()
     i = 0
 
-    # zaczytywanie poczÄ…tku pliku
+    # zaczytywanie pocz¹tku pliku
     while i < len(readline) and "POINTS" not in readline[i]:
         nwk.add_start(readline[i])
         i += 1
     i += 1
-
+    
     # zaczytywanie punktÃ³w do klasy nwkFile
     while i < len(readline) and "EndSect  // POINTS" not in readline[i]:
         line = readline[i]
@@ -200,7 +200,7 @@ def read_NWK(file):
         i += 1
 
     # zaczytywanie poszczegÃ³lnych klas
-    while i < len(readline) and "EndSect  // CULVERTS" not in readline[i]:
+    while i < len(readline) and "EndSect  // BRIDGE" not in readline[i]:            # zmieniono CULVERT na BRIDGE
         line = readline[i]
 
         if not line.split():
@@ -210,12 +210,12 @@ def read_NWK(file):
         data_list, name = line_to_list(line)
 
         if "[branch]" in line:
-            nwk.branchList.append(Branch())
+            nwk.branchList.append(Branch()) 
             cl = nwk.branchList[-1]
 
         elif "[linkchannel]" in line:
-            cl.linkChannel = LinkChannel(cl)
-            cl = cl.linkChannel
+            cl.linkChannel = LinkChannel(cl)    # utworzenie klasy, argumentem jest klasa powy¿ej (parent)
+            cl = cl.linkChannel                 # zmienna cl przechodzi do klasy "poni¿ej"
 
         elif "[Cross_Section]" in line:
             cl.crossSection = CrossSection(cl)
@@ -250,8 +250,12 @@ def read_NWK(file):
         elif "[Irregular]" in line:
             cl.irregular = Irregular(cl)
             cl = cl.irregular
+            
+        elif "[bridge_data]" in line:
+            nwk.bridgeList.append(Bridge())
+            cl = nwk.bridgeList[-1]
 
-        elif cl.end in line and cl.parent is None:
+        elif cl.end in line and cl.parent is None:      # je¿eli klasa siê koñczy, a nie ma klasy powy¿ej (co to za przypadek?)
             i += 1
             continue
 
@@ -259,7 +263,7 @@ def read_NWK(file):
             cl = cl.parent
 
         else:
-            cl.add_parameters(data_list, name, line)
+            cl.add_parameters(data_list, name, line)    # tu prawdopodobnie wywali
         i += 1
 
     while i < len(readline):
