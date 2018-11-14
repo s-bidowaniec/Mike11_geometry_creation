@@ -515,6 +515,27 @@ class Bridge(object):
         fil.write(self.data)
         fil.write('         ' + self.end + '\n\n')
 
+    def new_bridge(self, branch, chainage, ID, tID, bID, culvertRow, weirRow, fil):
+        self.branchName = branch
+        self.chainage = chainage
+        self.ID = ID
+        self.topoID = tID
+        self.type = 8
+        self.channelWidth = 0
+        self.sectionArea = 0
+        self.dragCoef = 0
+        self.cConst = 0
+        self.upstreamWidth = 0
+        self.totalWidth = 0
+        self.bridgeID = bID
+        self.culvertRow = culvertRow
+        self.weirRow = weirRow
+        self.horizonOffset = 0
+        op = open(fil, 'r')
+        rd = op.read()
+        self.data = rd
+        
+
 class CrossSection(object):
     def __init__(self, parent=None):
         self.data = []
