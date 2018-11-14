@@ -1,4 +1,4 @@
-import numpy as np
+﻿import numpy as np
 import collections
 import xlsxwriter
 from classes import *
@@ -163,7 +163,7 @@ def raport_XS(XS_list, output):
     workbook = xlsxwriter.Workbook(output)
     worksheet = workbook.add_worksheet('raport_XS')
     bold = workbook.add_format({'bold': 1})
-    headings = ['Nazwa rzeki', 'Topo ID', 'Kilometraż', 'ID Przekroju', 'Typ przekroju']  # 'Radius Type', 'Datum'
+    headings = ['Nazwa rzeki', 'Topo ID', 'KilometraÄąÄ˝', 'ID Przekroju', 'Typ przekroju']  # 'Radius Type', 'Datum'
     worksheet.write_row('A1', headings, bold)
     i = 1
     for XS in XS_list:
@@ -178,7 +178,7 @@ def raport_XS(XS_list, output):
         if XS.cs == 0:
             worksheet.write(i, 4, 'otwarty')
         else:
-            worksheet.write(i, 4, 'zamknięty')
+            worksheet.write(i, 4, 'zamkniĂ„â„˘ty')
         # worksheet.write(i, 5, XS.rt)
         # worksheet.write(i, 6, XS.datum)
         i += 1
@@ -208,25 +208,24 @@ def read_NWK(file):
     nwk = NwkFile()
     i = 0
 
-    # zaczytywanie początku pliku
+    # zaczytywanie poczﾹtku pliku
     while i < len(readline) and "POINTS" not in readline[i]:
         nwk.add_start(readline[i])
         i += 1
     i += 1
-
-    # zaczytywanie punktów do klasy nwkFile
+    
+    # zaczytywanie punktÄ‚Ĺ‚w do klasy nwkFile
     while i < len(readline) and "EndSect  // POINTS" not in readline[i]:
         line = readline[i]
         stringList, name = line_to_list(line)
         nwk.add_point(stringList, name)
         i += 1
 
-    # przejście do pierwszego "brancha"
+    # przejÄąâ€şcie do pierwszego "brancha"
     while "[branch]" not in readline[i]:
         i += 1
 
-    # zaczytywanie poszczególnych klas
-    while i < len(readline) and "EndSect  // CULVERTS" not in readline[i]:
+    while i < len(readline) and "EndSect  // BRIDGE" not in readline[i]:            # zmieniono CULVERT na BRIDGE
         line = readline[i]
 
         if not line.split():
@@ -236,12 +235,13 @@ def read_NWK(file):
         data_list, name = line_to_list(line)
 
         if "[branch]" in line:
-            nwk.branchList.append(Branch())
+            nwk.branchList.append(Branch()) 
             cl = nwk.branchList[-1]
 
         elif "[linkchannel]" in line:
-            cl.linkChannel = LinkChannel(cl)
-            cl = cl.linkChannel
+
+            cl.linkChannel = LinkChannel(cl)    # utworzenie klasy, argumentem jest klasa powy﾿ej (parent)
+            cl = cl.linkChannel                 # zmienna cl przechodzi do klasy "poni﾿ej"
 
         elif "[Cross_Section]" in line:
             cl.crossSection = CrossSection(cl)
@@ -276,8 +276,13 @@ def read_NWK(file):
         elif "[Irregular]" in line:
             cl.irregular = Irregular(cl)
             cl = cl.irregular
+            
+        elif "[bridge_data]" in line:
+            nwk.bridgeList.append(Bridge())
+            cl = nwk.bridgeList[-1]
 
-        elif cl.end in line and cl.parent is None:
+
+        elif cl.end in line and cl.parent is None:      # je﾿eli klasa siê koñczy, a nie ma klasy powy﾿ej (co to za przypadek?)
             i += 1
             continue
 
@@ -285,7 +290,7 @@ def read_NWK(file):
             cl = cl.parent
 
         else:
-            cl.add_parameters(data_list, name, line)
+            cl.add_parameters(data_list, name, line)    # tu prawdopodobnie wywali
         i += 1
 
     while i < len(readline):
@@ -707,6 +712,7 @@ def add_markers(xs, markers):
         xs.points.insert(startIndex, insertPoint)
         print(len(xs.points), " ilosc pkt na przekroju")
 
+
 def linear_equation(array):
     a = np.array([
          [(array[0][0]) ** 2, array[0][0], 1],
@@ -720,3 +726,4 @@ def linear_equation(array):
         ])
     x = np.linalg.solve(a,b)
     return lambda y: x[0]*y**2 + x[1]*y + x[2]
+
