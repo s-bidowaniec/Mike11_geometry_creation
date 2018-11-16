@@ -2,13 +2,19 @@ import glob
 from classes import *
 from functions import read_NWK
 import xlsxwriter
-
+# oznaczenia pietrzen i mostow:
 PIETRZENIA = ["próg", "stopień", "jaz"]
 MOSTY = ["przepust", "most", "kładka"]
 
+"""path - > zawiera folder 'mosty_out' z plikami txt (przekroje geodezja), folder ze zdjęciami z obiektow"""
 path = r"C:\!!Mode ISOKII\!ISOK II\Czarny Potok\Geodezja\rzeka_CZARNY_POTOK_16632"
+
+"""inputNwkDir - > podac sciezke do pliku nwk. (po generacji z gisa nwk otworzyc w mike 11 i zapisac (kilometruje pkt)
+plik potrzebny do kilometrowania budowli"""
 inputNwkDir = r"C:\!!Mode ISOKII\!ISOK II\Czarny Potok\Mike_v1\S01_Czarny_Potok.nwk11"
-workbook = xlsxwriter.Workbook(r'C:\!!Mode ISOKII\!ISOK II\Czarny Potok\Mike_v1\Czarny_Potok_budowle.xlsx')
+
+"""workbook - > plik wynikowy xlsx zawierający w sobie budowle, po generacji należy sprawdzić spadki, geometrię"""
+workbook = xlsxwriter.Workbook(r'C:\!!Mode ISOKII\!ISOK II\Czarny Potok\Mike_v1\test_po_integracji.xlsx')
 
 fileWejscieNWK = open(inputNwkDir, 'r')
 nwk = read_NWK(fileWejscieNWK)

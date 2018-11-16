@@ -2,32 +2,35 @@ import openpyxl, time
 import dbm
 import pickle
 import copy
-
+from classes import Bridge
 from functions import *
 # --------------------------------- PARAMETRY -----------------------------------------------------------------
 # spadek minimalny:
 spadMin = 0
 # -------------------------------- PLIKI WSADOWE --------------------------------------------------------------
-# plik wsadowy rawdata, pobierane sa punkty wspolne na przekrojach oraz inne dane do generacji linku
-xsInputDir = r"C:\!!Mode ISOKII\!ISOK II\Dobka\hec_ras2\Dobka_man.txt"
+"""plik wsadowy rawdata, pobierane sa przekroje z gis do laczenia z przekrojami obiektow, dopasowanie po km"""
+xsInputDir = r"C:\!!Mode ISOKII\!ISOK II\Czarny Potok\Mike_v1\S01_Czarny_Potok_man.txt"
 fileWejscieXS = open(xsInputDir,'r')
 bazaXsRawData, XsOrder = read_XSraw(fileWejscieXS)
-# plik wsadowy nwk, pobierana jest lista punktow oraz branchy do ktorych dopisywane sa dane z nowych linkow
-nwkInputDir = r"C:\!!Mode ISOKII\!ISOK II\Dobka\hec_ras2\Dobka.nwk11"
+
+"""plik nwk potrzebny do zaczytania schematyzacji i dodukowania wynikow"""
+nwkInputDir = r"C:\!!Mode ISOKII\!ISOK II\Czarny Potok\Mike_v1\S01_Czarny_Potok_link.nwk11"
 fileWejscieNWK = open(nwkInputDir, 'r')
 nwk = read_NWK(fileWejscieNWK)
-# plik z mostami
-wb = openpyxl.load_workbook(r'C:\!!Mode ISOKII\!ISOK II\Dobka\hec_ras2\Dobka_progi3.xlsx')
+nwk.nwk_rdp()                                # <- jeśli ma zrobić rdp na networku
+
+"""plik z mostami do wsadzenia"""
+wb = openpyxl.load_workbook(r'C:\!!Mode ISOKII\!ISOK II\Czarny Potok\Mike_v1\Czarny_Potok_budowle.xlsx')
 bridges = read_bridge_xlsx(wb)
 base_manning = 0.04
 # --------------------------------- PLIKI WYNIKOWE -----------------------------------------------------------
 # nowy plik NWK z naniesionymi mostasmi
-nwkOutDir = r"C:\!!Mode ISOKII\!ISOK II\Dobka\hec_ras2\otput\S01_Dobka_bridge_v3.nwk11"
+nwkOutDir = r"C:\!!Mode ISOKII\!ISOK II\Czarny Potok\Mike_v1\S01_Czarny_Potok_bri.nwk11"
 if nwkOutDir == nwkInputDir:
     raise ValueError('NWK input file equals NWK output file', 'foo', 'bar', 'baz')
 fileWynikNWK = open(nwkOutDir, "w")
 # nowy plik XSrawData z naniesionymi mostasmi
-xsOutputDir = r"C:\!!Mode ISOKII\!ISOK II\Dobka\hec_ras2\otput\rawdata_z_m_v3.txt"
+xsOutputDir = r"C:\!!Mode ISOKII\!ISOK II\Czarny Potok\Mike_v1\S01_Czarny_Potok_bri.txt"
 if xsInputDir == xsOutputDir:
     raise ValueError('XS input file equals XS output file', 'foo', 'bar', 'baz')
 fileWynikXS = open(xsOutputDir,'w')
@@ -42,11 +45,13 @@ MOSTY = ["przepust", "most", "kładka"]
 #-----------------------------------------------------------------------------------------------------------------
 # zaczytanie obiektow z xlsx, nwk i txt raw data
 # mosty z xlsx
-
+weir_row, culvert_row = 0, 0
+bridge_amount = len(bridges)
 for bridge in bridges:
     print("----!!!----",bridge.typ,"----!!!----")
     flag = "non"
     if bridge.typ in MOSTY:
+        culvert_row += 1
         flag = "bridge"
         # ---- CULVERT -----
         # --- conflict detection ---
@@ -60,6 +65,7 @@ for bridge in bridges:
         nwk.culvertList.append(Culvert())
         cl = nwk.culvertList[-1]
         cl.geometry = Geometry(cl)
+        cl.geometry.data["Type"] = 3
         cl = cl.geometry
         cl.levelWidth = LevelWidth(cl)
         cl.irregular = Irregular(cl)
@@ -67,8 +73,9 @@ for bridge in bridges:
         cl.reservoir = ReservoirData(cl)
         cl = cl.reservoir
         cl.elevation = Elevation(cl)
+
         # PRZYPISANIE DANYCH PODSTAWOWYCH
-        culvertID = str.upper(bridge.rzeka[0:3]) + "_M-" + str(bridge.lp).replace(' ', '') + "_C1"
+        culvertID = str.upper(bridge.rzeka[0:3]) + "_M-" + str(bridge.lp).replace(' ', '') + "_C"
         nwk.culvertList[-1].riverName = bridge.rzeka
         nwk.culvertList[-1].km = bridge.km
         nwk.culvertList[-1].ID = culvertID
@@ -85,8 +92,8 @@ for bridge in bridges:
         attributes = [bridge.downS, bridge.upS, round(float(bridge.dl), 2), bridge.mann, 1, 0, 0]
         nwk.culvertList[-1].culvertParams['Attributes'] = attributes
         nwk.culvertList[-1].culvertParams['HorizOffset'] = [0]
-        nwk.culvertList[-1].culvertParams['HeadLossFactors'] = [0.1, 0.3, 1, 0, 0.1, 0.3, 1, 0]
-        bridgeID = str.upper(bridge.rzeka[0:3])+"_M-"+str(bridge.lp).replace(' ','')+"_C1"
+        nwk.culvertList[-1].culvertParams['HeadLossFactors'] = [0.5, 1.0, 1, 0, 0.5, 1.0, 1, 0]
+        bridgeID = str.upper(bridge.rzeka[0:3])+"_M-"+str(bridge.lp).replace(' ','')+"_C"
         location = [str(bridge.rzeka).replace(' ',''), str(bridge.km).replace(' ',''), bridgeID, str(bridge.topoID).replace(' ','')]
         nwk.culvertList[-1].culvertParams['Location'] = location
         # GEOMETRY
@@ -119,18 +126,16 @@ for bridge in bridges:
         setKm = [float(i[1]) for i in set if i[0] == str.lower(bridge.rzeka).replace(' ', '')]
         setKm.sort()
         newSet = []
-        for km in setKm:
-            if abs(float(bridge.km) - float(km)) > 3:
-                newSet.append(km)
-            else:
-                if int(km) == 1047:
-                    import pdb
-                    pdb.set_trace()
-                km2 = km
-                pass
-        if km2:
-            bridge.km = km2
-            km2 = 0
+        closeSet = []
+
+        km_gis = min(setKm, key=lambda x: abs(x-bridge.km))
+        newSet = copy.deepcopy(setKm)
+        newSet.remove(km_gis)
+        if abs(bridge.km-km_gis)>6:
+            input("Odległość najbliższego przekroju GIS od pomiaru geodezyjnego powyżej 6m: \n bridge ID: {} \n kilometraz geodezyjny: {} \n kilometraż dopasowanego przekroju: {} \n kontynuuj... ".format(bridge.lp, bridge.km, km_gis))
+
+        bridge.km = km_gis
+
         nwk.culvertList[-1].km = bridge.km
         kmDown = max([i for i in newSet if i < bridge.km])
         kmUp = min([i for i in newSet if i > bridge.km])
@@ -162,7 +167,7 @@ for bridge in bridges:
         #bazaXsRawData.append(Xs())
         XsOrder['{}b {}'.format(str.lower(bridge.rzeka).replace(' ', ''), bridge.km)] = copy.deepcopy(Xs())
         XsOrder['{}b {}'.format(str.lower(bridge.rzeka).replace(' ', ''), bridge.km)].riverCode = bridge.rzeka
-        XsOrder['{}b {}'.format(str.lower(bridge.rzeka).replace(' ', ''), bridge.km)].reachCode = str(bridge.topoID)+"_CULVERT"
+        XsOrder['{}b {}'.format(str.lower(bridge.rzeka).replace(' ', ''), bridge.km)].reachCode = "_CULVERT"
         XsOrder['{}b {}'.format(str.lower(bridge.rzeka).replace(' ', ''), bridge.km)].km = bridge.km
         XsOrder['{}b {}'.format(str.lower(bridge.rzeka).replace(' ', ''), bridge.km)].mann = bridge.mann
         XsOrder['{}b {}'.format(str.lower(bridge.rzeka).replace(' ', ''), bridge.km)].cords = '    0  00.00  00.00 00.00  00.00\n'
@@ -172,7 +177,7 @@ for bridge in bridges:
         XsOrder['{}b {}'.format(str.lower(bridge.rzeka).replace(' ', ''), bridge.km)].cs = 1  # closed
         XsOrder['{}b {}'.format(str.lower(bridge.rzeka).replace(' ', ''), bridge.km)].rt = '    0\n'  # radius type
         XsOrder['{}b {}'.format(str.lower(bridge.rzeka).replace(' ', ''), bridge.km)].dx = '    0\n'  # divide xs
-        xsID = str.upper(bridge.rzeka[0:3]) + "_M-" + str(bridge.lp).replace(' ', '') + "_C1\n"
+        xsID = ("M-" + str(bridge.lp).replace(' ', '') + "\n")
         XsOrder['{}b {}'.format(str.lower(bridge.rzeka).replace(' ', ''), bridge.km)].id = xsID  # section id
         XsOrder['{}b {}'.format(str.lower(bridge.rzeka).replace(' ', ''), bridge.km)].inter = '    0\n'  # interpolated
         XsOrder['{}b {}'.format(str.lower(bridge.rzeka).replace(' ', ''), bridge.km)].angle = '    0.00   0\n'  # angle
@@ -184,11 +189,20 @@ for bridge in bridges:
         XsOrder['{}b {}'.format(str.lower(bridge.rzeka).replace(' ', ''), bridge.km)].lp = '   1  0    0.000  0    0.000  250\n'  # level params
 
         # ---- END XS -----
+        # ---- Input bridge structure ---
+        bridgeID = str.upper(bridge.rzeka[0:3]) + "_M-" + str(bridge.lp).replace(' ', '') + "_B"
+        b = Bridge()
+        b.new_bridge(bridge.rzeka, bridge.km, bridgeID, bridge.topoID, culvert_row, culvert_row, weir_row+1, r'Bridge_data.txt')
+        nwk.bridgeList.append(b)
+        #import pdb
+        #pdb.set_trace()
 
+        # ---- End Input Bridge ---
         print(len(XsOrder), "len od XsOrder")
-
+        nwk.culvertList[-1].geometry.data['Type'] = '3'
         # ---- WEIR -----
     if bridge.typ in MOSTY or bridge.typ in PIETRZENIA:
+        weir_row += 1
         if flag == "bridge":
             weirShift = bridgeShift
             for element in bridge.przelew:
@@ -219,7 +233,7 @@ for bridge in bridges:
         cl = cl.reservoir
         cl.elevation = Elevation(cl)
         # PRZYPISANIE DANYCH PODSTAWOWYCH
-        weirID = str.upper(bridge.rzeka[0:3]) + "_"+litera+"-" + str(bridge.lp).replace(' ', '') + "_W1"
+        weirID = str.upper(bridge.rzeka[0:3]) + "_"+litera+"-" + str(bridge.lp).replace(' ', '') + "_W"
         location = [str(bridge.rzeka).replace(' ', ''), str(bridge.km).replace(' ', ''), weirID,
                     str(bridge.topoID).replace(' ', '')]
 
@@ -235,7 +249,7 @@ for bridge in bridges:
         nwk.weirList[-1].weirParams['Attributes'] = attributes
 
         # nwk.weirList[-1].weirParams['Location'] = location
-        nwk.weirList[-1].weirParams['HeadLossFactors'] = [0.0, 0, 1, 0.0, 0, 1]  # ?
+        nwk.weirList[-1].weirParams['HeadLossFactors'] = [0.5, 1, 1, 0.5, 1, 1]  # ?
         nwk.weirList[-1].weirParams['WeirFormulaParam'] = [1, 1, 1.838, 1.5, 1]  # ?
         nwk.weirList[-1].weirParams['WeirFormula2Param'] = [0, 0, 0]  # ?
         nwk.weirList[-1].weirParams['WeirFormula3Param'] = [0, 0, 0, 0.6, 1.02, 1.37, 1, 0.03, 1.018, 1, 0, 2.6, 1,
@@ -247,13 +261,14 @@ for bridge in bridges:
         nwk.weirList[-1].reservoir.data['CoordXY'] = [0]
         nwk.weirList[-1].reservoir.data['InitialArea'] = [0]
         # GEOMETRY
-        nwk.weirList[-1].geometry.data['Attributes'] = [0, 0]
+        nwk.weirList[-1].geometry.data['Attributes'] = [1, 0]
         # WYMIAR PRZELEWU
+        """
         szerWys = 10   # maxymalny station w korytku
         szerNis = 5  # roznica stationow w przepuscie
         startElev = min(i[1] for i in bridge.przelew)  # najnizsza rzedna gory konstrukcji
         nwk.weirList[-1].geometry.levelWidth.data = [[startElev, szerNis], [startElev + 0.1, szerWys],
-                                                     [startElev + 2, 120]]
+                                                     [startElev + 2, 120]]"""
         # ---- END WEIR -----
         # robocze start ------------------------------------------------------------------------------------------------------------------------------------------------
         # --- DOPASOWANIE PRZEKROI -----------------------------------------------------------------------------------
@@ -263,18 +278,17 @@ for bridge in bridges:
         setKm = [float(i[1]) for i in set if i[0] == str.lower(bridge.rzeka).replace(' ', '')]
         setKm.sort()
         newSet = []
-        for km in setKm:
-            if abs(float(bridge.km) - float(km)) > 3:
-                newSet.append(km)
-            else:
-                if int(km) == 1047:
-                    import pdb
-                    pdb.set_trace()
-                km2 = km
-                pass
-        if km2:
-            bridge.km = km2
-            km2=0
+
+        km_gis = min(setKm, key=lambda x: abs(x-bridge.km))
+        newSet = copy.deepcopy(setKm)
+        newSet.remove(km_gis)
+
+        if abs(bridge.km-km_gis) > 6 and litera == "H":
+            input("Odległość najbliższego przekroju GIS od pomiaru geodezyjnego powyżej 6m: \n weir ID: {} \n kilometraz geodezyjny: {} \n kilometraż dopasowanego przekroju: {} \n kontynuuj... ".format(bridge.lp, bridge.km, km_gis))
+
+
+        bridge.km = km_gis
+
         nwk.weirList[-1].km = bridge.km
         if flag != "bridge":
             kmDown = max([i for i in newSet if i < bridge.km])
@@ -295,6 +309,7 @@ for bridge in bridges:
 
             xsUp2, xsWeir = fit_xs(xsUp, xsWeir)
 
+
         elif flag == "bridge":
             kmUp = min([i for i in newSet if i > bridge.km])
             xsUp = XsOrder['{} {}'.format(str.lower(bridge.rzeka).replace(' ', ''), kmUp)]
@@ -314,9 +329,11 @@ for bridge in bridges:
             #pdb.set_trace()
             import copy
             XsOrder['{}B {}'.format(str.lower(bridge.rzeka).replace(' ', ''), weirKmOnXS)] = copy.deepcopy(xsBridge)
-            XsOrder['{}B {}'.format(str.lower(bridge.rzeka).replace(' ', ''), weirKmOnXS)].reachCode = str(
-                bridge.topoID) + "_bridge"
+            XsOrder['{}B {}'.format(str.lower(bridge.rzeka).replace(' ', ''), weirKmOnXS)].reachCode = str("_BRIDGE")
+            xsID = ("M-" + str(bridge.lp).replace(' ', '') + "\n")
+            XsOrder['{}B {}'.format(str.lower(bridge.rzeka).replace(' ', ''), weirKmOnXS)].id = xsID  # section id
 
+        xsWeir.id =  weirID+"\n"
         weir = copy.deepcopy(bridge)
         weir.koryto = weir.przelew
         xsWeir, upMarker = fit_weir(xsWeir, weir, base_manning=0.04)
@@ -330,6 +347,7 @@ for bridge in bridges:
         print(xsUp.points[0].station, "stat3")
         print(xsUp.points[0].z, "z3")
         """
+
         # wbicie koryta na xs
         XsOrder['{} {}'.format(str.lower(bridge.rzeka).replace(' ', ''), kmUp)] = xsUp
         XsOrder['{} {}'.format(str.lower(bridge.rzeka).replace(' ', ''), kmDown)] = xsDown
@@ -338,7 +356,7 @@ for bridge in bridges:
         # bazaXsRawData.append(Xs())
         XsOrder['{}w {}'.format(str.lower(bridge.rzeka).replace(' ', ''), bridge.km)] = copy.deepcopy(Xs())
         XsOrder['{}w {}'.format(str.lower(bridge.rzeka).replace(' ', ''), bridge.km)].riverCode = bridge.rzeka
-        XsOrder['{}w {}'.format(str.lower(bridge.rzeka).replace(' ', ''), bridge.km)].reachCode = str(bridge.topoID)+"_weir"
+        XsOrder['{}w {}'.format(str.lower(bridge.rzeka).replace(' ', ''), bridge.km)].reachCode = "_WEIR"
         XsOrder['{}w {}'.format(str.lower(bridge.rzeka).replace(' ', ''), bridge.km)].km = bridge.km
         XsOrder['{}w {}'.format(str.lower(bridge.rzeka).replace(' ', ''), bridge.km)].mann = bridge.mann
         XsOrder['{}w {}'.format(str.lower(bridge.rzeka).replace(' ', ''),
@@ -349,7 +367,7 @@ for bridge in bridges:
         XsOrder['{}w {}'.format(str.lower(bridge.rzeka).replace(' ', ''), bridge.km)].cs = 0  # closed
         XsOrder['{}w {}'.format(str.lower(bridge.rzeka).replace(' ', ''), bridge.km)].rt = '    0\n'  # radius type
         XsOrder['{}w {}'.format(str.lower(bridge.rzeka).replace(' ', ''), bridge.km)].dx = '    0\n'  # divide xs
-        xsID = str.upper(bridge.rzeka[0:3]) + "_M-" + str(bridge.lp).replace(' ', '') + "_C1\n"
+        xsID = (litera + "-" + str(bridge.lp).replace(' ', '') + "\n")
         XsOrder['{}w {}'.format(str.lower(bridge.rzeka).replace(' ', ''), bridge.km)].id = xsID  # section id
         XsOrder['{}w {}'.format(str.lower(bridge.rzeka).replace(' ', ''), bridge.km)].inter = '    0\n'  # interpolated
         XsOrder['{}w {}'.format(str.lower(bridge.rzeka).replace(' ', ''), bridge.km)].angle = '    0.00   0\n'  # angle

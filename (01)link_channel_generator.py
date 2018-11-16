@@ -37,7 +37,10 @@ for i in range(len(XS_dat)):
     list_km.sort()
     index = list_km.index(float(XS_dat[i].km))
     if index == 0:
-        XS_dat[i].len = int(abs(list_km[index] - list_km[index + 1]) / 2)
+        print("Tutaj jest blad jesli branch nie zaczyna sie od 0, nie rozwiazane")
+        #import pdb
+        #pdb.set_trace()
+        XS_dat[i].len = int(abs(list_km[index] - (list_km[index + 1] / 2)))
     elif index >= len(list_km)-1:
         XS_dat[i].len = int(abs((list_km[index - 1] - list_km[index])) / 2)
     else: #if 0 < index < len(list_km) - 1:
