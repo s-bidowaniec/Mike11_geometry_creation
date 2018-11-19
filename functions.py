@@ -429,6 +429,7 @@ def fit_weir(xsWeir, weir, base_manning=0.04, bridgeType = False):
             z=statElevList[index][1]
             if abs(float(z)-float(pkt.z)) > 0.05:
                 list.append(pkt)
+                #pass
 
         # else dodaje punkt, - poza culvertem
         else:
@@ -439,6 +440,7 @@ def fit_weir(xsWeir, weir, base_manning=0.04, bridgeType = False):
     xsWeir.points = list
 
     flagP = 0
+
     for element in weir.koryto:
         # dla punktow koryta w obrebie przepustu
 
@@ -461,6 +463,7 @@ def fit_weir(xsWeir, weir, base_manning=0.04, bridgeType = False):
                 indesXsPk1 = xsWeir.points.index(punkt)
                 # del xs.points[indesXsPk1]
             elif flagP == 1:
+                #pass
                 indesXsPk1 += 1
                 # zmienny index do obliczenia delta z
             indesXsPkz = min([float(poi.station) for poi in xsWeir.points if float(poi.station) >= float(element[0])])
@@ -474,12 +477,12 @@ def fit_weir(xsWeir, weir, base_manning=0.04, bridgeType = False):
                           [float(element[0]), float(element[1])])
             # d = float(element[1]) - min([float(z1.z), float(z2.z)])
             print(indesXsPk1, "index")
-            if d != 0.0:
+            if d != 0.05:
                 xsWeir.points.insert(indesXsPk1, Pkt(line))
                 pass
-            flagP = 0
+            flagP = 1
 
-    return xsWeir, excludedMarkerListXs1
+    return xsWeir, excludedMarkerListXs1, deltaStatBridge
 
 def fit_bridge(xs, xsUp2, bridge, base_manning=0.04):
     koryto, przepust, downS, upS = bridge.koryto, bridge.przepust, bridge.downS, bridge.upS

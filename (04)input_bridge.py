@@ -203,12 +203,18 @@ for bridge in bridges:
         # ---- WEIR -----
     if bridge.typ in MOSTY or bridge.typ in PIETRZENIA:
         weir_row += 1
-        if flag == "bridge":
+        if flag == "bridge" and bridge.typ != 'butelka':
             weirShift = bridgeShift
             for element in bridge.przelew:
                 element[0] += weirShift
             litera ="M"
+            code = "_WEIR"
+        elif bridge.typ == 'butelka':
+            litera = "M"
+            weirShift = 0
+            code = "_XS"
         else:
+            code= "_WEIR"
             litera = "H"
             weirShift = 0
 
@@ -300,15 +306,15 @@ for bridge in bridges:
             print(xsUp.km, 'km')
             # -- xs dobrane --
             # spasowanie przekroi
-            xsUp2, xsDown2 = fit_xs(xsUp, xsDown)
-            XsOrder['{} {}'.format(str.lower(bridge.rzeka).replace(' ', ''), kmUp)] = copy.deepcopy(xsUp2)
-            XsOrder['{} {}'.format(str.lower(bridge.rzeka).replace(' ', ''), kmDown)] = copy.deepcopy(xsDown2)
 
             weirKmOnXS = min(setKm, key=lambda x: abs(x - bridge.km))
             xsWeir = XsOrder['{} {}'.format(str.lower(bridge.rzeka).replace(' ', ''), weirKmOnXS)]
+            xsWeir, xsUp = fit_xs(xsWeir, xsUp)
 
-            xsUp2, xsWeir = fit_xs(xsUp, xsWeir)
-
+            #xsUp2, xsDown2 = fit_xs(xsUp, xsDown)
+            xsUp2, xsDown = fit_xs(xsWeir, xsDown)
+            XsOrder['{} {}'.format(str.lower(bridge.rzeka).replace(' ', ''), kmUp)] = copy.deepcopy(xsUp)
+            XsOrder['{} {}'.format(str.lower(bridge.rzeka).replace(' ', ''), kmDown)] = copy.deepcopy(xsDown)
 
         elif flag == "bridge":
             kmUp = min([i for i in newSet if i > bridge.km])
@@ -323,7 +329,7 @@ for bridge in bridges:
             #print(xsWeir)
 
             weir = copy.deepcopy(bridge)
-            xsBridge, upMarker = fit_weir(xsWeir, weir, base_manning=0.04, bridgeType = True)
+            xsBridge, upMarker, deltaStatWeir = fit_weir(xsWeir, weir, base_manning=0.04, bridgeType = True)
             add_markers(xsBridge, upMarker)
             #import pdb
             #pdb.set_trace()
@@ -336,7 +342,7 @@ for bridge in bridges:
         xsWeir.id =  weirID+"\n"
         weir = copy.deepcopy(bridge)
         weir.koryto = weir.przelew
-        xsWeir, upMarker = fit_weir(xsWeir, weir, base_manning=0.04)
+        xsWeir, upMarker, deltaStatWeir = fit_weir(xsWeir, weir, base_manning=0.04)
         add_markers(xsWeir, upMarker)
         XsOrder['{} {}'.format(str.lower(bridge.rzeka).replace(' ', ''), weirKmOnXS)] = xsWeir
         """
@@ -356,7 +362,7 @@ for bridge in bridges:
         # bazaXsRawData.append(Xs())
         XsOrder['{}w {}'.format(str.lower(bridge.rzeka).replace(' ', ''), bridge.km)] = copy.deepcopy(Xs())
         XsOrder['{}w {}'.format(str.lower(bridge.rzeka).replace(' ', ''), bridge.km)].riverCode = bridge.rzeka
-        XsOrder['{}w {}'.format(str.lower(bridge.rzeka).replace(' ', ''), bridge.km)].reachCode = "_WEIR"
+        XsOrder['{}w {}'.format(str.lower(bridge.rzeka).replace(' ', ''), bridge.km)].reachCode = "{}-{}".format(code, litera)
         XsOrder['{}w {}'.format(str.lower(bridge.rzeka).replace(' ', ''), bridge.km)].km = bridge.km
         XsOrder['{}w {}'.format(str.lower(bridge.rzeka).replace(' ', ''), bridge.km)].mann = bridge.mann
         XsOrder['{}w {}'.format(str.lower(bridge.rzeka).replace(' ', ''),
@@ -377,7 +383,7 @@ for bridge in bridges:
             len(bridge.przelew))  # profile
         for pkt in bridge.przelew:
             XsOrder['{}w {}'.format(str.lower(bridge.rzeka).replace(' ', ''), bridge.km)].points.append(Pkt(
-                '    {}   {}     {}     <#0>     0     0.000     0'.format(pkt[0], pkt[1], bridge.mann)))
+                '    {}   {}     {}     <#0>     0     0.000     0'.format(pkt[0]+deltaStatWeir, pkt[1], bridge.mann)))
         XsOrder['{}w {}'.format(str.lower(bridge.rzeka).replace(' ', ''),
                                bridge.km)].lp = '   1  0    0.000  0    0.000  250\n'  # level params
         # ---- END XS ----

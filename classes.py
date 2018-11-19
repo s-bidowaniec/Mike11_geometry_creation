@@ -108,7 +108,7 @@ class Xs(object):
         self.mean_right = float(self.max_right) / 1
     pass
     def rdp_pkt(self, epsilon):
-        print("Wykonuję RDP na przekrojach. \n epsilon = {}".format(epsilon))
+        print("Wykonuję RDP na przekrojach. \n epsilon = {} \n (specjalna dedykacja dla Adama ;p jak epsilon = True to bedzie kiepsko..)".format(epsilon))
         self.pointsRdp=[]
         set = [[float(i.station), float(i.z)] for i in self.points]
         set2 = rdp(set, epsilon=epsilon)
@@ -752,7 +752,7 @@ class NwkFile(object):
         for i in self.pointList:
             self.pointsToRdp.append([float(i.x), float(i.y)])
         '''
-        print("Wykonuję RDP na branch (.nwk11) \n epsilon = {}".format(epsilon))
+        print("Wykonuję RDP na branch (.nwk11) \n epsilon = {}  \n (specjalna dedykacja dla Adama ;p jak epsilon = True to bedzie kiepsko..)".format(epsilon))
         self.pointsToRdp = [[i.x, i.y] for i in self.pointList]
         try:
             from rdp import rdp
