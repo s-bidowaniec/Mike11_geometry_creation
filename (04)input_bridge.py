@@ -9,28 +9,28 @@ from functions import *
 spadMin = 0
 # -------------------------------- PLIKI WSADOWE --------------------------------------------------------------
 """plik wsadowy rawdata, pobierane sa przekroje z gis do laczenia z przekrojami obiektow, dopasowanie po km"""
-xsInputDir = r"C:\!!Mode ISOKII\!ISOK II\Czarny Potok\Mike_v1\S01_Czarny_Potok_man.txt"
+xsInputDir = r"C:\!!Mode ISOKII\!ISOK II\Czarny Potok\Mike_v2_20.11\S01_Czarny_Potok_renamed.txt"
 fileWejscieXS = open(xsInputDir,'r')
 bazaXsRawData, XsOrder = read_XSraw(fileWejscieXS)
 
 """plik nwk potrzebny do zaczytania schematyzacji i dodukowania wynikow"""
-nwkInputDir = r"C:\!!Mode ISOKII\!ISOK II\Czarny Potok\Mike_v1\S01_Czarny_Potok_link.nwk11"
+nwkInputDir = r"C:\!!Mode ISOKII\!ISOK II\Czarny Potok\Mike_v2_20.11\S01_Czarny_Potok_renamed.nwk11"
 fileWejscieNWK = open(nwkInputDir, 'r')
 nwk = read_NWK(fileWejscieNWK)
-nwk.nwk_rdp()                                # <- jeśli ma zrobić rdp na networku
+#nwk.nwk_rdp()                                # <- jeśli ma zrobić rdp na networku
 
 """plik z mostami do wsadzenia"""
-wb = openpyxl.load_workbook(r'C:\!!Mode ISOKII\!ISOK II\Czarny Potok\Mike_v1\Czarny_Potok_budowle.xlsx')
+wb = openpyxl.load_workbook(r'C:\!!Mode ISOKII\!ISOK II\Czarny Potok\Mike_v2_20.11\Czarny_Potok_budowle.xlsx')
 bridges = read_bridge_xlsx(wb)
 base_manning = 0.04
 # --------------------------------- PLIKI WYNIKOWE -----------------------------------------------------------
 # nowy plik NWK z naniesionymi mostasmi
-nwkOutDir = r"C:\!!Mode ISOKII\!ISOK II\Czarny Potok\Mike_v1\S01_Czarny_Potok_bri.nwk11"
+nwkOutDir = r"C:\!!Mode ISOKII\!ISOK II\Czarny Potok\Mike_v2_20.11\S01_Czarny_Potok_bri.nwk11"
 if nwkOutDir == nwkInputDir:
     raise ValueError('NWK input file equals NWK output file', 'foo', 'bar', 'baz')
 fileWynikNWK = open(nwkOutDir, "w")
 # nowy plik XSrawData z naniesionymi mostasmi
-xsOutputDir = r"C:\!!Mode ISOKII\!ISOK II\Czarny Potok\Mike_v1\S01_Czarny_Potok_bri.txt"
+xsOutputDir = r"C:\!!Mode ISOKII\!ISOK II\Czarny Potok\Mike_v2_20.11\S01_Czarny_Potok_bri.txt"
 if xsInputDir == xsOutputDir:
     raise ValueError('XS input file equals XS output file', 'foo', 'bar', 'baz')
 fileWynikXS = open(xsOutputDir,'w')
@@ -150,16 +150,19 @@ for bridge in bridges:
         xsUp2, xsDown2 = fit_xs(xsUp, xsDown)
         print(xsUp2.points[0].station, "stat2")
         print(xsUp2.points[0].z, "z2")
+        # zapisuje osiowanie przekroju poniozej
+        XsOrder['{} {}'.format(str.lower(bridge.rzeka).replace(' ', ''), kmDown)] = copy.deepcopy(xsDown2)
 
-
-        xsDown, xsUp, bridgeShift, downMarker, upMarker = fit_bridge(xsDown2, xsUp2, bridge, base_manning=base_manning)
+        xsDown, xsUp, bridgeShift, downMarker, upMarker = fit_bridge_v2(xsDown2, xsUp2, bridge, base_manning=base_manning)
         print(xsUp.points[0].station, "stat3")
         print(xsUp.points[0].z, "z3")
         add_markers(xsDown, downMarker)
         add_markers(xsUp, upMarker)
-        # wbicie koryta na xs
+        # wbicie koryta na xs w osobnym topo id
         XsOrder['{}b {}'.format(str.lower(bridge.rzeka).replace(' ', ''), kmUp)] = copy.deepcopy(xsUp)
+        XsOrder['{}b {}'.format(str.lower(bridge.rzeka).replace(' ', ''), kmUp)].reachCode = "_BBXS"
         XsOrder['{}b {}'.format(str.lower(bridge.rzeka).replace(' ', ''), kmDown)] = copy.deepcopy(xsDown)
+        XsOrder['{}b {}'.format(str.lower(bridge.rzeka).replace(' ', ''), kmDown)].reachCode = "_BBXS"
         # shift bridge
         nwk.culvertList[-1].culvertParams['HorizOffset'] = [0]
         # --- Przekroje dopasowane ---
@@ -329,7 +332,7 @@ for bridge in bridges:
             #print(xsWeir)
 
             weir = copy.deepcopy(bridge)
-            xsBridge, upMarker, deltaStatWeir = fit_weir(xsWeir, weir, base_manning=0.04, bridgeType = True)
+            xsBridge, upMarker, deltaStatWeir = fit_weir(xsWeir, weir, base_manning=0.04, bridgeType = bridgeShift)
             add_markers(xsBridge, upMarker)
             #import pdb
             #pdb.set_trace()
@@ -339,7 +342,7 @@ for bridge in bridges:
             xsID = ("M-" + str(bridge.lp).replace(' ', '') + "\n")
             XsOrder['{}B {}'.format(str.lower(bridge.rzeka).replace(' ', ''), weirKmOnXS)].id = xsID  # section id
 
-        xsWeir.id =  weirID+"\n"
+        xsWeir.id = weirID+"\n"
         weir = copy.deepcopy(bridge)
         weir.koryto = weir.przelew
         xsWeir, upMarker, deltaStatWeir = fit_weir(xsWeir, weir, base_manning=0.04)
@@ -355,8 +358,8 @@ for bridge in bridges:
         """
 
         # wbicie koryta na xs
-        XsOrder['{} {}'.format(str.lower(bridge.rzeka).replace(' ', ''), kmUp)] = xsUp
-        XsOrder['{} {}'.format(str.lower(bridge.rzeka).replace(' ', ''), kmDown)] = xsDown
+        #XsOrder['{} {}'.format(str.lower(bridge.rzeka).replace(' ', ''), kmUp)] = xsUp
+        #XsOrder['{} {}'.format(str.lower(bridge.rzeka).replace(' ', ''), kmDown)] = xsDown
         # robocze end ------------------------------------------------------------------------------------------------------------------------------------------------
         # ------  XS  ------
         # bazaXsRawData.append(Xs())

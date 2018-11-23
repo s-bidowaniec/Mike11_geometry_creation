@@ -1,6 +1,7 @@
 ﻿import numpy as np
 import collections
 import xlsxwriter
+import numpy
 from classes import *
 from dbfread import DBF
 import copy
@@ -152,13 +153,14 @@ def read_XSraw(file):
     return XS_dat, XsOrder
 def read_manning_dbf(dbf):
     base = {}
-    for record in DBF(dbf):
+    for record in DBF(dbf, load=True):
         kod = '{} {} {}'.format(str(record['RiverCode']).title(), record['ReachCode'], round(float("{0:.1f}".format(record['ProfileM'])),0))
         if kod in base.keys():
             base[kod].dodaj(record)
         else:
             base[kod] = ManningXS(record)
     return base
+
 def raport_XS(XS_list, output):
     workbook = xlsxwriter.Workbook(output)
     worksheet = workbook.add_worksheet('raport_XS')
@@ -395,7 +397,7 @@ def fit_weir(xsWeir, weir, base_manning=0.04, bridgeType = False):
     # przesuniecie obiektu (- start stat ?, nie wiem dla czego ale pomaga na dosuniecie)
     # if przes >= 0:
     if bridgeType:
-        deltaStatBridge = 0
+        deltaStatBridge = bridgeType
     else:
         deltaStatBridge = przes - startStat
     # else:
@@ -484,7 +486,292 @@ def fit_weir(xsWeir, weir, base_manning=0.04, bridgeType = False):
 
     return xsWeir, excludedMarkerListXs1, deltaStatBridge
 
+def fit_bridge_v2(xsDown, xsUp, bridge, base_manning=0.04):
+    """ dopasowanie przy pomocy matplot lib i recznego dosunięcia przekroi """
+    import matplotlib.pyplot as plt
+    from matplotlib.widgets import Button
+    from matplotlib.widgets import TextBox
+    import copy
+
+    koryto, przepust, downS, upS = bridge.koryto, bridge.przepust, bridge.downS, bridge.upS
+    minim, przes = dopasowanie(xsDown, koryto, przepust)
+    startStat = min([i[0] for i in przepust])
+    deltaStatBridge = przes - startStat
+
+    min_culvert = min([y[1] for y in przepust])
+
+    y1 = [pkt.z for pkt in xsUp.points]
+    y2 = [pkt.z for pkt in xsDown.points]
+    x1 = [pkt.station for pkt in xsUp.points]
+    x2 = [pkt.station for pkt in xsDown.points]
+    y1_origin, y2_origin, x1_origin, x2_origin = copy.copy(y1), copy.copy(y2), copy.copy(x1), copy.copy(x2)
+    xsUp_origin = copy.deepcopy(xsUp)
+    xsDown_origin = copy.deepcopy(xsDown)
+    xc = [x[0]+deltaStatBridge for x in przepust]
+    yc = [y[1] for y in przepust]
+    ycD = copy.deepcopy(yc)
+    deltaUp = float(upS) - min(yc)
+    deltaDo = float(downS) - min(yc)
+    for i in range(len(yc)):
+        yc[i] += deltaUp
+        ycD[i] += deltaDo
+
+    class Buttons(object):
+        spacing = 0.5
+
+        def submit(self, text):
+            data = eval(text)
+            self.spacing = data
+            plt.draw()
+
+        def prawo(self, event):
+            nonlocal x1
+            for i in range(len(x1)):
+                x1[i] += self.spacing
+            a.set_xdata(x1)
+            plt.draw()
+
+        def lewo(self, event):
+            nonlocal x1
+            for i in range(len(x1)):
+                x1[i] -= self.spacing
+            a.set_xdata(x1)
+            plt.draw()
+
+        def doGory(self, event):
+            nonlocal y1
+            for i in range(len(y1)):
+                y1[i] += self.spacing
+            a.set_ydata(y1)
+            plt.draw()
+
+        def wDol(self, event):
+            nonlocal y1
+            for i in range(len(y1)):
+                y1[i] -= self.spacing
+            a.set_ydata(y1)
+            plt.draw()
+
+        def save(self, event):
+            nonlocal x1
+            nonlocal y1
+            nonlocal xsUp
+            for i in range(len(x1)):
+                xsUp.points[i].station = x1[i]
+                xsUp.points[i].z = y1[i]
+
+        def refresh(self, event):
+            nonlocal x1
+            nonlocal x1_origin
+            nonlocal y1
+            nonlocal y1_origin
+            nonlocal xsUp
+            xsUp = copy.copy(xsUp_origin)
+            y1 = copy.copy(y1_origin)
+            x1 = copy.copy(x1_origin)
+            a.set_ydata(y1)
+            a.set_xdata(x1)
+            plt.draw()
+
+        def burn(self, event):
+            nonlocal x1
+            nonlocal y1
+            nonlocal xsUp
+            nonlocal bridge
+            delta = x1_origin[0] - x1[0]
+            start = min(xc)
+            end = max(xc)
+            index_s = x1.index(max([x if x <= start else x1[0] for x in x1]))
+            index_e = x1.index(min([x if x >= end else x1[-1] for x in x1]))
+            kor = list(filter(lambda x: start <= x[0]+deltaStatBridge <= end, koryto))
+            x_midle = [x[0]+deltaStatBridge for x in kor]
+            y_middle = [x[1]+deltaDo for x in kor]
+            pkt_middle = []
+            for i in range(len(x_midle)):
+                pkt_middle.append(Pkt("{} {} {} <#0>".format(x_midle[i], y_middle[i], bridge.mann)))
+            x_left = x1[:index_s]
+            y_left = y1[:index_s]
+            pkt_left = xsUp.points[:index_s]
+            x_right = x1[index_e:]
+            y_right = y1[index_e:]
+            pkt_right = xsUp.points[index_e:]
+            x = x_left+x_midle+x_right
+            y = y_left+y_middle+y_right
+            x1,y1 = x,y
+            a.set_ydata(y)
+            a.set_xdata(x)
+            xsUp.points = pkt_left+pkt_middle+pkt_right
+            plt.draw()
+
+
+        def prawo2(self, event):
+            nonlocal x2
+            for i in range(len(x2)):
+                x2[i] += self.spacing
+            b.set_xdata(x2)
+            plt.draw()
+
+        def lewo2(self, event):
+            nonlocal x2
+            for i in range(len(x2)):
+                x2[i] -= self.spacing
+            b.set_xdata(x2)
+            plt.draw()
+
+        def doGory2(self, event):
+            nonlocal y2
+            for i in range(len(y2)):
+                y2[i] += self.spacing
+            b.set_ydata(y2)
+            plt.draw()
+
+        def wDol2(self, event):
+            nonlocal y2
+            for i in range(len(y2)):
+                y2[i] -= self.spacing
+            b.set_ydata(y2)
+            plt.draw()
+
+        def save2(self, event):
+            nonlocal x2
+            nonlocal y2
+            nonlocal xsDown
+            for i in range(len(x2)):
+                xsDown.points[i].station = x2[i]
+                xsDown.points[i].z = y2[i]
+
+
+        def refresh2(self, event):
+            nonlocal x2
+            nonlocal x2_origin
+            nonlocal y2
+            nonlocal y2_origin
+            nonlocal xsDown
+
+            xsDown = copy.copy(xsDown_origin)
+            y2 = copy.copy(y2_origin)
+            x2 = copy.copy(x2_origin)
+            b.set_ydata(y2)
+            b.set_xdata(x2)
+            plt.draw()
+
+        def burn2(self, event):
+            nonlocal x2
+            nonlocal y2
+            nonlocal xsDown
+            nonlocal bridge
+            delta = x2_origin[0] - x2[0]
+            start = min(xc)
+            end = max(xc)
+            index_s = x2.index(max([x if x <= start else x2[0] for x in x2]))
+            index_e = x2.index(min([x if x >= end else x2[-1] for x in x2]))
+            kor = list(filter(lambda x: start <= x[0]+deltaStatBridge <= end, koryto))
+            x_midle = [x[0]+deltaStatBridge for x in kor]
+            y_middle = [x[1]+deltaUp for x in kor]
+            pkt_middle = []
+            for i in range(len(x_midle)):
+                pkt_middle.append(Pkt("{} {} {} <#0>".format(x_midle[i], y_middle[i], bridge.mann)))
+            x_left = x2[:index_s]
+            y_left = y2[:index_s]
+            pkt_left = xsDown.points[:index_s]
+            x_right = x2[index_e:]
+            y_right = y2[index_e:]
+            pkt_right = xsDown.points[index_e:]
+            x = x_left+x_midle+x_right
+            y = y_left+y_middle+y_right
+            x2, y2 = x, y
+            b.set_ydata(y2)
+            b.set_xdata(x2)
+            xsDown.points = pkt_left+pkt_middle+pkt_right
+            plt.draw()
+
+    fig, ax = plt.subplots()
+    plt.subplots_adjust(bottom=0.2)
+    plt.subplot(2, 1, 1)
+    a, = plt.plot(x1, y1, 'g')
+    plt.plot(xc, yc, 'r')
+    ax.set_xticks(numpy.arange(0, 1, 0.1))
+    ax.set_yticks(numpy.arange(0, 1., 0.1))
+    plt.grid(True)
+    plt.title('Obiekt: nr{} - km {} - typ {}'.format(bridge.lp, bridge.km, bridge.typ))
+    plt.ylabel('MikeDownstream(powyżej)\n{}\n{}'.format(xsUp.id, xsUp.km))
+
+    callback = Buttons()
+
+    axbox = plt.axes([0.05, 0.04, 0.04, 0.055])
+    text_box = TextBox(axbox, '', initial=str(Buttons.spacing))
+    text_box.on_submit(callback.submit)
+
+    axright = plt.axes([0.26, 0.04, 0.07, 0.055])
+    bright = Button(axright, 'Prawo', color='#9fcc51', hovercolor='#d3f29b')
+    bright.on_clicked(callback.prawo)
+
+    axleft = plt.axes([0.1, 0.04, 0.07, 0.055])
+    bleft = Button(axleft, 'Lewo', color='#9fcc51', hovercolor='#d3f29b')
+    bleft.on_clicked(callback.lewo)
+
+    axup = plt.axes([0.18, 0.07, 0.07, 0.055])
+    bup = Button(axup, 'Góra', color='#9fcc51', hovercolor='#d3f29b')
+    bup.on_clicked(callback.doGory)
+
+    axdown = plt.axes([0.18, 0.01, 0.07, 0.055])
+    bdown = Button(axdown, 'Dół', color='#9fcc51', hovercolor='#d3f29b')
+    bdown.on_clicked(callback.wDol)
+
+    axrefresh = plt.axes([0.34, 0.11, 0.095, 0.04])
+    brefresh = Button(axrefresh, 'Odśwież', color='#86a385', hovercolor='#b1d4af')
+    brefresh.on_clicked(callback.refresh)
+
+    axburn = plt.axes([0.34, 0.06, 0.095, 0.04])
+    bburn = Button(axburn, 'Wypal', color='#86a385', hovercolor='#b1d4af')
+    bburn.on_clicked(callback.burn)
+
+    axsave = plt.axes([0.34, 0.01, 0.095, 0.04])
+    bsave = Button(axsave, 'Zapisz', color='#86a385', hovercolor='#b1d4af')
+    bsave.on_clicked(callback.save)
+
+    plt.subplot(2, 1, 2)
+    b, = plt.plot(x2, y2, 'b')
+    plt.plot(xc, ycD, 'r')
+    ax.set_xticks(numpy.arange(0, 1, 0.1))
+    ax.set_yticks(numpy.arange(0, 1., 0.1))
+    plt.grid(True)
+    plt.ylabel('MikeUpstream(Poniżej)\n{}\n{}'.format(xsDown.id, xsDown.km))
+
+    axright2 = plt.axes([0.71, 0.04, 0.07, 0.055])
+    bright2 = Button(axright2, 'Prawo', color='#9bb7f2', hovercolor='#587ed0')
+    bright2.on_clicked(callback.prawo2)
+
+    axleft2 = plt.axes([0.55, 0.04, 0.07, 0.055])
+    bleft2 = Button(axleft2, 'Lewo', color='#9bb7f2', hovercolor='#587ed0')
+    bleft2.on_clicked(callback.lewo2)
+
+    axup2 = plt.axes([0.63, 0.07, 0.07, 0.055])
+    bup2 = Button(axup2, 'Góra', color='#9bb7f2', hovercolor='#587ed0')
+    bup2.on_clicked(callback.doGory2)
+
+    axdown2 = plt.axes([0.63, 0.01, 0.07, 0.055])
+    bdown2 = Button(axdown2, 'Dół', color='#9bb7f2', hovercolor='#587ed0')
+    bdown2.on_clicked(callback.wDol2)
+
+    axrefresh2 = plt.axes([0.79, 0.11, 0.095, 0.04])
+    brefresh2 = Button(axrefresh2, 'Odśwież', color='#6188bd', hovercolor='#8bb9f9')
+    brefresh2.on_clicked(callback.refresh2)
+
+    axburn2 = plt.axes([0.79, 0.06, 0.095, 0.04])
+    bburn2 = Button(axburn2, 'Wypal', color='#6188bd', hovercolor='#8bb9f9')
+    bburn2.on_clicked(callback.burn2)
+
+    axsave2 = plt.axes([0.79, 0.01, 0.095, 0.04])
+    bsave2 = Button(axsave2, 'Zapisz', color='#6188bd', hovercolor='#8bb9f9')
+    bsave2.on_clicked(callback.save2)
+
+
+    plt.show()
+    return xsDown, xsUp, deltaStatBridge, [], []
+
 def fit_bridge(xs, xsUp2, bridge, base_manning=0.04):
+    """ dopasowanie automatyczne na podstawie markerów 4 i 5 """
     koryto, przepust, downS, upS = bridge.koryto, bridge.przepust, bridge.downS, bridge.upS
     print(koryto, "koryto")
     minKor = min([i[1] for i in koryto])

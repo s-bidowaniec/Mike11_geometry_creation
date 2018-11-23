@@ -4,10 +4,10 @@ from functions import *
 from classes import *
 
 # plik wsadowy nwk, pobierana jest lista punktow oraz branchy do ktorych dopisywane sa dane z nowych linkow
-inputNwkDir = r"C:\!!Modele ISOKII\!Etap1\BUDKOWICZANKA_V1\Wstawianie mostów\BUDKOWICZANKA_S01_Qn.nwk11"
+inputNwkDir = r"C:\!!Mode ISOKII\!ISOK II\Czarny Potok\Mike_v2_20.11\S01_Czarny_Potok_link.nwk11"
 
 # nowy plik NWK z naniesionymi linkami
-outputNwkDir = r"C:\!!Modele ISOKII\!Etap1\BUDKOWICZANKA_V1\Wstawianie mostów\BUDKOWICZANKA_S01_Qn5.nwk11"
+outputNwkDir = r"C:\!!Mode ISOKII\!ISOK II\Czarny Potok\Mike_v2_20.11\S01_Czarny_Potok_round.nwk11"
 if inputNwkDir != outputNwkDir:
     fileWejscieNWK = open(inputNwkDir, 'r')
     fileWynik = open(outputNwkDir, "w")

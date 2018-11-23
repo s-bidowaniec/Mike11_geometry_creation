@@ -6,6 +6,8 @@ from rdp import rdp
 import time
 import numpy as np
 # clas func
+
+
 def distance(x1, x2, y1, y2):
     """
     Function calculates distance betwean two points
@@ -151,7 +153,11 @@ class Xs(object):
         except:
             pass
         if rr == None:
-            file.write(str('RESISTANCE NUMBERS\r\n   2  1     {}     1.000     1.000    1.000    1.000\r\n').format(self.mann))
+            try:
+                file.write(str('RESISTANCE NUMBERS\r\n   2  1     {}     1.000     1.000    1.000    1.000\r\n').format(self.mann))
+            except:
+                file.write(str('RESISTANCE NUMBERS\r\n   2  1     {}     1.000     1.000    1.000    1.000\r\n').format(
+                    0.045))
         else:
             file.write('RESISTANCE NUMBERS\r\n   2  0     1.000     1.000     1.000    1.000    1.000\r\n')
         file.write('PROFILE        {}\r\n'.format(self.profile))

@@ -5,13 +5,13 @@ from functions import *
 from classes import *
 import multiprocessing
 # plik wsadowy rawdata, pobierane sa punkty wspolne na przekrojach oraz inne dane do generacji linku
-fileWejscieXS = open(r"C:\!!Mode ISOKII\!ISOK II\Czarny Potok\Mike_v1\S01_Czarny_Potok_man.txt",'r')
+fileWejscieXS = open(r"C:\!!Mode ISOKII\!ISOK II\Czarny Potok\Mike_v2_20.11\S01_Czarny_Potok_man.txt",'r')
 
 # plik wsadowy nwk, pobierana jest lista punktow oraz branchy do ktorych dopisywane sa dane z nowych linkow
-inputNwkDir = r"C:\!!Mode ISOKII\!ISOK II\Czarny Potok\Mike_v1\S01_Czarny_Potok.nwk11"
+inputNwkDir = r"C:\!!Mode ISOKII\!ISOK II\Czarny Potok\Mike_v2_20.11\S01_Czarny_Potok.nwk11"
 
 # nowy plik NWK z naniesionymi linkami
-outputNwkDir = r"C:\!!Mode ISOKII\!ISOK II\Czarny Potok\Mike_v1\S01_Czarny_Potok_link.nwk11"
+outputNwkDir = r"C:\!!Mode ISOKII\!ISOK II\Czarny Potok\Mike_v2_20.11\S01_Czarny_Potok_link.nwk11"
 if inputNwkDir == outputNwkDir:
     raise 'Error: input == output'
 # Otwarcie plikow
@@ -24,7 +24,7 @@ print("Raw data zaczytane")
 # minimalna roznica rzednych dla link channeli
 minDeltaH = 0.51
 """ czy ma zrobic redukcje pkt w branch (True, False) """
-robicRDP = False
+robicRDP = True
 # ------------------------------------------------------------------------------------------------------------------- #
 # przypisanie przekrojom wspolrzednych left i right oraz max z na krancach
 list_km = []
@@ -40,7 +40,7 @@ for i in range(len(XS_dat)):
         print("Tutaj jest blad jesli branch nie zaczyna sie od 0, nie rozwiazane")
         #import pdb
         #pdb.set_trace()
-        XS_dat[i].len = int(abs(list_km[index] - (list_km[index + 1] / 2)))
+        XS_dat[i].len = int(abs(list_km[index] - (list_km[index + 1])))
     elif index >= len(list_km)-1:
         XS_dat[i].len = int(abs((list_km[index - 1] - list_km[index])) / 2)
     else: #if 0 < index < len(list_km) - 1:
