@@ -396,6 +396,7 @@ def fit_weir(xsWeir, weir, base_manning=0.04, bridgeType = False):
     print(przes, startStat, 'przes start stat')
     # przesuniecie obiektu (- start stat ?, nie wiem dla czego ale pomaga na dosuniecie)
     # if przes >= 0:
+
     if bridgeType:
         deltaStatBridge = bridgeType
     else:
@@ -458,7 +459,11 @@ def fit_weir(xsWeir, weir, base_manning=0.04, bridgeType = False):
             print(xsWeir.km)
             print([float(poi.station) for poi in xsWeir.points])
             if flagP == 0:
-                indesXsPk1 = min([float(poi.station) for poi in xsWeir.points if float(poi.station) >= float(element[0])])
+                try:
+                    indesXsPk1 = min([float(poi.station) for poi in xsWeir.points if float(poi.station) >= float(element[0])])
+                except:
+                    import pdb
+                    pdb.set_trace()
                 for items in xsWeir.points:
                     if float(indesXsPk1) == float(items.station):
                         punkt = items
@@ -468,7 +473,9 @@ def fit_weir(xsWeir, weir, base_manning=0.04, bridgeType = False):
                 #pass
                 indesXsPk1 += 1
                 # zmienny index do obliczenia delta z
+
             indesXsPkz = min([float(poi.station) for poi in xsWeir.points if float(poi.station) >= float(element[0])])
+
             for items in xsWeir.points:
                 if float(indesXsPkz) == float(items.station):
                     punkt = items
@@ -481,7 +488,6 @@ def fit_weir(xsWeir, weir, base_manning=0.04, bridgeType = False):
             print(indesXsPk1, "index")
             if d != 0.05:
                 xsWeir.points.insert(indesXsPk1, Pkt(line))
-                pass
             flagP = 1
 
     return xsWeir, excludedMarkerListXs1, deltaStatBridge
@@ -497,7 +503,7 @@ def fit_bridge_v2(xsDown, xsUp, bridge, base_manning=0.04):
     minim, przes = dopasowanie(xsDown, koryto, przepust)
     startStat = min([i[0] for i in przepust])
     deltaStatBridge = przes - startStat
-
+    delta1 = deltaStatBridge
     min_culvert = min([y[1] for y in przepust])
 
     y1 = [pkt.z for pkt in xsUp.points]
@@ -512,6 +518,7 @@ def fit_bridge_v2(xsDown, xsUp, bridge, base_manning=0.04):
     ycD = copy.deepcopy(yc)
     deltaUp = float(upS) - min(yc)
     deltaDo = float(downS) - min(yc)
+
     for i in range(len(yc)):
         yc[i] += deltaUp
         ycD[i] += deltaDo
@@ -578,14 +585,14 @@ def fit_bridge_v2(xsDown, xsUp, bridge, base_manning=0.04):
             nonlocal y1
             nonlocal xsUp
             nonlocal bridge
-            delta = x1_origin[0] - x1[0]
+            delta1 = x1_origin[0] - x1[0]
             start = min(xc)
             end = max(xc)
             index_s = x1.index(max([x if x <= start else x1[0] for x in x1]))
             index_e = x1.index(min([x if x >= end else x1[-1] for x in x1]))
             kor = list(filter(lambda x: start <= x[0]+deltaStatBridge <= end, koryto))
             x_midle = [x[0]+deltaStatBridge for x in kor]
-            y_middle = [x[1]+deltaDo for x in kor]
+            y_middle = [x[1]+deltaUp for x in kor]
             pkt_middle = []
             for i in range(len(x_midle)):
                 pkt_middle.append(Pkt("{} {} {} <#0>".format(x_midle[i], y_middle[i], bridge.mann)))
@@ -667,7 +674,7 @@ def fit_bridge_v2(xsDown, xsUp, bridge, base_manning=0.04):
             index_e = x2.index(min([x if x >= end else x2[-1] for x in x2]))
             kor = list(filter(lambda x: start <= x[0]+deltaStatBridge <= end, koryto))
             x_midle = [x[0]+deltaStatBridge for x in kor]
-            y_middle = [x[1]+deltaUp for x in kor]
+            y_middle = [x[1]+deltaDo for x in kor]
             pkt_middle = []
             for i in range(len(x_midle)):
                 pkt_middle.append(Pkt("{} {} {} <#0>".format(x_midle[i], y_middle[i], bridge.mann)))
@@ -768,6 +775,7 @@ def fit_bridge_v2(xsDown, xsUp, bridge, base_manning=0.04):
 
 
     plt.show()
+
     return xsDown, xsUp, deltaStatBridge, [], []
 
 def fit_bridge(xs, xsUp2, bridge, base_manning=0.04):

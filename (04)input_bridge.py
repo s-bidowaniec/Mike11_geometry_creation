@@ -9,28 +9,28 @@ from functions import *
 spadMin = 0
 # -------------------------------- PLIKI WSADOWE --------------------------------------------------------------
 """plik wsadowy rawdata, pobierane sa przekroje z gis do laczenia z przekrojami obiektow, dopasowanie po km"""
-xsInputDir = r"C:\!!Mode ISOKII\!ISOK II\Czarny Potok\Mike_v2_20.11\S01_Czarny_Potok_renamed.txt"
+xsInputDir = r"C:\!!Mode ISOKII\!ISOK II\Czarny Potok\Mike_v3_26.11\S01_Czarny_Potok_renamed.txt"
 fileWejscieXS = open(xsInputDir,'r')
 bazaXsRawData, XsOrder = read_XSraw(fileWejscieXS)
 
 """plik nwk potrzebny do zaczytania schematyzacji i dodukowania wynikow"""
-nwkInputDir = r"C:\!!Mode ISOKII\!ISOK II\Czarny Potok\Mike_v2_20.11\S01_Czarny_Potok_renamed.nwk11"
+nwkInputDir = r"C:\!!Mode ISOKII\!ISOK II\Czarny Potok\Mike_v3_26.11\S01_Czarny_Potok_renamed.nwk11"
 fileWejscieNWK = open(nwkInputDir, 'r')
 nwk = read_NWK(fileWejscieNWK)
 #nwk.nwk_rdp()                                # <- jeśli ma zrobić rdp na networku
 
 """plik z mostami do wsadzenia"""
-wb = openpyxl.load_workbook(r'C:\!!Mode ISOKII\!ISOK II\Czarny Potok\Mike_v2_20.11\Czarny_Potok_budowle.xlsx')
+wb = openpyxl.load_workbook(r'C:\!!Mode ISOKII\!ISOK II\Czarny Potok\Mike_v3_26.11\Czarny_Potok_budowle.xlsx')
 bridges = read_bridge_xlsx(wb)
 base_manning = 0.04
 # --------------------------------- PLIKI WYNIKOWE -----------------------------------------------------------
 # nowy plik NWK z naniesionymi mostasmi
-nwkOutDir = r"C:\!!Mode ISOKII\!ISOK II\Czarny Potok\Mike_v2_20.11\S01_Czarny_Potok_bri.nwk11"
+nwkOutDir = r"C:\!!Mode ISOKII\!ISOK II\Czarny Potok\Mike_v3_26.11\S01_Czarny_Potok_bri.nwk11"
 if nwkOutDir == nwkInputDir:
     raise ValueError('NWK input file equals NWK output file', 'foo', 'bar', 'baz')
 fileWynikNWK = open(nwkOutDir, "w")
 # nowy plik XSrawData z naniesionymi mostasmi
-xsOutputDir = r"C:\!!Mode ISOKII\!ISOK II\Czarny Potok\Mike_v2_20.11\S01_Czarny_Potok_bri.txt"
+xsOutputDir = r"C:\!!Mode ISOKII\!ISOK II\Czarny Potok\Mike_v3_26.11\S01_Czarny_Potok_bri.txt"
 if xsInputDir == xsOutputDir:
     raise ValueError('XS input file equals XS output file', 'foo', 'bar', 'baz')
 fileWynikXS = open(xsOutputDir,'w')
@@ -111,8 +111,8 @@ for bridge in bridges:
 
         # ---- XS -----
         # --- Detect XS conflict ---
-
         set = [[str.lower(i.riverCode), round(float(i.km))] for i in bazaXsRawData]
+
         """
         dodawany = [str.lower(bridge.rzeka).replace(' ', ''), round(float(bridge.km))]
         if dodawany in set:
@@ -127,7 +127,6 @@ for bridge in bridges:
         setKm.sort()
         newSet = []
         closeSet = []
-
         km_gis = min(setKm, key=lambda x: abs(x-bridge.km))
         newSet = copy.deepcopy(setKm)
         newSet.remove(km_gis)
@@ -152,17 +151,19 @@ for bridge in bridges:
         print(xsUp2.points[0].z, "z2")
         # zapisuje osiowanie przekroju poniozej
         XsOrder['{} {}'.format(str.lower(bridge.rzeka).replace(' ', ''), kmDown)] = copy.deepcopy(xsDown2)
-
+        xsWeir = XsOrder['{} {}'.format(str.lower(bridge.rzeka).replace(' ', ''), bridge.km)]
+        xsUp2, xsWeir2 = fit_xs(xsUp, xsWeir)
+        XsOrder['{} {}'.format(str.lower(bridge.rzeka).replace(' ', ''), bridge.km)] = copy.deepcopy(xsWeir2)
         xsDown, xsUp, bridgeShift, downMarker, upMarker = fit_bridge_v2(xsDown2, xsUp2, bridge, base_manning=base_manning)
         print(xsUp.points[0].station, "stat3")
         print(xsUp.points[0].z, "z3")
         add_markers(xsDown, downMarker)
         add_markers(xsUp, upMarker)
         # wbicie koryta na xs w osobnym topo id
-        XsOrder['{}b {}'.format(str.lower(bridge.rzeka).replace(' ', ''), kmUp)] = copy.deepcopy(xsUp)
-        XsOrder['{}b {}'.format(str.lower(bridge.rzeka).replace(' ', ''), kmUp)].reachCode = "_BBXS"
-        XsOrder['{}b {}'.format(str.lower(bridge.rzeka).replace(' ', ''), kmDown)] = copy.deepcopy(xsDown)
-        XsOrder['{}b {}'.format(str.lower(bridge.rzeka).replace(' ', ''), kmDown)].reachCode = "_BBXS"
+        XsOrder['{} {}'.format(str.lower(bridge.rzeka).replace(' ', ''), kmUp)] = copy.deepcopy(xsUp)
+        XsOrder['{} {}'.format(str.lower(bridge.rzeka).replace(' ', ''), kmUp)].reachCode = "S01"
+        XsOrder['{} {}'.format(str.lower(bridge.rzeka).replace(' ', ''), kmDown)] = copy.deepcopy(xsDown)
+        XsOrder['{} {}'.format(str.lower(bridge.rzeka).replace(' ', ''), kmDown)].reachCode = "S01"
         # shift bridge
         nwk.culvertList[-1].culvertParams['HorizOffset'] = [0]
         # --- Przekroje dopasowane ---
@@ -216,6 +217,7 @@ for bridge in bridges:
             litera = "M"
             weirShift = 0
             code = "_XS"
+            flag = "weir"
         else:
             code= "_WEIR"
             litera = "H"
