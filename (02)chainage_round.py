@@ -4,10 +4,10 @@ from functions import *
 from classes import *
 
 # plik wsadowy nwk, pobierana jest lista punktow oraz branchy, km krańcowych punktow jest zaokraglany do jednostek
-inputNwkDir = r"C:\!!Mode ISOKII\!ISOK II\Czarny Potok\Mike_v3_26.11\S01_Czarny_Potok_link.nwk11"
+inputNwkDir = r"C:\!!Mode ISOKII\!ISOK II\Czarny Potok\Mike_v4_13.12\S01_Czarny_Potok_link.nwk11"
 
 # nowy plik NWK z zaokragleniami
-outputNwkDir = r"C:\!!Mode ISOKII\!ISOK II\Czarny Potok\Mike_v3_26.11\S01_Czarny_Potok_round.nwk11"
+outputNwkDir = r"C:\!!Mode ISOKII\!ISOK II\Czarny Potok\Mike_v4_13.12\S01_Czarny_Potok_round.nwk11"
 if inputNwkDir != outputNwkDir:
     fileWejscieNWK = open(inputNwkDir, 'r')
     fileWynik = open(outputNwkDir, "w")

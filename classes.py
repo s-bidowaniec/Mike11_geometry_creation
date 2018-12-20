@@ -1665,7 +1665,86 @@ class Link(object):
         self.main_site = "C"
         self.topo = "Topo"
 
-    def data_definition(self, minDeltaH=0.51):
+    def data_definition(self, minDeltaH=0.51, weryfikacja = True):
+        if weryfikacja:
+            import matplotlib.pyplot as plt
+            from matplotlib.widgets import Button
+            from matplotlib.widgets import TextBox
+            xs1 = self.object1
+            xs2 = self.object2
+            if xs1.points[0].station != xs2.points[-1].station:
+                delta = xs2.points[-1].station - xs1.points[0].station
+                for point in xs1.points:
+                    point.station += delta
+            y1 = [pkt.z for pkt in self.object1.points]
+            y2 = [pkt.z for pkt in self.object2.points]
+            x1 = [pkt.station for pkt in self.object1.points]
+            x2 = [pkt.station for pkt in self.object2.points]
+
+            class Buttons(object):
+                def lewo(self, event):
+                    nonlocal xs1
+                    nonlocal xs2
+                    pkt = xs2.points.pop(-1)
+                    pkt = xs2.points[-1]
+                    xs1.points.insert(0, pkt)
+                    xs1.max_left = pkt.z
+                    y1 = [pkt.z for pkt in xs1.points]
+                    y2 = [pkt.z for pkt in xs2.points]
+                    x1 = [pkt.station for pkt in xs1.points]
+                    x2 = [pkt.station for pkt in xs2.points]
+                    a.set_xdata(x1)
+                    a.set_ydata(y1)
+                    b.set_xdata(x2)
+                    b.set_ydata(y2)
+                    plt.draw()
+
+                def prawo(self, event):
+                    nonlocal xs1
+                    nonlocal xs2
+                    pkt = xs1.points.pop(0)
+                    pkt = xs1.points[0]
+                    xs2.points.append(pkt)
+                    xs2.max_right = pkt.z
+                    y1 = [pkt.z for pkt in xs1.points]
+                    y2 = [pkt.z for pkt in xs2.points]
+                    x1 = [pkt.station for pkt in xs1.points]
+                    x2 = [pkt.station for pkt in xs2.points]
+                    a.set_xdata(x1)
+                    a.set_ydata(y1)
+                    b.set_xdata(x2)
+                    b.set_ydata(y2)
+                    plt.draw()
+
+                def close(self, event):
+                    plt.close()
+
+            plt.grid(True)
+            plt.title(
+                'Link pomiędzy rzeką {} km {} a rzeką {} km {}'.format(self.river1, self.chain1, self.river2, self.chain2))
+
+
+            b, = plt.plot(x2, y2, 'r')
+            a, = plt.plot(x1, y1, 'g')
+
+            callback = Buttons()
+            axright = plt.axes([0.26, 0.04, 0.07, 0.055])
+            bright = Button(axright, 'Prawo', color='#9fcc51', hovercolor='#d3f29b')
+            bright.on_clicked(callback.prawo)
+
+            axleft = plt.axes([0.1, 0.04, 0.07, 0.055])
+            bleft = Button(axleft, 'Lewo', color='#9fcc51', hovercolor='#d3f29b')
+            bleft.on_clicked(callback.lewo)
+
+            axclose = plt.axes([0.18, 0.04, 0.07, 0.055])
+            bclose = Button(axclose, 'close', color='#9fcc51', hovercolor='#d3f29b')
+            bclose.on_clicked(callback.close)
+
+            plt.draw()
+            plt.show()
+
+
+
         self.main_km = int(self.main_km)
         if self.rzad == 0:
             print("brak przypisania")

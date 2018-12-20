@@ -6,16 +6,16 @@ from classes import *
 import time
 
 # plik wsadowy rawdata,
-inputXS = r"C:\!!Mode ISOKII\!ISOK II\Czarny Potok\Mike_v3_26.11\S01_Czarny_Potok_man.txt"
+inputXS = r"C:\!!Mode ISOKII\!ISOK II\Czarny Potok\Mike_v4_13.12\S01_Czarny_Potok_man.txt"
 # plik wsadowy nwk, pobierane sa poloaczenia link do generacji nazw dla branch
-inputNWK = r"C:\!!Mode ISOKII\!ISOK II\Czarny Potok\Mike_v3_26.11\S01_Czarny_Potok_round.nwk11"
+inputNWK = r"C:\!!Mode ISOKII\!ISOK II\Czarny Potok\Mike_v4_13.12\S01_Czarny_Potok_round.nwk11"
 
 # -----------------------------------------------------------------------------------------------------------
 
 # plik wynikowy przekroje z nazwami
-outputXS = r"C:\!!Mode ISOKII\!ISOK II\Czarny Potok\Mike_v3_26.11\S01_Czarny_Potok_renamed.txt"
+outputXS = r"C:\!!Mode ISOKII\!ISOK II\Czarny Potok\Mike_v4_13.12\S01_Czarny_Potok_renamed.txt"
 # plik wynikowy NWK z nazwami
-outputNWK = r"C:\!!Mode ISOKII\!ISOK II\Czarny Potok\Mike_v3_26.11\S01_Czarny_Potok_renamed.nwk11"
+outputNWK = r"C:\!!Mode ISOKII\!ISOK II\Czarny Potok\Mike_v4_13.12\S01_Czarny_Potok_renamed.nwk11"
 
 if outputXS == inputXS or outputNWK == inputNWK or inputNWK == outputXS or inputXS == outputNWK:
     raise 'Error: ten sam plik na wejsciu i wyjsciu'

@@ -5,13 +5,16 @@ from functions import *
 from classes import *
 import multiprocessing
 # plik wsadowy rawdata, pobierane sa punkty wspolne na przekrojach oraz inne dane do generacji linku
-fileWejscieXS = open(r"C:\!!Mode ISOKII\!ISOK II\Czarny Potok\Mike_v3_26.11\S01_Czarny_Potok_man.txt",'r')
-
+fileWejscieXS = open(r"C:\!!Mode ISOKII\!ISOK II\Czarny Potok\S01_Czarny_Potok_v3.01_13.12\testy\rawdata.txt",'r')
+xsOutputDir = r"C:\!!Mode ISOKII\!ISOK II\Czarny Potok\S01_Czarny_Potok_v3.01_13.12\testy\rawdata_marker.txt"
+if fileWejscieXS == xsOutputDir:
+    raise ValueError('XS input file equals XS output file', 'foo', 'bar', 'baz')
+fileWynikXS = open(xsOutputDir,'w')
 # plik wsadowy nwk, pobierana jest lista punktow oraz branchy do ktorych dopisywane sa dane z nowych linkow
-inputNwkDir = r"C:\!!Mode ISOKII\!ISOK II\Czarny Potok\Mike_v3_26.11\S01_Czarny_Potok.nwk11"
+inputNwkDir = r"C:\!!Mode ISOKII\!ISOK II\Czarny Potok\S01_Czarny_Potok_v3.01_13.12\testy\S01_Czarny_Potok.nwk11"
 
 # nowy plik NWK z naniesionymi linkami
-outputNwkDir = r"C:\!!Mode ISOKII\!ISOK II\Czarny Potok\Mike_v3_26.11\S01_Czarny_Potok_link.nwk11"
+outputNwkDir = r"C:\!!Mode ISOKII\!ISOK II\Czarny Potok\S01_Czarny_Potok_v3.01_13.12\testy\S01_Czarny_Potok_link.nwk11"
 if inputNwkDir == outputNwkDir:
     raise 'Error: input == output'
 # Otwarcie plikow
@@ -24,7 +27,9 @@ print("Raw data zaczytane")
 # minimalna roznica rzednych dla link channeli
 minDeltaH = 0.51
 """ czy ma zrobic redukcje pkt w branch (True, False) """
-robicRDP = True
+robicRDP = False
+""" czy zweryfikowac ciecie przekroi (umożliwia zmianę miejsca przecięcia przekroi -> rzędną przelewu w linku) """
+weryfikacja = True
 # ------------------------------------------------------------------------------------------------------------------- #
 # przypisanie przekrojom wspolrzednych left i right oraz max z na krancach
 list_km = []
@@ -40,7 +45,7 @@ for i in range(len(XS_dat)):
         print("Tutaj jest blad jesli branch nie zaczyna sie od 0, nie rozwiazane")
         #import pdb
         #pdb.set_trace()
-        XS_dat[i].len = int(abs(list_km[index] - (list_km[index + 1])))
+        XS_dat[i].len = int(abs(list_km[index - 1] - (list_km[index])))
     elif index >= len(list_km)-1:
         XS_dat[i].len = int(abs((list_km[index - 1] - list_km[index])) / 2)
     else: #if 0 < index < len(list_km) - 1:
@@ -68,7 +73,7 @@ defined = 0
 # Nadanie parametrow przekroja ----------------------------------------------------------------------------------------
 # do refaktoryzacji - 4 krotne wywolanie tego samego
 for element in linki:
-    if "TZ_" not in element.river1 and "TZ_" in element.river2:
+    if "TZ-" not in element.river1.replace("_","-") and "TZ-" in element.river2.replace("_","-"):
         #print(element.river1, element.chain1, element.river2, element.chain2)
         element.rzad = 1
         element.kolej = 1
@@ -78,7 +83,7 @@ for element in linki:
         element.main_km = element.object1.km
         element.topo = element.object1.reachCode
         defined += 1
-    elif "TZ_" in element.river1 and "TZ_" not in element.river2:
+    elif "TZ-" in element.river1.replace("_","-") and "TZ-" not in element.river2.replace("_","-"):
         #print(element.river1, element.chain1, element.river2, element.chain2)
         element.rzad = 1
         element.kolej = 2
@@ -86,7 +91,7 @@ for element in linki:
         element.main_km = element.object2.km
         element.topo = element.object2.reachCode
         defined += 1
-    elif "TZ_" not in element.river1 and "TZ_" not in element.river2:
+    elif "TZ-" not in element.river1.replace("_","-") and "TZ-" not in element.river2.replace("_","-"):
         #print(element.river1,element.chain1, element.river2, element.chain2)
         if element.object1.mean_left > element.object2.mean_right:
             element.rzad = 1
@@ -168,7 +173,7 @@ for element in linki:
     # musi dziedziczyc razem z rzedem, narazie tylko stale domyslne
     # main_chan, main_km, main_site ---- do nazewnictwa z cieku glownego
     # topo bezposrednio z cieku glownego
-    element.data_definition(minDeltaH)
+    element.data_definition(minDeltaH, weryfikacja)
 
 #multiprocessing.Pool().map(lambda x: x.data_definition(minDeltaH), linki)
 
@@ -189,6 +194,9 @@ print('polaczenia link wykryte')
 
 nwk = read_NWK(fileWejscieNWK)
 print("NWK zaczytane")
+nwk.branchList = list(filter(lambda x: x.riverName[:3] != 'KP_', nwk.branchList))
+
+print("linki usuniete")
 
 
 ### iterowanie listy zawierającej klasy nowych link channeli
@@ -233,7 +241,11 @@ for i in linki:                         #   iterowanie listy zawierającej klasy
 if robicRDP == True:
     nwk.nwk_rdp()
 nwk.sort_points()
+nwk.branchList.sort(key=lambda x: x.riverName.replace("KP", "zzzc").replace("LTZ", "zzza").replace("PTZ","zzzb"))
 nwk.print_to_nwk(fileWynik)
 fileWynik.close()
 
+for element in list(XS_dat):
+    element.print_txt(fileWynikXS, None, 1)
+fileWynikXS.close()
 print("done")

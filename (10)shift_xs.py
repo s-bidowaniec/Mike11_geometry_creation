@@ -5,16 +5,16 @@ import copy
 from classes import Bridge
 from functions import *
 # -------------------------------- PARAMETRY --------------------------------------------
-river = 'CZARNY_POTOK'
+river = 'BUDKOWICZANKA'
 # -------------------------------- PLIKI WSADOWE --------------------------------------------------------------
 """plik wsadowy rawdata"""
-xsInputDir = r"rawxs.txt"
+xsInputDir = r"C:\!!Mode ISOKII\!ISOK II\Czarny Potok\S01_Czarny_Potok_v3.01_13.12\testy\rawdata_marker.txt"
 fileWejscieXS = open(xsInputDir,'r')
 bazaXsRawData, XsOrder = read_XSraw(fileWejscieXS)
 
 # --------------------------------- PLIKI WYNIKOWE -----------------------------------------------------------
 # nowy plik XSrawData
-xsOutputDir = r"xs_out.txt"
+xsOutputDir = r"C:\!!Mode ISOKII\!ISOK II\Czarny Potok\S01_Czarny_Potok_v3.01_13.12\testy\rawdata_marker_shift.txt"
 if xsInputDir == xsOutputDir:
     raise ValueError('XS input file equals XS output file', 'foo', 'bar', 'baz')
 fileWynikXS = open(xsOutputDir,'w')
