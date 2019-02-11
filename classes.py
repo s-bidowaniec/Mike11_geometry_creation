@@ -903,7 +903,7 @@ class bridge_xs(object):
 
 class point(object):
     def __init__(self, lp, x, y, z, odlRed=0, kod=0,  cos=0,znacznik=0,  ogon='nul'):
-        self.lp = int(float(lp.replace("o","0").replace("O","0").replace("a","").replace("A","")))
+        self.lp = float(lp.replace("o","0").replace("O","0").replace("a","").replace("A",""))
         self.x = float(x.replace("o", "0").replace("O", "0"))
         self.y = float(y.replace("o", "0").replace("O", "0"))
         self.z = float(z.replace("o", "0").replace("O", "0"))
@@ -1058,6 +1058,16 @@ class XS_t(object):
             dy = math.fabs(y2 - y1)
             dist = math.sqrt((dx**2) + (dy**2))
             i.dist = dist
+
+    def distance_odlRed(self):
+        self.pierwszy_punkt = self.point_data[0]
+        self.pozost_punkty = self.point_data[1:]
+        self.punkty_odleglosci = {}
+        self.sortowane = []
+
+        for i in self.point_data:
+            i.dist = i.odlRed
+
     def dist_sort(self):
         self.point_data = sorted(self.point_data, key=operator.attrgetter('dist'))
 
@@ -1346,9 +1356,7 @@ class XS_t(object):
                     self.geom.append(pkt_first)
                     flag = 1
             self.culvertXS = list(self.geom) + list(reversed(self.culver_bottom[1:-1]))
-            #self.culvertXS = reversed(self.culvertXS)
-        #if self.culvertXS[0] != self.culvertXS[-1]:
-            #self.culvertXS.append(self.culvertXS[0])
+
 
         if len(self.deck) == 0:
             lista = self.culvert_common+self.culvert_top+self.culver_bottom
@@ -1499,9 +1507,27 @@ class XS_t(object):
             self.deck.append(laczenie[-1])
 
     def excel_print(self, workbook, path='C:\\'):
+        for pkt in self.point_data:
+            try:
+                a = [float(pkt.dist), float(pkt.z)]
+                for element in self.deck:
+                    if [float(pkt.dist), float(pkt.z)] == element:
+
+                        self.deck[self.deck.index(element)] = [pkt.lp] + element + [pkt.kod, pkt.znacznik]
+
+                for element in self.culvertXS:
+                    if [float(pkt.dist), float(pkt.z)] == element:
+                        self.culvertXS[self.culvertXS.index(element)] = [pkt.lp] + element + [pkt.kod, pkt.znacznik]
+
+                for element in self.kor:
+                    if [float(pkt.dist), float(pkt.z)] == element:
+                        self.kor[self.kor.index(element)] = [pkt.lp] + element + [pkt.kod, pkt.znacznik]
+
+            except:
+                pass
         worksheet = workbook.add_worksheet(str(self.lp))
         bold = workbook.add_format({'bold': 1})
-        headings = ['Koryto Stat','Koryto Elev', 'Przepust Stat', 'Przepust Elev', 'Przelew Stat', 'Przelew Elev']
+        headings = ['Koryto lp','Koryto Stat','Koryto Elev','kod','kod2', 'Przepust lp','Przepust Stat', 'Przepust Elev','kod','kod2','Przelew lp', 'Przelew Stat', 'Przelew Elev','kod','kod2']
         worksheet.write_row('A10', headings, bold)
         worksheet.write(0, 0, 'Rzeka:')
         worksheet.write(0, 1, str(self.rzeka))
@@ -1567,36 +1593,39 @@ class XS_t(object):
         worksheet.write(4, 3, 'Wprowadzić:')
         worksheet.write(4, 4, 'tak')
         chart1 = workbook.add_chart({'type': 'scatter', 'subtype': 'straight'})
+
         for row, line in enumerate(self.kor):
             for col, cell in enumerate(line):
                 worksheet.write(row+10, col, cell)
 
         chart1.add_series({
             'name': 'Koryto',
-            'categories': [str(self.lp), 10, 0, row+10, 0],
-            'values': [str(self.lp), 10, 1, row+10, 1],
+            'categories': [str(self.lp), 10, 1, row+10, 1],
+            'values': [str(self.lp), 10, 2, row+10, 2],
         })
 
         for row, line in enumerate(self.culvertXS):
             for col, cell in enumerate(line):
-                worksheet.write(row+10, col+2, cell)
+                worksheet.write(row+10, col+5, cell)
 
         chart1.add_series({
             'name': 'Przepust',
-            'categories': [str(self.lp), 10, 2, row + 10, 2],
-            'values': [str(self.lp), 10, 3, row + 10, 3],
+            'categories': [str(self.lp), 10, 6, row + 10, 6],
+            'values': [str(self.lp), 10, 7, row + 10, 7],
         })
-        if len(self.deck) == 2:
-            point = [(self.deck[0][0]+self.deck[-1][0])/2, (self.deck[0][1]+self.deck[-1][1])/2]
-            self.deck.insert(1, point)
+        """if len(self.deck) == 2:
+            import pdb
+            pdb.set_trace()
+            point = [(self.deck[0][1]+self.deck[-1][1])/2, (self.deck[0][2]+self.deck[-1][2])/2]
+            self.deck.insert(1, point)"""
 
         for row, line in enumerate(self.deck):
             for col, cell in enumerate(line):
-                worksheet.write(row+10, col+4, cell)
+                worksheet.write(row+10, col+10, cell)
         chart1.add_series({
             'name': 'Przelew',
-            'categories': [str(self.lp), 10, 4, row + 10, 4],
-            'values': [str(self.lp), 10, 5, row + 10, 5],
+            'categories': [str(self.lp), 10, 11, row + 10, 11],
+            'values': [str(self.lp), 10, 12, row + 10, 12],
         })
         chart1.set_style(10)
         chart1.set_size({'width': 720, 'height': 576})
@@ -1620,7 +1649,7 @@ class XS_t(object):
         for foto in self.foto.replace(' ', '').split(','):
             for root, dirs, files in os.walk(path):
                 for name in files:
-                    if name.replace(' ', '') == foto:
+                    if name.replace(' ', '').lower() == foto.lower():
                         image_path = os.path.abspath(os.path.join(root, name))
                         bound_width_height = (900, 400)
                         resize_scale = calculate_scale(image_path, bound_width_height)

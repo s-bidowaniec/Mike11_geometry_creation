@@ -27,11 +27,20 @@ def convert_res11(res11_lok):
         os.system('"'+read11res_lok + " -xyh " + '"'+res11_lok+'"' + " " + '"'+res_lok+ "\\" + nazwa + ".csv"+'"'+'"')
 
         # wywalenie majkowej inwokacji pliku
+        data2=[]
         with open(res_lok + "\\" + nazwa + ".csv", 'r') as fin:
             data = fin.read().splitlines(True)
+            data = data[19:-3]
 
+            for line in data:
+                line = line[:24] + ' ' + line[24:]
+                if len(line.split()) > 16:
+                    line = line.split()
+                    line = line[0:2]+[line[2]+"_"+line[3]]+line[3:]
+                    line = ' '.join(line)
+                data2.append(line)
         with open(res_lok + "\\" + nazwa + ".csv", 'w') as fout:
-            fout.writelines(data[19:-3])
+            fout.writelines(data2)
 
         # dodanie nagłówka pliku na sztywny zdefiniowany w line 37
         plik = codecs.open(res_lok + "\\" + nazwa + ".csv", "r", encoding='windows-1250')

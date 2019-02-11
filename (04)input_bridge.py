@@ -9,28 +9,28 @@ from functions import *
 spadMin = 0
 # -------------------------------- PLIKI WSADOWE --------------------------------------------------------------
 """plik wsadowy rawdata, pobierane sa przekroje z gis do laczenia z przekrojami obiektow, dopasowanie po km"""
-xsInputDir = r"C:\!!Mode ISOKII\!ISOK II\Czarny Potok\Mike_v3_26.11\S01_Czarny_Potok_renamed.txt"
+xsInputDir = r"C:\!!Mode ISOKII\kornela\dla stacha\xs.txt"
 fileWejscieXS = open(xsInputDir,'r')
 bazaXsRawData, XsOrder = read_XSraw(fileWejscieXS)
 
 """plik nwk potrzebny do zaczytania schematyzacji i dodukowania wynikow"""
-nwkInputDir = r"C:\!!Mode ISOKII\!ISOK II\Czarny Potok\Mike_v3_26.11\S01_Czarny_Potok_renamed.nwk11"
+nwkInputDir = r"C:\!!Mode ISOKII\kornela\dla stacha\5_name.nwk11"
 fileWejscieNWK = open(nwkInputDir, 'r')
 nwk = read_NWK(fileWejscieNWK)
 #nwk.nwk_rdp()                                # <- jeśli ma zrobić rdp na networku
 
 """plik z mostami do wsadzenia"""
-wb = openpyxl.load_workbook(r'C:\!!Mode ISOKII\!ISOK II\Czarny Potok\Mike_v3_26.11\Czarny_Potok_budowle.xlsx')
+wb = openpyxl.load_workbook(r'C:\!!Mode ISOKII\kornela\dla stacha\Zadrna_obiekty_python.xlsx')
 bridges = read_bridge_xlsx(wb)
 base_manning = 0.04
 # --------------------------------- PLIKI WYNIKOWE -----------------------------------------------------------
 # nowy plik NWK z naniesionymi mostasmi
-nwkOutDir = r"C:\!!Mode ISOKII\!ISOK II\Czarny Potok\Mike_v3_26.11\S01_Czarny_Potok_bri.nwk11"
+nwkOutDir = r"C:\!!Mode ISOKII\kornela\dla stacha\5_name_bri.nwk11"
 if nwkOutDir == nwkInputDir:
     raise ValueError('NWK input file equals NWK output file', 'foo', 'bar', 'baz')
 fileWynikNWK = open(nwkOutDir, "w")
 # nowy plik XSrawData z naniesionymi mostasmi
-xsOutputDir = r"C:\!!Mode ISOKII\!ISOK II\Czarny Potok\Mike_v3_26.11\S01_Czarny_Potok_bri.txt"
+xsOutputDir = r"C:\!!Mode ISOKII\kornela\dla stacha\xs_bri.txt"
 if xsInputDir == xsOutputDir:
     raise ValueError('XS input file equals XS output file', 'foo', 'bar', 'baz')
 fileWynikXS = open(xsOutputDir,'w')

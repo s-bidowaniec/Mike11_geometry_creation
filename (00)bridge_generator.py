@@ -14,7 +14,10 @@ plik potrzebny do kilometrowania budowli"""
 inputNwkDir = r"C:\!!Mode ISOKII\!ISOK II\Czarny Potok\Mike_v1\S01_Czarny_Potok.nwk11"
 
 """workbook - > plik wynikowy xlsx zawierający w sobie budowle, po generacji należy sprawdzić spadki, geometrię"""
-workbook = xlsxwriter.Workbook(r'C:\!!Mode ISOKII\!ISOK II\Czarny Potok\Mike_v1\test_po_integracji.xlsx')
+workbook = xlsxwriter.Workbook(r'C:\!!Mode ISOKII\!ISOK II\Czarny Potok\Mike_v1\test_po_dodaniu_lp.xlsx')
+""" odleglosc zredukowana z excela? true/false"""
+odlRedXlsx = True
+
 
 fileWejscieNWK = open(inputNwkDir, 'r')
 nwk = read_NWK(fileWejscieNWK)
@@ -38,7 +41,11 @@ for num in range(len(XS_base)):
             pkt.xp = (Points2Line(x1,x2,y1,y2, pkt.x, pkt.y).yp)
             pkt.yp = (Points2Line(x1, x2, y1, y2, pkt.x, pkt.y).xp)
         # pomiar odleglosci (station), i przypisanie pkt
-        XS_base[num].distance()
+        if odlRedXlsx:
+            XS_base[num].distance_odlRed()
+        else:
+            XS_base[num].distance()
+
         # przypisanie danych odpowiadajacych za culvert
         XS_base[num].get_culvert()
         XS_base[num].get_culver_len()
@@ -51,7 +58,10 @@ for num in range(len(XS_base)):
         for pkt in XS_base[num].point_data:
             pkt.xp = (Points2Line(x1, x2, y1, y2, pkt.x, pkt.y).yp)
             pkt.yp = (Points2Line(x1, x2, y1, y2, pkt.x, pkt.y).xp)
-        XS_base[num].distance()
+        if odlRedXlsx:
+            XS_base[num].distance_odlRed()
+        else:
+            XS_base[num].distance()
         XS_base[num].get_weir()
         XS_base[num].get_km_bridge(nwk)
         XS_base[num].excel_print(workbook, path)

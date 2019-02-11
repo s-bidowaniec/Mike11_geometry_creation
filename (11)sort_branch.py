@@ -2,9 +2,9 @@ from functions import *
 from classes import *
 #---------------------------------------------------------------------------------------------------------------------
 # plik wsadowy NWK
-inputNwkDir = r"C:\!!Mode ISOKII\!ISOK II\Czarny Potok\S01_Czarny_Potok_v3.01_13.12\testy\S01_Czarny_Potok_link.nwk11"
+inputNwkDir = r"C:\!!Mode ISOKII\!Etap1\Budkowiczanka_kalibracja\S01_Budkowiczanka_v3.01_14.12.18\01_MIKE11\02_NWK\S01_Budkowiczanka.nwk11"
 # nowy plik NWK
-outputNwkDir = r"C:\!!Mode ISOKII\!ISOK II\Czarny Potok\S01_Czarny_Potok_v3.01_13.12\testy\S01_Czarny_Potok_sort.nwk11"
+outputNwkDir = r"C:\!!Mode ISOKII\!Etap1\Budkowiczanka_kalibracja\S01_Budkowiczanka_v3.01_14.12.18\01_MIKE11\02_NWK\S01_Budkowiczanka_sort.nwk11"
 #---------------------------------------------------------------------------------------------------------------------
 
 """ czy ma zrobic redukcje pkt w branch (True, False) """

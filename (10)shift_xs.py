@@ -8,13 +8,13 @@ from functions import *
 river = 'BUDKOWICZANKA'
 # -------------------------------- PLIKI WSADOWE --------------------------------------------------------------
 """plik wsadowy rawdata"""
-xsInputDir = r"C:\!!Mode ISOKII\!ISOK II\Czarny Potok\S01_Czarny_Potok_v3.01_13.12\testy\rawdata_marker.txt"
+xsInputDir = r"C:\!!Mode ISOKII\!Etap1\Budkowiczanka_kalibracja\S01_Budkowiczanka_v3.01_14.12.18\01_MIKE11\03_XNS\raw.txt"
 fileWejscieXS = open(xsInputDir,'r')
 bazaXsRawData, XsOrder = read_XSraw(fileWejscieXS)
 
 # --------------------------------- PLIKI WYNIKOWE -----------------------------------------------------------
 # nowy plik XSrawData
-xsOutputDir = r"C:\!!Mode ISOKII\!ISOK II\Czarny Potok\S01_Czarny_Potok_v3.01_13.12\testy\rawdata_marker_shift.txt"
+xsOutputDir = r"C:\!!Mode ISOKII\!Etap1\Budkowiczanka_kalibracja\S01_Budkowiczanka_v3.01_14.12.18\01_MIKE11\03_XNS\rawdata_marker_shift.txt"
 if xsInputDir == xsOutputDir:
     raise ValueError('XS input file equals XS output file', 'foo', 'bar', 'baz')
 fileWynikXS = open(xsOutputDir,'w')
